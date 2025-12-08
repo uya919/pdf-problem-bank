@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>라벨링 UI 목업 - Phase 40</title>
+  <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --toss-blue: #3182F6;
+      --toss-blue-light: #E8F3FF;
+      --grey-50: #F9FAFB;
+      --grey-100: #F3F4F6;
+      --grey-200: #E5E7EB;
+      --grey-300: #D1D5DB;
+      --grey-400: #9CA3AF;
+      --grey-500: #6B7280;
+      --grey-600: #4B5563;
+      --grey-700: #374151;
+      --grey-800: #1F2937;
+      --grey-900: #111827;
+      --green-500: #22C55E;
+      --green-100: #DCFCE7;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--grey-50);
+      color: var(--grey-900);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 전체 레이아웃 */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* 헤더 */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: white;
+      border-bottom: 1px solid var(--grey-100);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--grey-600);
+    }
+
+    .back-btn:hover {
+      background: var(--grey-100);
+    }
+
+    .doc-info h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--grey-900);
+    }
+
+    .doc-info p {
+      font-size: 13px;
+      color: var(--grey-500);
+      margin-top: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--grey-500);
+    }
+
+    .icon-btn:hover {
+      background: var(--grey-100);
+    }
+
+    .export-btn {
+      padding: 8px 16px;
+      background: var(--toss-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .export-btn:hover {
+      background: #2563EB;
+    }
+
+    /* 메인 컨텐츠 */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* 왼쪽 패널 */
+    .left-panel {
+      width: 200px;
+      background: white;
+      border-right: 1px solid var(--grey-100);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--grey-100);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-header span:first-child {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--grey-600);
+    }
+
+    .section-header .count {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--toss-blue);
+    }
+
+    .section-header .count.green {
+      color: var(--green-500);
+    }
+
+    .problem-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .problem-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+
+    .problem-item:hover {
+      background: var(--grey-100);
+    }
+
+    .problem-item.selected {
+      background: var(--toss-blue-light);
+      border-left: 3px solid var(--toss-blue);
+    }
+
+    .problem-item .circle {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--grey-300);
+      border-radius: 50%;
+    }
+
+    .problem-item.selected .circle {
+      border-color: var(--toss-blue);
+    }
+
+    .problem-item .check {
+      width: 16px;
+      height: 16px;
+      background: var(--green-500);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 10px;
+    }
+
+    .problem-item .text {
+      font-size: 14px;
+      color: var(--grey-700);
+    }
+
+    .problem-item.selected .text {
+      color: var(--toss-blue);
+      font-weight: 500;
+    }
+
+    .problem-item .link {
+      font-size: 12px;
+      color: var(--grey-400);
+    }
+
+    /* 중앙 캔버스 영역 */
+    .center-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--grey-50);
+    }
+
+    /* 네비게이션 */
+    .navigation {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: white;
+      border-bottom: 1px solid var(--grey-100);
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--grey-700);
+      cursor: pointer;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--grey-100);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .nav-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-info {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--grey-700);
+    }
+
+    .page-info .book-page {
+      color: var(--grey-500);
+      font-weight: 400;
+      margin-left: 8px;
+    }
+
+    .progress-bar {
+      width: 200px;
+      height: 4px;
+      background: var(--grey-200);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar .fill {
+      width: 8%;
+      height: 100%;
+      background: var(--toss-blue);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    /* 캔버스 */
+    .canvas-wrapper {
+      flex: 1;
+      padding: 20px;
+      overflow: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .canvas {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 800px;
+      aspect-ratio: 210/297;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 40px;
+    }
+
+    .block {
+      border: 2px dashed var(--grey-300);
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: rgba(49, 130, 246, 0.05);
+    }
+
+    .block.selected {
+      border-color: var(--toss-blue);
+      border-style: solid;
+      background: rgba(49, 130, 246, 0.1);
+    }
+
+    .block-text {
+      font-size: 14px;
+      color: var(--grey-600);
+      line-height: 1.6;
+    }
+
+    /* 오른쪽 아코디언 패널 */
+    .right-panel {
+      width: 280px;
+      background: white;
+      border-left: 1px solid var(--grey-100);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .accordion-section {
+      border-bottom: 1px solid var(--grey-100);
+    }
+
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .accordion-header:hover {
+      background: var(--grey-50);
+    }
+
+    .accordion-header.current {
+      background: var(--toss-blue-light);
+    }
+
+    .accordion-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .accordion-arrow {
+      color: var(--grey-400);
+      font-size: 12px;
+      transition: transform 0.2s;
+    }
+
+    .accordion-header.expanded .accordion-arrow {
+      transform: rotate(90deg);
+    }
+
+    .accordion-page {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--grey-800);
+    }
+
+    .accordion-header.current .accordion-page {
+      color: var(--toss-blue);
+    }
+
+    .accordion-progress {
+      font-size: 13px;
+      color: var(--grey-500);
+    }
+
+    .accordion-check {
+      color: var(--green-500);
+    }
+
+    .accordion-content {
+      padding: 0 16px 16px;
+    }
+
+    .group-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+
+    .group-item:hover {
+      background: var(--grey-50);
+    }
+
+    .group-item.editing {
+      background: var(--green-100);
+      border: 1px solid var(--green-500);
+    }
+
+    .group-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .group-number {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--grey-800);
+    }
+
+    .group-meta {
+      font-size: 12px;
+      color: var(--grey-500);
+    }
+
+    .group-status {
+      color: var(--green-500);
+      font-size: 16px;
+    }
+
+    .group-editing {
+      font-size: 12px;
+      color: var(--green-500);
+      font-weight: 500;
+    }
+
+    /* 단축키 힌트 */
+    .shortcuts-hint {
+      padding: 8px 16px;
+      background: var(--grey-50);
+      border-top: 1px solid var(--grey-100);
+      font-size: 11px;
+      color: var(--grey-500);
+      text-align: center;
+    }
+
+    .shortcuts-hint kbd {
+      padding: 2px 6px;
+      background: white;
+      border: 1px solid var(--grey-200);
+      border-radius: 4px;
+      font-family: inherit;
+      margin: 0 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="header-left">
+        <button class="back-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="doc-info">
+          <h1>고1 공통수학1 - 베이직쎈</h1>
+          <p>7개 문제 · 29% 연결</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" title="도움말">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </button>
+        <button class="icon-btn" title="설정">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+        <button class="export-btn">내보내기</button>
+      </div>
+    </header>
+
+    <!-- 메인 -->
+    <main class="main">
+      <!-- 왼쪽 패널: 문제 목록 -->
+      <aside class="left-panel">
+        <div class="section-header">
+          <span>미연결 문제</span>
+          <span class="count">5</span>
+        </div>
+        <div class="problem-list">
+          <div class="problem-item selected">
+            <div class="circle"></div>
+            <span class="text">3번</span>
+          </div>
+          <div class="problem-item">
+            <div class="circle"></div>
+            <span class="text">4번</span>
+          </div>
+          <div class="problem-item">
+            <div class="circle"></div>
+            <span class="text">5번</span>
+          </div>
+          <div class="problem-item">
+            <div class="circle"></div>
+            <span class="text">6번</span>
+          </div>
+          <div class="problem-item">
+            <div class="circle"></div>
+            <span class="text">7번</span>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <span>매칭 완료</span>
+          <span class="count green">2</span>
+        </div>
+        <div class="problem-list">
+          <div class="problem-item">
+            <div class="check">✓</div>
+            <span class="text">1번</span>
+            <span class="link">→ R1</span>
+          </div>
+          <div class="problem-item">
+            <div class="check">✓</div>
+            <span class="text">2번</span>
+            <span class="link">→ R2</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- 중앙: 캔버스 영역 -->
+      <section class="center-area">
+        <!-- 간소화된 네비게이션 -->
+        <nav class="navigation">
+          <button class="nav-btn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+            이전
+          </button>
+
+          <div class="nav-center">
+            <span class="page-info">
+              1 / 120
+              <span class="book-page">(책 15p)</span>
+            </span>
+            <div class="progress-bar">
+              <div class="fill"></div>
+            </div>
+          </div>
+
+          <button class="nav-btn">
+            다음
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </nav>
+
+        <!-- 캔버스 -->
+        <div class="canvas-wrapper">
+          <div class="canvas">
+            <div class="canvas-content">
+              <div class="block selected">
+                <div class="block-text">
+                  <strong>1.</strong> 다음 중 이차방정식 x² - 5x + 6 = 0의 두 근의 합은?
+                </div>
+              </div>
+              <div class="block selected">
+                <div class="block-text">
+                  ① 3 &nbsp;&nbsp; ② 4 &nbsp;&nbsp; ③ 5 &nbsp;&nbsp; ④ 6 &nbsp;&nbsp; ⑤ 7
+                </div>
+              </div>
+              <div class="block">
+                <div class="block-text">
+                  <strong>2.</strong> 이차함수 y = x² - 4x + 3의 꼭짓점의 좌표를 구하시오.
+                </div>
+              </div>
+              <div class="block">
+                <div class="block-text">
+                  <strong>3.</strong> 다음 연립방정식의 해를 구하시오.<br>
+                  { x + y = 5<br>
+                  { 2x - y = 1
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 단축키 힌트 -->
+        <div class="shortcuts-hint">
+          <kbd>←</kbd><kbd>→</kbd> 페이지 이동 ·
+          <kbd>G</kbd> 그룹 생성 ·
+          <kbd>Esc</kbd> 선택 해제
+        </div>
+      </section>
+
+      <!-- 오른쪽 패널: 아코디언 그룹 -->
+      <aside class="right-panel">
+        <!-- 현재 페이지 (펼쳐진 상태) -->
+        <div class="accordion-section">
+          <div class="accordion-header current expanded">
+            <div class="accordion-left">
+              <span class="accordion-arrow">▼</span>
+              <span class="accordion-page">17p</span>
+            </div>
+            <span class="accordion-progress">4/7</span>
+          </div>
+          <div class="accordion-content">
+            <div class="group-item">
+              <div class="group-left">
+                <span class="group-number">1</span>
+                <span class="group-meta">베이직쎈 · 17p</span>
+              </div>
+              <span class="group-status">✓</span>
+            </div>
+            <div class="group-item">
+              <div class="group-left">
+                <span class="group-number">2</span>
+                <span class="group-meta">베이직쎈 · 17p</span>
+              </div>
+              <span class="group-status">✓</span>
+            </div>
+            <div class="group-item">
+              <div class="group-left">
+                <span class="group-number">3</span>
+                <span class="group-meta">베이직쎈 · 17p</span>
+              </div>
+              <span class="group-status">✓</span>
+            </div>
+            <div class="group-item editing">
+              <div class="group-left">
+                <span class="group-number">4</span>
+                <span class="group-meta">2블록 선택됨</span>
+              </div>
+              <span class="group-editing">편집중</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 완료된 페이지 (접힌 상태) -->
+        <div class="accordion-section">
+          <div class="accordion-header">
+            <div class="accordion-left">
+              <span class="accordion-arrow">▶</span>
+              <span class="accordion-page">10p</span>
+            </div>
+            <span class="accordion-progress">7/7 <span class="accordion-check">✓</span></span>
+          </div>
+        </div>
+
+        <div class="accordion-section">
+          <div class="accordion-header">
+            <div class="accordion-left">
+              <span class="accordion-arrow">▶</span>
+              <span class="accordion-page">8p</span>
+            </div>
+            <span class="accordion-progress">5/5 <span class="accordion-check">✓</span></span>
+          </div>
+        </div>
+
+        <div class="accordion-section">
+          <div class="accordion-header">
+            <div class="accordion-left">
+              <span class="accordion-arrow">▶</span>
+              <span class="accordion-page">5p</span>
+            </div>
+            <span class="accordion-progress">6/6 <span class="accordion-check">✓</span></span>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>

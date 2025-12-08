@@ -1,0 +1,41 @@
+[
+  {
+    "id": "5d8dc030-6d4f-4c7d-8909-a141ffdc5413",
+    "classification": null,
+    "questionType": "short_answer",
+    "difficulty": 5,
+    "points": null,
+    "content": {
+      "imageUrl": "/test/problem1.png",
+      "thumbnailUrl": null,
+      "latex": null,
+      "ocrText": null,
+      "choices": null,
+      "answer": "42",
+      "answerType": null,
+      "solution": null,
+      "solutionImageUrl": null
+    },
+    "source": {
+      "type": "book",
+      "name": "수학의 바이블",
+      "page": 100,
+      "problemNumber": null,
+      "year": null,
+      "month": null,
+      "organization": null,
+      "documentId": null,
+      "groupId": null
+    },
+    "tags": [
+      "이차방정식",
+      "근의 공식"
+    ],
+    "createdAt": "2025-12-01T06:29:13.954752",
+    "updatedAt": "2025-12-01T06:29:34.733564",
+    "createdBy": "system",
+    "usageCount": 0,
+    "lastUsedAt": null,
+    "isFavorite": true
+  }
+]

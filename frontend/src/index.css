@@ -1,0 +1,136 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 컬러 토큰 (RGB for opacity support) */
+    --color-primary: 49 130 246;
+    --color-primary-light: 232 243 255;
+    --color-primary-dark: 27 100 218;
+
+    --color-background: 249 250 251;
+    --color-surface: 255 255 255;
+    --color-surface-secondary: 243 244 246;
+
+    --color-text-primary: 17 24 39;
+    --color-text-secondary: 107 114 128;
+    --color-text-tertiary: 156 163 175;
+
+    --color-border: 229 231 235;
+    --color-divider: 243 244 246;
+
+    --color-success: 16 185 129;
+    --color-warning: 245 158 11;
+    --color-error: 239 68 68;
+
+    /* 스페이싱 */
+    --spacing-unit: 4px;
+
+    /* 모서리 */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+
+    /* 그림자 */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    /* 애니메이션 */
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
+    --duration-slow: 350ms;
+    --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-grey-50 text-grey-900;
+  }
+
+  /* 포커스 스타일 (접근성) */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-toss-blue ring-offset-2;
+  }
+
+  /* 스크롤바 스타일 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-grey-100 rounded;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-grey-300 rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-grey-400;
+  }
+
+  /* 선택 영역 스타일 */
+  ::selection {
+    @apply bg-toss-blue-light text-toss-blue;
+  }
+}
+
+@layer components {
+  /* 토스 스타일 버튼 기본 클래스 */
+  .btn-toss {
+    @apply inline-flex items-center justify-center font-medium transition-all duration-250 ease-toss-out;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-toss-blue focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+    @apply active:scale-[0.96];
+  }
+
+  /* 카드 기본 클래스 */
+  .card-toss {
+    @apply bg-white rounded-md shadow transition-all duration-250;
+    @apply hover:shadow-md;
+  }
+
+  /* 입력 필드 기본 클래스 */
+  .input-toss {
+    @apply w-full bg-white border border-grey-200 text-grey-900 placeholder:text-grey-400;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-toss-blue focus:border-transparent;
+    @apply disabled:bg-grey-50 disabled:cursor-not-allowed;
+  }
+}
+
+@layer utilities {
+  /* 클릭 가능 요소 */
+  .clickable {
+    @apply cursor-pointer select-none active:scale-[0.98] transition-transform duration-150;
+  }
+
+  /* 텍스트 밸런스 */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* 숨김 처리 (접근성 유지) */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}

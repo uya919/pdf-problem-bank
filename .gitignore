@@ -1,0 +1,48 @@
+# Phase 12-1: Git ignore 설정
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+venv/
+.venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Project specific
+dataset_root/
+*.log
+nul
+
+# Node (frontend in subdirectory)
+node_modules/
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/

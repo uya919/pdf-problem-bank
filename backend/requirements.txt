@@ -1,0 +1,24 @@
+# FastAPI Backend Dependencies (Phase 1)
+
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Core Processing (재사용)
+Pillow==10.1.0
+opencv-python==4.8.1.78
+numpy==1.26.2
+PyMuPDF==1.23.8
+
+# Async & Background Tasks
+aiofiles==23.2.1
+
+# Configuration
+python-dotenv==1.0.0
+
+# Data Validation
+pydantic==2.5.0
+
+# CORS
+fastapi-cors==0.0.6

@@ -1,0 +1,1060 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "source": "mathsecr.com 기반 샘플",
+    "lastUpdated": "2025-11-30",
+    "totalNodes": 847,
+    "levels": ["grade", "majorUnit", "middleUnit", "minorUnit", "type"]
+  },
+  "tree": [
+    {
+      "id": 1,
+      "code": "01",
+      "name": "중1-1",
+      "fullName": "01 중1-1",
+      "level": 1,
+      "parentId": null,
+      "order": 1,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 101,
+          "code": "01",
+          "name": "소인수분해",
+          "fullName": "01 소인수분해",
+          "level": 2,
+          "parentId": 1,
+          "order": 1,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 10101,
+              "code": "01",
+              "name": "소수와 합성수",
+              "fullName": "01 소수와 합성수",
+              "level": 3,
+              "parentId": 101,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 1010101,
+                  "code": "01",
+                  "name": "소수의 정의",
+                  "fullName": "01 소수의 정의",
+                  "level": 4,
+                  "parentId": 10101,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 101010101, "code": "01", "name": "소수 찾기", "fullName": "01 소수 찾기", "level": 5, "parentId": 1010101, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 101010102, "code": "02", "name": "합성수 구별", "fullName": "02 합성수 구별", "level": 5, "parentId": 1010101, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 10102,
+              "code": "02",
+              "name": "소인수분해",
+              "fullName": "02 소인수분해",
+              "level": 3,
+              "parentId": 101,
+              "order": 2,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 1010201,
+                  "code": "01",
+                  "name": "소인수분해 방법",
+                  "fullName": "01 소인수분해 방법",
+                  "level": 4,
+                  "parentId": 10102,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 101020101, "code": "01", "name": "나눗셈을 이용한 소인수분해", "fullName": "01 나눗셈을 이용한 소인수분해", "level": 5, "parentId": 1010201, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 101020102, "code": "02", "name": "거듭제곱 표현", "fullName": "02 거듭제곱 표현", "level": 5, "parentId": 1010201, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 102,
+          "code": "02",
+          "name": "정수와 유리수",
+          "fullName": "02 정수와 유리수",
+          "level": 2,
+          "parentId": 1,
+          "order": 2,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 10201,
+              "code": "01",
+              "name": "정수와 유리수",
+              "fullName": "01 정수와 유리수",
+              "level": 3,
+              "parentId": 102,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 1020101,
+                  "code": "01",
+                  "name": "양수와 음수",
+                  "fullName": "01 양수와 음수",
+                  "level": 4,
+                  "parentId": 10201,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 102010101, "code": "01", "name": "양수와 음수의 뜻", "fullName": "01 양수와 음수의 뜻", "level": 5, "parentId": 1020101, "order": 1, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "code": "02",
+      "name": "중1-2",
+      "fullName": "02 중1-2",
+      "level": 1,
+      "parentId": null,
+      "order": 2,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 201,
+          "code": "01",
+          "name": "기본 도형",
+          "fullName": "01 기본 도형",
+          "level": 2,
+          "parentId": 2,
+          "order": 1,
+          "problemCount": 0,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "code": "03",
+      "name": "중2-1",
+      "fullName": "03 중2-1",
+      "level": 1,
+      "parentId": null,
+      "order": 3,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 301,
+          "code": "01",
+          "name": "유리수와 근사값",
+          "fullName": "01 유리수와 근사값",
+          "level": 2,
+          "parentId": 3,
+          "order": 1,
+          "problemCount": 0,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "code": "04",
+      "name": "중2-2",
+      "fullName": "04 중2-2",
+      "level": 1,
+      "parentId": null,
+      "order": 4,
+      "problemCount": 0,
+      "children": []
+    },
+    {
+      "id": 5,
+      "code": "05",
+      "name": "중3-1",
+      "fullName": "05 중3-1",
+      "level": 1,
+      "parentId": null,
+      "order": 5,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 501,
+          "code": "01",
+          "name": "제곱근과 실수",
+          "fullName": "01 제곱근과 실수",
+          "level": 2,
+          "parentId": 5,
+          "order": 1,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 50101,
+              "code": "01",
+              "name": "제곱근의 뜻과 성질",
+              "fullName": "01 제곱근의 뜻과 성질",
+              "level": 3,
+              "parentId": 501,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 5010101,
+                  "code": "01",
+                  "name": "제곱근",
+                  "fullName": "01 제곱근",
+                  "level": 4,
+                  "parentId": 50101,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 501010101, "code": "01", "name": "제곱근의 뜻", "fullName": "01 제곱근의 뜻", "level": 5, "parentId": 5010101, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 501010102, "code": "02", "name": "제곱근의 표현", "fullName": "02 제곱근의 표현", "level": 5, "parentId": 5010101, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 502,
+          "code": "02",
+          "name": "다항식의 곱셈과 인수분해",
+          "fullName": "02 다항식의 곱셈과 인수분해",
+          "level": 2,
+          "parentId": 5,
+          "order": 2,
+          "problemCount": 0,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "code": "06",
+      "name": "중3-2",
+      "fullName": "06 중3-2",
+      "level": 1,
+      "parentId": null,
+      "order": 6,
+      "problemCount": 0,
+      "children": []
+    },
+    {
+      "id": 7,
+      "code": "07",
+      "name": "공통수학1",
+      "fullName": "07 공통수학1",
+      "level": 1,
+      "parentId": null,
+      "order": 7,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 701,
+          "code": "01",
+          "name": "다항식",
+          "fullName": "01 다항식",
+          "level": 2,
+          "parentId": 7,
+          "order": 1,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 70101,
+              "code": "01",
+              "name": "다항식의 연산",
+              "fullName": "01 다항식의 연산",
+              "level": 3,
+              "parentId": 701,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 7010101,
+                  "code": "01",
+                  "name": "다항식의 덧셈과 뺄셈",
+                  "fullName": "01 다항식의 덧셈과 뺄셈",
+                  "level": 4,
+                  "parentId": 70101,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 701010101, "code": "01", "name": "동류항 정리", "fullName": "01 동류항 정리", "level": 5, "parentId": 7010101, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 701010102, "code": "02", "name": "다항식의 덧셈", "fullName": "02 다항식의 덧셈", "level": 5, "parentId": 7010101, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 7010102,
+                  "code": "02",
+                  "name": "다항식의 곱셈",
+                  "fullName": "02 다항식의 곱셈",
+                  "level": 4,
+                  "parentId": 70101,
+                  "order": 2,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 701010201, "code": "01", "name": "분배법칙", "fullName": "01 분배법칙", "level": 5, "parentId": 7010102, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 701010202, "code": "02", "name": "곱셈 공식", "fullName": "02 곱셈 공식", "level": 5, "parentId": 7010102, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 7010103,
+                  "code": "03",
+                  "name": "다항식의 나눗셈",
+                  "fullName": "03 다항식의 나눗셈",
+                  "level": 4,
+                  "parentId": 70101,
+                  "order": 3,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 701010301, "code": "01", "name": "조립제법", "fullName": "01 조립제법", "level": 5, "parentId": 7010103, "order": 1, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 70102,
+              "code": "02",
+              "name": "항등식과 나머지정리",
+              "fullName": "02 항등식과 나머지정리",
+              "level": 3,
+              "parentId": 701,
+              "order": 2,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 7010201,
+                  "code": "01",
+                  "name": "항등식",
+                  "fullName": "01 항등식",
+                  "level": 4,
+                  "parentId": 70102,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 701020101, "code": "01", "name": "항등식의 성질", "fullName": "01 항등식의 성질", "level": 5, "parentId": 7010201, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 701020102, "code": "02", "name": "미정계수법", "fullName": "02 미정계수법", "level": 5, "parentId": 7010201, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 7010202,
+                  "code": "02",
+                  "name": "나머지정리",
+                  "fullName": "02 나머지정리",
+                  "level": 4,
+                  "parentId": 70102,
+                  "order": 2,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 701020201, "code": "01", "name": "나머지정리", "fullName": "01 나머지정리", "level": 5, "parentId": 7010202, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 701020202, "code": "02", "name": "인수정리", "fullName": "02 인수정리", "level": 5, "parentId": 7010202, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 70103,
+              "code": "03",
+              "name": "인수분해",
+              "fullName": "03 인수분해",
+              "level": 3,
+              "parentId": 701,
+              "order": 3,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 7010301,
+                  "code": "01",
+                  "name": "인수분해 공식",
+                  "fullName": "01 인수분해 공식",
+                  "level": 4,
+                  "parentId": 70103,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 701030101, "code": "01", "name": "공통인수", "fullName": "01 공통인수", "level": 5, "parentId": 7010301, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 701030102, "code": "02", "name": "완전제곱식", "fullName": "02 완전제곱식", "level": 5, "parentId": 7010301, "order": 2, "problemCount": 0, "children": []},
+                    {"id": 701030103, "code": "03", "name": "합차공식", "fullName": "03 합차공식", "level": 5, "parentId": 7010301, "order": 3, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 702,
+          "code": "02",
+          "name": "방정식과 부등식",
+          "fullName": "02 방정식과 부등식",
+          "level": 2,
+          "parentId": 7,
+          "order": 2,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 70201,
+              "code": "01",
+              "name": "복소수",
+              "fullName": "01 복소수",
+              "level": 3,
+              "parentId": 702,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 7020101,
+                  "code": "01",
+                  "name": "복소수의 뜻",
+                  "fullName": "01 복소수의 뜻",
+                  "level": 4,
+                  "parentId": 70201,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 702010101, "code": "01", "name": "허수단위 i", "fullName": "01 허수단위 i", "level": 5, "parentId": 7020101, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 702010102, "code": "02", "name": "복소수의 상등", "fullName": "02 복소수의 상등", "level": 5, "parentId": 7020101, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 7020102,
+                  "code": "02",
+                  "name": "복소수의 연산",
+                  "fullName": "02 복소수의 연산",
+                  "level": 4,
+                  "parentId": 70201,
+                  "order": 2,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 702010201, "code": "01", "name": "복소수의 덧셈과 뺄셈", "fullName": "01 복소수의 덧셈과 뺄셈", "level": 5, "parentId": 7020102, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 702010202, "code": "02", "name": "복소수의 곱셈", "fullName": "02 복소수의 곱셈", "level": 5, "parentId": 7020102, "order": 2, "problemCount": 0, "children": []},
+                    {"id": 702010203, "code": "03", "name": "켤레복소수", "fullName": "03 켤레복소수", "level": 5, "parentId": 7020102, "order": 3, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 70202,
+              "code": "02",
+              "name": "이차방정식",
+              "fullName": "02 이차방정식",
+              "level": 3,
+              "parentId": 702,
+              "order": 2,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 7020201,
+                  "code": "01",
+                  "name": "이차방정식의 풀이",
+                  "fullName": "01 이차방정식의 풀이",
+                  "level": 4,
+                  "parentId": 70202,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 702020101, "code": "01", "name": "인수분해를 이용한 풀이", "fullName": "01 인수분해를 이용한 풀이", "level": 5, "parentId": 7020201, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 702020102, "code": "02", "name": "완전제곱식을 이용한 풀이", "fullName": "02 완전제곱식을 이용한 풀이", "level": 5, "parentId": 7020201, "order": 2, "problemCount": 0, "children": []},
+                    {"id": 702020103, "code": "03", "name": "근의 공식", "fullName": "03 근의 공식", "level": 5, "parentId": 7020201, "order": 3, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 7020202,
+                  "code": "02",
+                  "name": "판별식",
+                  "fullName": "02 판별식",
+                  "level": 4,
+                  "parentId": 70202,
+                  "order": 2,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 702020201, "code": "01", "name": "판별식의 뜻", "fullName": "01 판별식의 뜻", "level": 5, "parentId": 7020202, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 702020202, "code": "02", "name": "실근의 조건", "fullName": "02 실근의 조건", "level": 5, "parentId": 7020202, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 7020203,
+                  "code": "03",
+                  "name": "근과 계수의 관계",
+                  "fullName": "03 근과 계수의 관계",
+                  "level": 4,
+                  "parentId": 70202,
+                  "order": 3,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 702020301, "code": "01", "name": "근과 계수의 관계", "fullName": "01 근과 계수의 관계", "level": 5, "parentId": 7020203, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 702020302, "code": "02", "name": "두 근을 알 때 이차방정식", "fullName": "02 두 근을 알 때 이차방정식", "level": 5, "parentId": 7020203, "order": 2, "problemCount": 0, "children": []},
+                    {"id": 702020303, "code": "03", "name": "근대입", "fullName": "03 근대입", "level": 5, "parentId": 7020203, "order": 3, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 70203,
+              "code": "03",
+              "name": "이차함수와 이차방정식",
+              "fullName": "03 이차함수와 이차방정식",
+              "level": 3,
+              "parentId": 702,
+              "order": 3,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 7020301,
+                  "code": "01",
+                  "name": "이차함수의 그래프",
+                  "fullName": "01 이차함수의 그래프",
+                  "level": 4,
+                  "parentId": 70203,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 702030101, "code": "01", "name": "이차함수의 최대·최소", "fullName": "01 이차함수의 최대·최소", "level": 5, "parentId": 7020301, "order": 1, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 70204,
+              "code": "04",
+              "name": "여러 가지 방정식",
+              "fullName": "04 여러 가지 방정식",
+              "level": 3,
+              "parentId": 702,
+              "order": 4,
+              "problemCount": 0,
+              "children": []
+            },
+            {
+              "id": 70205,
+              "code": "05",
+              "name": "여러 가지 부등식",
+              "fullName": "05 여러 가지 부등식",
+              "level": 3,
+              "parentId": 702,
+              "order": 5,
+              "problemCount": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": 703,
+          "code": "03",
+          "name": "도형의 방정식",
+          "fullName": "03 도형의 방정식",
+          "level": 2,
+          "parentId": 7,
+          "order": 3,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 70301,
+              "code": "01",
+              "name": "평면좌표",
+              "fullName": "01 평면좌표",
+              "level": 3,
+              "parentId": 703,
+              "order": 1,
+              "problemCount": 0,
+              "children": []
+            },
+            {
+              "id": 70302,
+              "code": "02",
+              "name": "직선의 방정식",
+              "fullName": "02 직선의 방정식",
+              "level": 3,
+              "parentId": 703,
+              "order": 2,
+              "problemCount": 0,
+              "children": []
+            },
+            {
+              "id": 70303,
+              "code": "03",
+              "name": "원의 방정식",
+              "fullName": "03 원의 방정식",
+              "level": 3,
+              "parentId": 703,
+              "order": 3,
+              "problemCount": 0,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "code": "08",
+      "name": "공통수학2",
+      "fullName": "08 공통수학2",
+      "level": 1,
+      "parentId": null,
+      "order": 8,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 801,
+          "code": "01",
+          "name": "집합과 명제",
+          "fullName": "01 집합과 명제",
+          "level": 2,
+          "parentId": 8,
+          "order": 1,
+          "problemCount": 0,
+          "children": []
+        },
+        {
+          "id": 802,
+          "code": "02",
+          "name": "함수",
+          "fullName": "02 함수",
+          "level": 2,
+          "parentId": 8,
+          "order": 2,
+          "problemCount": 0,
+          "children": []
+        },
+        {
+          "id": 803,
+          "code": "03",
+          "name": "경우의 수",
+          "fullName": "03 경우의 수",
+          "level": 2,
+          "parentId": 8,
+          "order": 3,
+          "problemCount": 0,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "code": "09",
+      "name": "대수",
+      "fullName": "09 대수",
+      "level": 1,
+      "parentId": null,
+      "order": 9,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 901,
+          "code": "01",
+          "name": "지수함수와 로그함수",
+          "fullName": "01 지수함수와 로그함수",
+          "level": 2,
+          "parentId": 9,
+          "order": 1,
+          "problemCount": 0,
+          "children": []
+        },
+        {
+          "id": 902,
+          "code": "02",
+          "name": "삼각함수",
+          "fullName": "02 삼각함수",
+          "level": 2,
+          "parentId": 9,
+          "order": 2,
+          "problemCount": 0,
+          "children": []
+        },
+        {
+          "id": 903,
+          "code": "03",
+          "name": "수열",
+          "fullName": "03 수열",
+          "level": 2,
+          "parentId": 9,
+          "order": 3,
+          "problemCount": 0,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "code": "10",
+      "name": "미적분",
+      "fullName": "10 미적분",
+      "level": 1,
+      "parentId": null,
+      "order": 10,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 1001,
+          "code": "01",
+          "name": "수열의 극한",
+          "fullName": "01 수열의 극한",
+          "level": 2,
+          "parentId": 10,
+          "order": 1,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 100101,
+              "code": "01",
+              "name": "수열의 극한",
+              "fullName": "01 수열의 극한",
+              "level": 3,
+              "parentId": 1001,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 10010101,
+                  "code": "01",
+                  "name": "수열의 극한값",
+                  "fullName": "01 수열의 극한값",
+                  "level": 4,
+                  "parentId": 100101,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1001010101, "code": "01", "name": "수열의 수렴과 발산", "fullName": "01 수열의 수렴과 발산", "level": 5, "parentId": 10010101, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 1001010102, "code": "02", "name": "극한값의 계산", "fullName": "02 극한값의 계산", "level": 5, "parentId": 10010101, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 100102,
+              "code": "02",
+              "name": "급수",
+              "fullName": "02 급수",
+              "level": 3,
+              "parentId": 1001,
+              "order": 2,
+              "problemCount": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": 1002,
+          "code": "02",
+          "name": "미분법",
+          "fullName": "02 미분법",
+          "level": 2,
+          "parentId": 10,
+          "order": 2,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 100201,
+              "code": "01",
+              "name": "여러 가지 함수의 미분",
+              "fullName": "01 여러 가지 함수의 미분",
+              "level": 3,
+              "parentId": 1002,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 10020101,
+                  "code": "01",
+                  "name": "지수함수·로그함수의 미분",
+                  "fullName": "01 지수함수·로그함수의 미분",
+                  "level": 4,
+                  "parentId": 100201,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1002010101, "code": "01", "name": "자연로그의 밑 e", "fullName": "01 자연로그의 밑 e", "level": 5, "parentId": 10020101, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 1002010102, "code": "02", "name": "지수함수의 미분", "fullName": "02 지수함수의 미분", "level": 5, "parentId": 10020101, "order": 2, "problemCount": 0, "children": []},
+                    {"id": 1002010103, "code": "03", "name": "로그함수의 미분", "fullName": "03 로그함수의 미분", "level": 5, "parentId": 10020101, "order": 3, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 10020102,
+                  "code": "02",
+                  "name": "삼각함수의 미분",
+                  "fullName": "02 삼각함수의 미분",
+                  "level": 4,
+                  "parentId": 100201,
+                  "order": 2,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1002010201, "code": "01", "name": "삼각함수의 극한", "fullName": "01 삼각함수의 극한", "level": 5, "parentId": 10020102, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 1002010202, "code": "02", "name": "삼각함수의 도함수", "fullName": "02 삼각함수의 도함수", "level": 5, "parentId": 10020102, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 100202,
+              "code": "02",
+              "name": "미분법의 응용",
+              "fullName": "02 미분법의 응용",
+              "level": 3,
+              "parentId": 1002,
+              "order": 2,
+              "problemCount": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": 1003,
+          "code": "03",
+          "name": "적분법",
+          "fullName": "03 적분법",
+          "level": 2,
+          "parentId": 10,
+          "order": 3,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 100301,
+              "code": "01",
+              "name": "여러 가지 적분법",
+              "fullName": "01 여러 가지 적분법",
+              "level": 3,
+              "parentId": 1003,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 10030101,
+                  "code": "01",
+                  "name": "치환적분",
+                  "fullName": "01 치환적분",
+                  "level": 4,
+                  "parentId": 100301,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1003010101, "code": "01", "name": "치환적분법", "fullName": "01 치환적분법", "level": 5, "parentId": 10030101, "order": 1, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 10030102,
+                  "code": "02",
+                  "name": "부분적분",
+                  "fullName": "02 부분적분",
+                  "level": 4,
+                  "parentId": 100301,
+                  "order": 2,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1003010201, "code": "01", "name": "부분적분법", "fullName": "01 부분적분법", "level": 5, "parentId": 10030102, "order": 1, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 100302,
+              "code": "02",
+              "name": "정적분의 응용",
+              "fullName": "02 정적분의 응용",
+              "level": 3,
+              "parentId": 1003,
+              "order": 2,
+              "problemCount": 0,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "code": "11",
+      "name": "확률과통계",
+      "fullName": "11 확률과통계",
+      "level": 1,
+      "parentId": null,
+      "order": 11,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 1101,
+          "code": "01",
+          "name": "경우의 수",
+          "fullName": "01 경우의 수",
+          "level": 2,
+          "parentId": 11,
+          "order": 1,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 110101,
+              "code": "01",
+              "name": "순열과 조합",
+              "fullName": "01 순열과 조합",
+              "level": 3,
+              "parentId": 1101,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 11010101,
+                  "code": "01",
+                  "name": "순열",
+                  "fullName": "01 순열",
+                  "level": 4,
+                  "parentId": 110101,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1101010101, "code": "01", "name": "순열의 수", "fullName": "01 순열의 수", "level": 5, "parentId": 11010101, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 1101010102, "code": "02", "name": "원순열", "fullName": "02 원순열", "level": 5, "parentId": 11010101, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 11010102,
+                  "code": "02",
+                  "name": "조합",
+                  "fullName": "02 조합",
+                  "level": 4,
+                  "parentId": 110101,
+                  "order": 2,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1101010201, "code": "01", "name": "조합의 수", "fullName": "01 조합의 수", "level": 5, "parentId": 11010102, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 1101010202, "code": "02", "name": "중복조합", "fullName": "02 중복조합", "level": 5, "parentId": 11010102, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1102,
+          "code": "02",
+          "name": "확률",
+          "fullName": "02 확률",
+          "level": 2,
+          "parentId": 11,
+          "order": 2,
+          "problemCount": 0,
+          "children": []
+        },
+        {
+          "id": 1103,
+          "code": "03",
+          "name": "통계",
+          "fullName": "03 통계",
+          "level": 2,
+          "parentId": 11,
+          "order": 3,
+          "problemCount": 0,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "code": "12",
+      "name": "기하",
+      "fullName": "12 기하",
+      "level": 1,
+      "parentId": null,
+      "order": 12,
+      "problemCount": 0,
+      "children": [
+        {
+          "id": 1201,
+          "code": "01",
+          "name": "이차곡선",
+          "fullName": "01 이차곡선",
+          "level": 2,
+          "parentId": 12,
+          "order": 1,
+          "problemCount": 0,
+          "children": [
+            {
+              "id": 120101,
+              "code": "01",
+              "name": "이차곡선",
+              "fullName": "01 이차곡선",
+              "level": 3,
+              "parentId": 1201,
+              "order": 1,
+              "problemCount": 0,
+              "children": [
+                {
+                  "id": 12010101,
+                  "code": "01",
+                  "name": "포물선",
+                  "fullName": "01 포물선",
+                  "level": 4,
+                  "parentId": 120101,
+                  "order": 1,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1201010101, "code": "01", "name": "포물선의 정의", "fullName": "01 포물선의 정의", "level": 5, "parentId": 12010101, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 1201010102, "code": "02", "name": "포물선의 방정식", "fullName": "02 포물선의 방정식", "level": 5, "parentId": 12010101, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 12010102,
+                  "code": "02",
+                  "name": "타원",
+                  "fullName": "02 타원",
+                  "level": 4,
+                  "parentId": 120101,
+                  "order": 2,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1201010201, "code": "01", "name": "타원의 정의", "fullName": "01 타원의 정의", "level": 5, "parentId": 12010102, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 1201010202, "code": "02", "name": "타원의 방정식", "fullName": "02 타원의 방정식", "level": 5, "parentId": 12010102, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                },
+                {
+                  "id": 12010103,
+                  "code": "03",
+                  "name": "쌍곡선",
+                  "fullName": "03 쌍곡선",
+                  "level": 4,
+                  "parentId": 120101,
+                  "order": 3,
+                  "problemCount": 0,
+                  "children": [
+                    {"id": 1201010301, "code": "01", "name": "쌍곡선의 정의", "fullName": "01 쌍곡선의 정의", "level": 5, "parentId": 12010103, "order": 1, "problemCount": 0, "children": []},
+                    {"id": 1201010302, "code": "02", "name": "쌍곡선의 방정식", "fullName": "02 쌍곡선의 방정식", "level": 5, "parentId": 12010103, "order": 2, "problemCount": 0, "children": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1202,
+          "code": "02",
+          "name": "벡터",
+          "fullName": "02 벡터",
+          "level": 2,
+          "parentId": 12,
+          "order": 2,
+          "problemCount": 0,
+          "children": []
+        },
+        {
+          "id": 1203,
+          "code": "03",
+          "name": "공간도형과 공간좌표",
+          "fullName": "03 공간도형과 공간좌표",
+          "level": 2,
+          "parentId": 12,
+          "order": 3,
+          "problemCount": 0,
+          "children": []
+        }
+      ]
+    }
+  ]
+}
