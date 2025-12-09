@@ -7,12 +7,14 @@
  * - 검색/필터 기능
  * - Phase 24-B: 일괄 삭제 기능
  * - Phase 24-C: 해설 연결 표시
+ * - Phase 57-E: ProblemModal 통합 - 문제 클릭 시 해설 탭으로 연결된 해설 확인 가능
  */
 import { useState, useMemo, useCallback } from 'react';
 import { Search, Grid, List, Trash2, Image as ImageIcon, Loader2, CheckSquare, Square, X, BookOpen } from 'lucide-react';
 import { useAllExportedProblems, useDeleteProblem, useBulkDeleteProblems, useLinkedSolutions } from '../../hooks/useDocuments';
 import { api, type ExportedProblem } from '../../api/client';
 import { useToast } from '../Toast';
+import { ProblemModal } from '../ui/ProblemModal';
 
 type ViewMode = 'grid' | 'list';
 type GroupByMode = 'none' | 'document';
@@ -348,54 +350,27 @@ export function CropProblemBank() {
         </div>
       )}
 
-      {/* 선택된 문제 미리보기 모달 */}
-      {selectedProblem && (
-        <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedProblem(null)}
-        >
-          <div
-            className="bg-white rounded-xl shadow-xl max-w-4xl max-h-[90vh] overflow-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-4 border-b border-grey-200 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-lg">
-                  {selectedProblem.problem_info?.problemNumber || selectedProblem.group_id}
-                </h3>
-                <p className="text-sm text-grey-500">
-                  {selectedProblem.document_id} - 페이지 {selectedProblem.page_index + 1}
-                </p>
-              </div>
-              <button
-                onClick={() => setSelectedProblem(null)}
-                className="text-grey-400 hover:text-grey-600"
-              >
-                &times;
-              </button>
-            </div>
-            <div className="p-4">
-              <img
-                src={getImageUrl(selectedProblem)}
-                alt={`문제 ${selectedProblem.group_id}`}
-                className="max-w-full h-auto"
-              />
-            </div>
-            <div className="p-4 border-t border-grey-200 bg-grey-50">
-              <dl className="grid grid-cols-2 gap-2 text-sm">
-                <dt className="text-grey-500">교재</dt>
-                <dd>{selectedProblem.problem_info?.bookName || '-'}</dd>
-                <dt className="text-grey-500">과정</dt>
-                <dd>{selectedProblem.problem_info?.course || '-'}</dd>
-                <dt className="text-grey-500">페이지</dt>
-                <dd>{selectedProblem.problem_info?.page || '-'}</dd>
-                <dt className="text-grey-500">내보내기 시간</dt>
-                <dd>{selectedProblem.exported_at ? new Date(selectedProblem.exported_at).toLocaleString('ko-KR') : '-'}</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Phase 57-E: ProblemModal로 교체 - 해설 탭 기능 포함 */}
+      <ProblemModal
+        problem={selectedProblem ? {
+          problem_id: formatProblemName(selectedProblem),
+          document_id: selectedProblem.document_id,
+          page_index: selectedProblem.page_index,
+          group_id: selectedProblem.group_id,
+          image_path: selectedProblem.image_path,
+          created_at: selectedProblem.exported_at
+            ? Math.floor(new Date(selectedProblem.exported_at).getTime() / 1000)
+            : undefined,
+        } : null}
+        imageUrl={selectedProblem ? getImageUrl(selectedProblem) : ''}
+        isOpen={!!selectedProblem}
+        onClose={() => setSelectedProblem(null)}
+        onDelete={(problemId) => {
+          if (selectedProblem) {
+            handleDelete(selectedProblem);
+          }
+        }}
+      />
     </div>
   );
 }
