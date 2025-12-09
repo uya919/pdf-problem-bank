@@ -1046,6 +1046,11 @@ async def list_all_exported_problems(
                 doc_dirs = []
 
         for doc_dir in doc_dirs:
+            # Phase 57-F-1: 해설 문서 필터링 (문제은행에서 해설 이미지 제외)
+            doc_name = doc_dir.name
+            if "해설" in doc_name or "_sol" in doc_name.lower() or "solution" in doc_name.lower():
+                continue
+
             problems_dir = doc_dir / "problems"
             if not problems_dir.exists():
                 continue
@@ -1058,6 +1063,11 @@ async def list_all_exported_problems(
                     # Phase 23-E: 크롭 문제 필수 필드 검증
                     if "document_id" not in problem_data or "image_path" not in problem_data:
                         continue  # 크롭 문제가 아닌 데이터 스킵
+
+                    # Phase 57-F-3: 모문제(isParent=true) 필터링
+                    # 모문제는 컨텍스트 제공자이므로 문제은행에서 제외
+                    if problem_data.get("isParent", False):
+                        continue
 
                     # 검색 필터 적용
                     if search:
