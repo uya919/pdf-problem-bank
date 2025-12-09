@@ -425,6 +425,8 @@ function ProblemCard({
             ? 'border-orange-500 bg-orange-50'
             : isSelected
             ? 'border-blue-500 bg-blue-50'
+            : hasLinkedSolution
+            ? 'border-green-400 bg-green-50/50'  // Phase 57-F-2: 해설 연결 강조
             : 'border-grey-200 hover:bg-grey-50'
         }`}
         onClick={handleClick}
@@ -495,10 +497,22 @@ function ProblemCard({
           ? 'border-orange-500 ring-2 ring-orange-200'
           : isSelected
           ? 'border-blue-500 ring-2 ring-blue-200'
+          : hasLinkedSolution
+          ? 'border-green-400 ring-1 ring-green-200 bg-green-50/30'  // Phase 57-F-2: 해설 연결 강조
           : 'border-grey-200 hover:border-grey-300'
       }`}
       onClick={handleClick}
     >
+      {/* Phase 57-F-2: 해설 연결 리본 뱃지 */}
+      {hasLinkedSolution && !isMultiSelectMode && (
+        <div className="absolute top-0 left-0 z-10">
+          <div className="bg-green-500 text-white text-xs font-medium px-2 py-0.5 rounded-br-lg flex items-center gap-1">
+            <BookOpen className="w-3 h-3" />
+            해설
+          </div>
+        </div>
+      )}
+
       {/* Phase 24-B: 체크박스 (다중 선택 모드) */}
       {isMultiSelectMode && (
         <div className="absolute top-2 left-2 z-10">
@@ -541,15 +555,7 @@ function ProblemCard({
 
       {/* 라벨 */}
       <div className="p-2 bg-white border-t border-grey-100">
-        <div className="flex items-center gap-1">
-          <p className="text-sm font-medium text-grey-900 truncate flex-1">{displayName}</p>
-          {/* Phase 24-C: 해설 연결 뱃지 (그리드) */}
-          {hasLinkedSolution && (
-            <span className="inline-flex items-center p-1 rounded bg-green-100 text-green-700 flex-shrink-0" title="해설 연결됨">
-              <BookOpen className="w-3 h-3" />
-            </span>
-          )}
-        </div>
+        <p className="text-sm font-medium text-grey-900 truncate">{displayName}</p>
         <p className="text-xs text-grey-500 truncate">
           {problem.problem_info?.bookName || problem.document_id}
         </p>
