@@ -400,10 +400,12 @@ async def get_session_state(session_id: str):
 @router.get("/linked-solutions")
 async def get_linked_solutions():
     """
-    Phase 24-C: 해설 연결 정보 조회
+    Phase 24-C → Phase 57-G: 해설 연결 정보 조회
 
-    모든 매칭 세션에서 문제-해설 연결 정보를 집계합니다.
+    모든 작업 세션(WorkSession)에서 문제-해설 연결 정보를 집계합니다.
     문제은행에서 해설이 연결된 문제를 표시하기 위해 사용됩니다.
+
+    Phase 57-G: MatchingSession.matchedPairs 대신 WorkSession.links 사용
 
     Returns:
         {
@@ -418,29 +420,45 @@ async def get_linked_solutions():
             "total": int
         }
     """
-    sessions = list_all_sessions()
+    from ..config import config
+    from ..utils.file_utils import load_json
+    from ..models.work_session import WorkSession
 
     # 문제 키 -> 해설 정보 맵
     links = {}
 
-    for session in sessions:
-        for match in session.matchedPairs:
-            problem = match.problem
-            solution = match.solution
+    # Phase 57-G: WorkSession에서 links 읽기
+    if config.WORK_SESSIONS_DIR.exists():
+        for session_file in config.WORK_SESSIONS_DIR.glob("ws-*.json"):
+            try:
+                data = load_json(session_file)
+                session = WorkSession(**data)
 
-            # 문제 고유 키: documentId|pageIndex|groupId
-            key = f"{problem.documentId}|{problem.pageIndex}|{problem.groupId}"
+                # problems를 그룹 ID로 인덱싱
+                problems_by_group = {p.groupId: p for p in session.problems}
 
-            # 이미 링크가 있으면 더 최신 세션의 것을 사용 (세션은 최신순 정렬됨)
-            if key not in links:
-                links[key] = {
-                    "solutionDocumentId": solution.documentId,
-                    "solutionPageIndex": solution.pageIndex,
-                    "solutionGroupId": solution.groupId,
-                    "sessionId": session.sessionId,
-                    "matchedAt": match.matchedAt,
-                    "problemNumber": problem.problemNumber
-                }
+                for link in session.links:
+                    # 문제 정보 찾기
+                    problem = problems_by_group.get(link.problemGroupId)
+                    if not problem:
+                        continue
+
+                    # 문제 고유 키: documentId|pageIndex|groupId
+                    key = f"{problem.documentId}|{problem.pageIndex}|{problem.groupId}"
+
+                    # 이미 링크가 있으면 더 최신 것을 사용
+                    if key not in links or link.linkedAt > links[key].get("matchedAt", 0):
+                        links[key] = {
+                            "solutionDocumentId": link.solutionDocumentId,
+                            "solutionPageIndex": link.solutionPageIndex,
+                            "solutionGroupId": link.solutionGroupId,
+                            "sessionId": session.sessionId,
+                            "matchedAt": link.linkedAt,
+                            "problemNumber": problem.problemNumber
+                        }
+            except Exception as e:
+                print(f"[linked-solutions] 세션 로드 실패: {session_file.name}, {e}")
+                continue
 
     return {
         "links": links,
