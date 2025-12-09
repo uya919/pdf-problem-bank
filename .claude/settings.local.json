@@ -109,7 +109,9 @@
       "Bash(dir C:MYCLAUDE_PROJECThyeyum-v2 /b)",
       "Bash(npx create-next-app@latest:*)",
       "Bash(npm install)",
-      "Bash(start cmd /k \"cd /d C:\\MYCLAUDE_PROJECT\\hyeyum-v2 && npm run dev\")"
+      "Bash(start cmd /k \"cd /d C:\\MYCLAUDE_PROJECT\\hyeyum-v2 && npm run dev\")",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(gh auth status:*)"
     ],
     "deny": [],
     "ask": []
