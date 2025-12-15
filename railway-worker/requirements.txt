@@ -1,0 +1,21 @@
+# Railway Worker Dependencies
+# 메이크에듀 동기화 백그라운드 서버
+
+# Web Framework
+flask==3.0.0
+flask-cors==4.0.0
+gunicorn==21.2.0
+
+# Web Scraping
+playwright==1.40.0
+beautifulsoup4==4.12.2
+lxml==5.1.0
+
+# Supabase
+supabase==2.10.0
+
+# Environment
+python-dotenv==1.0.0
+
+# Utilities
+requests==2.31.0
