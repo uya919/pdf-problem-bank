@@ -1,24 +1,41 @@
-# MakeEdu Sync Worker Dockerfile
-# Playwright 공식 이미지 사용 (Chromium 사전 설치됨)
-FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
+# Railway Worker Dockerfile (hyeyum 방식으로 수정)
+FROM python:3.12-slim
 
-# Set working directory
+# 작업 디렉토리 생성
 WORKDIR /app
 
-# Copy requirements first for better caching (from railway-worker subfolder)
-COPY railway-worker/requirements.txt .
+# 시스템 패키지 설치 (Playwright Chromium 의존성)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libnss3 \
+    libnspr4 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdrm2 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libasound2 \
+    libatspi2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies (playwright는 이미 설치됨)
+# Python 패키지 설치
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code (only railway-worker folder)
-COPY railway-worker/ .
+# Playwright Chromium 설치
+RUN playwright install chromium
 
-# Expose port (Railway sets PORT env var)
-EXPOSE 5000
+# 애플리케이션 파일 복사
+COPY . .
 
-# Default PORT (Railway overrides via env var)
-ENV PORT=5000
+# temp 디렉토리 생성 (scraping_result.json 저장용)
+RUN mkdir -p temp
 
-# Start command - use shell to properly expand $PORT
+# Gunicorn 서버 시작 (Single Worker - Memory Isolation 방지)
 CMD ["sh", "-c", "gunicorn worker:app --bind 0.0.0.0:${PORT:-5000} --workers 1 --timeout 120"]
