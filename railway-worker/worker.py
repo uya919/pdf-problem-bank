@@ -135,22 +135,19 @@ def run_sync_task(job_id: str, preview: bool = True):
         # 1단계: 스크래핑 시작
         update_job(job_id, 'scraping', 10, '메이크에듀 로그인 중...')
 
-        # scrape_makeedu.py 실행
+        # scrape_makeedu.py 실행 (hyeyum과 동일하게 env 파라미터 제거)
         scrape_result = subprocess.run(
             ['python', 'scrape_makeedu.py'],
             capture_output=True,
             text=True,
             timeout=90,  # 최대 90초
             cwd=os.path.dirname(__file__) or '.',
-            env={
-                **os.environ,
-                'MAKEEDU_USERNAME': MAKEEDU_USERNAME,
-                'MAKEEDU_PASSWORD': MAKEEDU_PASSWORD,
-            }
         )
 
         if scrape_result.returncode != 0:
-            raise Exception(f"스크래핑 실패: {scrape_result.stderr}")
+            # 디버깅을 위해 stdout도 포함
+            error_detail = scrape_result.stderr or scrape_result.stdout[:1000] or "알 수 없는 에러"
+            raise Exception(f"스크래핑 실패 (exit={scrape_result.returncode}): {error_detail}")
 
         # scrape_makeedu.py의 stdout에서 JSON 파싱
         stdout = scrape_result.stdout
