@@ -10,6 +10,7 @@ Supabase 학생 동기화 스크립트
 import argparse
 import json
 import os
+import re
 import sys
 from datetime import datetime
 from supabase import create_client, Client
@@ -35,6 +36,57 @@ if not SERVICE_ROLE_KEY:
 supabase: Client = create_client(SUPABASE_URL, SERVICE_ROLE_KEY)
 
 
+# 학년 정규화 패턴
+GRADE_PATTERNS = [
+    # 중학교
+    (r'중[등학교]*\s*1', '중1'),
+    (r'중[등학교]*\s*2', '중2'),
+    (r'중[등학교]*\s*3', '중3'),
+    # 고등학교
+    (r'고[등학교]*\s*1', '고1'),
+    (r'고[등학교]*\s*2', '고2'),
+    (r'고[등학교]*\s*3', '고3'),
+    # 초등학교
+    (r'초[등학교]*\s*1', '초1'),
+    (r'초[등학교]*\s*2', '초2'),
+    (r'초[등학교]*\s*3', '초3'),
+    (r'초[등학교]*\s*4', '초4'),
+    (r'초[등학교]*\s*5', '초5'),
+    (r'초[등학교]*\s*6', '초6'),
+]
+
+# 표준 학년 목록
+STANDARD_GRADES = ['중1', '중2', '중3', '고1', '고2', '고3', '초1', '초2', '초3', '초4', '초5', '초6']
+
+
+def normalize_grade(raw_grade: str) -> str:
+    """
+    학년 문자열을 표준 형식으로 정규화
+
+    Examples:
+        "중등 1학년" → "중1"
+        "중학교 2학년" → "중2"
+        "고1" → "고1"
+        "초등학교 5학년" → "초5"
+    """
+    if not raw_grade:
+        return ""
+
+    raw = raw_grade.strip()
+
+    # 이미 표준 형식이면 그대로 반환
+    if raw in STANDARD_GRADES:
+        return raw
+
+    # 패턴 매칭으로 변환
+    for pattern, standard in GRADE_PATTERNS:
+        if re.search(pattern, raw):
+            return standard
+
+    # 매칭 안되면 원본 반환 (로그용)
+    return raw
+
+
 def map_makeedu_to_supabase(makeedu_student: dict, grade_map: dict = None) -> dict:
     """MakeEdu 데이터를 Supabase 형식으로 변환
 
@@ -42,10 +94,13 @@ def map_makeedu_to_supabase(makeedu_student: dict, grade_map: dict = None) -> di
     - grade_id (uuid FK) - NOT grade string
     - is_active (boolean) - NOT status
     """
-    grade_name = makeedu_student.get("grade") or ""
+    raw_grade = makeedu_student.get("grade") or ""
+    grade_name = normalize_grade(raw_grade)  # 정규화된 학년
     grade_id = None
     if grade_map and grade_name:
         grade_id = grade_map.get(grade_name)
+        if not grade_id and raw_grade:
+            print(f"⚠️ 학년 매핑 실패: '{raw_grade}' → '{grade_name}'")
 
     return {
         "name": makeedu_student["name"],
