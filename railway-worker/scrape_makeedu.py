@@ -222,11 +222,30 @@ def parse_student_data(html: str) -> list[dict]:
             name_link = cells[1].find('a', class_='d_link_')
             name = name_link.get_text(strip=True) if name_link else cells[1].get_text(strip=True)
 
-            # 학년
-            grade = cells[2].get_text(strip=True)
+            # 학년/학교 (같은 셀에 줄바꿈으로 구분됨)
+            # 예: "-\n인화여중" 또는 "중1\n서울중학교"
+            grade_school_text = cells[2].get_text(separator='\n', strip=True)
+            grade_school_lines = [line.strip() for line in grade_school_text.split('\n') if line.strip()]
 
-            # 학교
-            school = cells[3].get_text(strip=True)
+            if len(grade_school_lines) >= 2:
+                grade = grade_school_lines[0]  # 첫 줄: 학년
+                school = grade_school_lines[1]  # 둘째 줄: 학교
+            elif len(grade_school_lines) == 1:
+                # 하나만 있으면 학교인지 학년인지 판단
+                text = grade_school_lines[0]
+                if text in ['-', ''] or any(g in text for g in ['중', '고', '초']):
+                    grade = text if text != '-' else ''
+                    school = ''
+                else:
+                    grade = ''
+                    school = text
+            else:
+                grade = ''
+                school = ''
+
+            # "-"는 빈 값으로 처리
+            if grade == '-':
+                grade = ''
 
             # 보호자연락처 (label 내부 텍스트)
             parent_phone_label = cells[4].find('label', class_='btnCheck')
