@@ -167,21 +167,28 @@ def sync_students(makeedu_students: list[dict], dry_run: bool = True) -> dict:
                 existing = existing_students[name]
                 stats["existing"] += 1
 
-                # 연락처 변경 체크
+                # 연락처 또는 학년 변경 체크
                 phone_changed = (
                     existing.get("parent_phone") != supabase_data["parent_phone"] or
                     existing.get("phone") != supabase_data["phone"]
                 )
+                grade_changed = (
+                    existing.get("grade_id") != supabase_data["grade_id"] and
+                    supabase_data["grade_id"] is not None  # 새 학년이 있을 때만
+                )
 
-                if phone_changed:
+                if phone_changed or grade_changed:
                     stats["updated"] += 1
-                    stats["updated_students"].append({
-                        "name": name,
-                        "old_phone": existing.get("phone"),
-                        "new_phone": supabase_data["phone"],
-                        "old_parent_phone": existing.get("parent_phone"),
-                        "new_parent_phone": supabase_data["parent_phone"],
-                    })
+                    update_info = {"name": name}
+                    if phone_changed:
+                        update_info["old_phone"] = existing.get("phone")
+                        update_info["new_phone"] = supabase_data["phone"]
+                        update_info["old_parent_phone"] = existing.get("parent_phone")
+                        update_info["new_parent_phone"] = supabase_data["parent_phone"]
+                    if grade_changed:
+                        update_info["old_grade_id"] = existing.get("grade_id")
+                        update_info["new_grade_id"] = supabase_data["grade_id"]
+                    stats["updated_students"].append(update_info)
 
                     if not dry_run:
                         supabase.table("students").update(supabase_data).eq(
