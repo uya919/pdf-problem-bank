@@ -113,6 +113,11 @@ def map_makeedu_to_supabase(makeedu_student: dict, grade_map: dict = None) -> di
     }
 
 
+def make_student_key(name: str, parent_phone: str) -> str:
+    """동명이인 구분을 위한 고유 키 생성 (이름_보호자연락처)"""
+    return f"{name}_{parent_phone or ''}"
+
+
 def sync_students(makeedu_students: list[dict], dry_run: bool = True) -> dict:
     """
     학생 데이터 동기화
@@ -150,7 +155,11 @@ def sync_students(makeedu_students: list[dict], dry_run: bool = True) -> dict:
             "id, name, parent_phone, phone, grade_id, is_active"
         ).eq("is_active", True).execute()
 
-        existing_students = {s["name"]: s for s in response.data}
+        # 동명이인 구분: 이름_보호자연락처로 키 생성
+        existing_students = {
+            make_student_key(s["name"], s.get("parent_phone")): s
+            for s in response.data
+        }
     except Exception as e:
         return {"error": f"Supabase 조회 실패: {str(e)}"}
 
@@ -162,20 +171,20 @@ def sync_students(makeedu_students: list[dict], dry_run: bool = True) -> dict:
 
         try:
             supabase_data = map_makeedu_to_supabase(makeedu_student, grade_map)
+            parent_phone = makeedu_student.get("parent_phone") or ""
+            student_key = make_student_key(name, parent_phone)
 
-            if name in existing_students:
-                existing = existing_students[name]
+            if student_key in existing_students:
+                existing = existing_students[student_key]
                 stats["existing"] += 1
 
-                # 연락처 또는 학년 변경 체크
-                phone_changed = (
-                    existing.get("parent_phone") != supabase_data["parent_phone"] or
-                    existing.get("phone") != supabase_data["phone"]
-                )
+                # 학년 변경 체크 (연락처는 키로 사용하므로 변경 체크 불필요)
                 grade_changed = (
                     existing.get("grade_id") != supabase_data["grade_id"] and
                     supabase_data["grade_id"] is not None  # 새 학년이 있을 때만
                 )
+                # 원생연락처(phone)는 변경될 수 있음
+                phone_changed = existing.get("phone") != supabase_data["phone"]
 
                 if phone_changed or grade_changed:
                     stats["updated"] += 1
@@ -183,8 +192,6 @@ def sync_students(makeedu_students: list[dict], dry_run: bool = True) -> dict:
                     if phone_changed:
                         update_info["old_phone"] = existing.get("phone")
                         update_info["new_phone"] = supabase_data["phone"]
-                        update_info["old_parent_phone"] = existing.get("parent_phone")
-                        update_info["new_parent_phone"] = supabase_data["parent_phone"]
                     if grade_changed:
                         update_info["old_grade_id"] = existing.get("grade_id")
                         update_info["new_grade_id"] = supabase_data["grade_id"]
@@ -212,13 +219,16 @@ def sync_students(makeedu_students: list[dict], dry_run: bool = True) -> dict:
             stats["errors"] += 1
 
     # MakeEdu에 없는 학생 → is_active=False 처리
-    makeedu_names = {s.get("name") for s in makeedu_students if s.get("name")}
+    makeedu_keys = {
+        make_student_key(s.get("name"), s.get("parent_phone"))
+        for s in makeedu_students if s.get("name")
+    }
 
-    for name, student in existing_students.items():
-        if name not in makeedu_names:
+    for student_key, student in existing_students.items():
+        if student_key not in makeedu_keys:
             stats["deleted"] += 1
             stats["deleted_students"].append({
-                "name": name,
+                "name": student.get("name"),
                 "grade_id": student.get("grade_id"),
             })
 
