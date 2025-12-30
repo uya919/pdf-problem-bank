@@ -19,7 +19,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Vercel에서 접근 가능하도록
+# Stage 35-D: Vercel 배포 시 CORS 허용 (모든 origin 허용)
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": "*"}})
 
 # 작업 상태 저장소 (메모리, 추후 Redis 권장)
 jobs = {}
@@ -43,6 +44,51 @@ def health_check():
         'jobs_count': len(jobs),
         'playwright_installed': check_playwright(),
     })
+
+
+# ========================================
+# Stage 33: 등원 알림 스케줄러 엔드포인트
+# ========================================
+
+@app.route('/notifications/process', methods=['POST'])
+def process_notifications():
+    """
+    대기 중인 등원 알림 일괄 처리
+    (D-1, D-day 알림 발송)
+    """
+    try:
+        from notification_scheduler import process_notifications as do_process
+        result = do_process()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/notifications/upcoming', methods=['GET'])
+def get_upcoming_enrollments():
+    """
+    향후 7일 내 등원 예정 학생 조회
+    """
+    try:
+        from notification_scheduler import get_upcoming_enrollments as do_get
+        days = request.args.get('days', 7, type=int)
+        result = do_get(days)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/notifications/create-scheduled', methods=['POST'])
+def create_scheduled_notifications():
+    """
+    D-1, D-day 알림 생성 (백업용)
+    """
+    try:
+        from notification_scheduler import create_scheduled_notifications as do_create
+        count = do_create()
+        return jsonify({'created': count})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 def check_playwright():
@@ -269,6 +315,9 @@ if __name__ == '__main__':
    - POST /sync/preview
    - POST /sync/execute
    - GET  /sync/status/<job_id>
+   - POST /notifications/process
+   - GET  /notifications/upcoming
+   - POST /notifications/create-scheduled
     """)
 
     # Gunicorn으로 실행 (프로덕션)
