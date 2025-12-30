@@ -59,6 +59,26 @@ GRADE_PATTERNS = [
 STANDARD_GRADES = ['중1', '중2', '중3', '고1', '고2', '고3', '초1', '초2', '초3', '초4', '초5', '초6']
 
 
+def normalize_phone(phone: str) -> str:
+    """
+    전화번호 정규화 (비교용)
+
+    Examples:
+        "010-1234-5678" → "01012345678"
+        "010 1234 5678" → "01012345678"
+        "" → ""
+        None → ""
+        "  " → ""
+    """
+    if not phone:
+        return ""
+
+    # 숫자만 추출
+    digits = re.sub(r'\D', '', phone.strip())
+
+    return digits
+
+
 def normalize_grade(raw_grade: str) -> str:
     """
     학년 문자열을 표준 형식으로 정규화
@@ -183,8 +203,10 @@ def sync_students(makeedu_students: list[dict], dry_run: bool = True) -> dict:
                     existing.get("grade_id") != supabase_data["grade_id"] and
                     supabase_data["grade_id"] is not None  # 새 학년이 있을 때만
                 )
-                # 원생연락처(phone)는 변경될 수 있음
-                phone_changed = existing.get("phone") != supabase_data["phone"]
+                # 원생연락처(phone)는 변경될 수 있음 - 정규화 후 비교
+                old_phone_normalized = normalize_phone(existing.get("phone"))
+                new_phone_normalized = normalize_phone(supabase_data["phone"])
+                phone_changed = old_phone_normalized != new_phone_normalized
 
                 if phone_changed or grade_changed:
                     stats["updated"] += 1
