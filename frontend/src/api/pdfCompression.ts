@@ -10,7 +10,7 @@
 /** Railway Worker URL (환경변수 또는 기본값) */
 const RAILWAY_WORKER_URL =
   import.meta.env.VITE_RAILWAY_WORKER_URL ||
-  'https://pdf-production-1764.up.railway.app';
+  'https://makeedu-worker-production.up.railway.app';
 
 /** 압축 결과 */
 export interface CompressionResult {
