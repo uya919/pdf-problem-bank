@@ -1,7 +1,9 @@
 """
-Railway Python Worker - 메이크에듀 동기화 백그라운드 작업 서버
+Railway Python Worker - 메이크에듀 동기화 및 PDF 압축 서버
 
 이 서버는 Vercel에서 실행할 수 없는 Python/Playwright 작업을 처리합니다.
+- 메이크에듀 동기화 (Playwright)
+- PDF 압축 (PyMuPDF)
 """
 
 import os
@@ -11,9 +13,12 @@ import asyncio
 import threading
 import subprocess
 from datetime import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from dotenv import load_dotenv
+
+# PDF 압축 모듈
+from pdf_compressor import compress_pdf, get_pdf_info
 
 # 환경변수 로드
 load_dotenv()
@@ -87,6 +92,110 @@ def create_scheduled_notifications():
         from notification_scheduler import create_scheduled_notifications as do_create
         count = do_create()
         return jsonify({'created': count})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ========================================
+# Stage 46: PDF 압축 엔드포인트
+# ========================================
+
+@app.route('/compress-pdf', methods=['POST', 'OPTIONS'])
+def compress_pdf_endpoint():
+    """
+    PDF 압축 API
+
+    Request:
+        - file: PDF 파일 (multipart/form-data)
+        - quality: JPEG 품질 (선택, 기본 90)
+
+    Response:
+        - 압축된 PDF 파일 (binary)
+        - Headers에 통계 정보 포함
+    """
+    # CORS preflight 처리
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = '*'
+        return response
+
+    try:
+        # 파일 검증
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+
+        file = request.files['file']
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files allowed'}), 400
+
+        # 품질 파라미터 (기본 90)
+        quality = request.form.get('quality', 90, type=int)
+        if not 1 <= quality <= 100:
+            quality = 90
+
+        # 파일 읽기
+        input_bytes = file.read()
+        original_size = len(input_bytes)
+
+        print(f"📥 [COMPRESS] 수신: {file.filename} ({original_size / 1024 / 1024:.1f}MB)")
+
+        # 압축 수행
+        compressed_bytes, stats = compress_pdf(input_bytes, jpeg_quality=quality)
+
+        print(f"✅ [COMPRESS] 완료: {stats['compressed_size'] / 1024 / 1024:.1f}MB ({stats['compression_ratio']}% 감소)")
+
+        # 응답 헤더에 통계 정보 추가
+        response = make_response(compressed_bytes)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename="compressed_{file.filename}"'
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Expose-Headers'] = 'X-Original-Size, X-Compressed-Size, X-Compression-Ratio, X-Images-Processed, X-Page-Count'
+        response.headers['X-Original-Size'] = str(stats['original_size'])
+        response.headers['X-Compressed-Size'] = str(stats['compressed_size'])
+        response.headers['X-Compression-Ratio'] = str(stats['compression_ratio'])
+        response.headers['X-Images-Processed'] = str(stats['images_processed'])
+        response.headers['X-Page-Count'] = str(stats['pages'])
+
+        return response
+
+    except Exception as e:
+        print(f"❌ [COMPRESS] 실패: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/compress-pdf/info', methods=['POST', 'OPTIONS'])
+def pdf_info_endpoint():
+    """
+    PDF 정보 조회 (압축 없이)
+
+    Request:
+        - file: PDF 파일 (multipart/form-data)
+
+    Response:
+        - pages: 페이지 수
+        - images: 이미지 수
+        - size: 파일 크기
+    """
+    # CORS preflight 처리
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = '*'
+        return response
+
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+
+        file = request.files['file']
+        input_bytes = file.read()
+
+        info = get_pdf_info(input_bytes)
+        return jsonify(info)
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -318,6 +427,8 @@ if __name__ == '__main__':
    - POST /notifications/process
    - GET  /notifications/upcoming
    - POST /notifications/create-scheduled
+   - POST /compress-pdf (Stage 46: PDF 압축)
+   - POST /compress-pdf/info
     """)
 
     # Gunicorn으로 실행 (프로덕션)
