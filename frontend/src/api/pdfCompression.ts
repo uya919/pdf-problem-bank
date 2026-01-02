@@ -49,6 +49,7 @@ export async function compressPdfOnServer(
 ): Promise<CompressionResult> {
   const { quality = 90, onProgress } = options;
 
+  console.log(`[COMPRESS] 시작: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
   onProgress?.(10, 'Railway 서버로 전송 중...');
 
   // FormData 생성
@@ -56,15 +57,35 @@ export async function compressPdfOnServer(
   formData.append('file', file);
   formData.append('quality', String(quality));
 
-  // Railway Worker 호출
-  const response = await fetch(`${RAILWAY_WORKER_URL}/compress-pdf`, {
-    method: 'POST',
-    body: formData,
-  });
+  // Railway Worker 호출 (3분 타임아웃 - 85MB PDF 압축 시간 고려)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 180000); // 3분
+
+  let response: Response;
+
+  try {
+    response = await fetch(`${RAILWAY_WORKER_URL}/compress-pdf`, {
+      method: 'POST',
+      body: formData,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('[COMPRESS] 타임아웃 (3분 초과)');
+      throw new Error('PDF 압축 타임아웃 - 파일이 너무 큽니다');
+    }
+    console.error('[COMPRESS] 네트워크 에러:', error);
+    throw error;
+  }
+
+  console.log(`[COMPRESS] 응답: ${response.status} ${response.statusText}`);
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    throw new Error(error.error || `Compression failed: ${response.status}`);
+    const errorText = await response.text();
+    console.error(`[COMPRESS] 에러 응답: ${errorText}`);
+    throw new Error(errorText || `Compression failed: ${response.status}`);
   }
 
   onProgress?.(70, '압축 완료, 다운로드 중...');
@@ -83,6 +104,7 @@ export async function compressPdfOnServer(
     lastModified: Date.now(),
   });
 
+  console.log(`[COMPRESS] 성공: ${(compressedSize / 1024 / 1024).toFixed(1)}MB (${compressionRatio}% 감소)`);
   onProgress?.(100, '완료!');
 
   return {
@@ -116,5 +138,5 @@ export async function checkRailwayHealth(): Promise<boolean> {
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 / 1024)).toFixed(1)} MB`;
 }
