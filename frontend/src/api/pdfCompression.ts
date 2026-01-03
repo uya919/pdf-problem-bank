@@ -5,7 +5,13 @@
  * - Railway Worker에서 PyMuPDF로 압축
  * - 2단계: 무손실 최적화 + JPEG 90 이미지 압축
  * - 예상 결과: 85MB -> 25-35MB (60-70% 감소)
+ *
+ * @module pdfCompression
+ * @sideEffects true - 이 모듈은 tree-shaking 제외 대상
  */
+
+// Tree-shaking 방지: 이 로그는 모듈이 로드될 때 실행됨
+console.log('[PDF-COMPRESS-MODULE] Railway PDF 압축 모듈 로드됨');
 
 /** Railway Worker URL (환경변수 또는 기본값) */
 const RAILWAY_WORKER_URL =

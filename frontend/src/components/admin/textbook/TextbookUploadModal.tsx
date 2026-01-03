@@ -1,12 +1,13 @@
 /**
  * TextbookUploadModal - 교재 업로드 모달
  * Stage 18-E/G: 교재 관리 페이지 + PDF 압축
+ * Stage 46-B: Railway Worker 서버사이드 압축으로 변경
  *
  * - 교재명 입력 (자동완성 지원)
  * - 과목 선택
  * - 과정 선택 (공통수학1, 수학Ⅰ 등)
  * - PDF 파일 드래그 앤 드롭
- * - 50MB 초과 시 자동 압축
+ * - 50MB 초과 시 Railway Worker에서 자동 압축
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -19,13 +20,12 @@ import {
   POPULAR_TEXTBOOK_SERIES,
   formatFileSize,
 } from '@/hooks/useAllTextbooks';
-import {
-  compressPdf,
-  needsCompression as checkNeedsCompression,
-  type CompressionProgress,
-  type CompressionResult,
-} from '@/utils/pdfCompressor';
-import { CompressionProgress as CompressionProgressComponent } from './CompressionProgress';
+
+/** 50MB 압축 알림 임계값 (Railway에서 자동 압축) */
+const COMPRESSION_THRESHOLD = 50 * 1024 * 1024;
+
+/** 50MB 이상 파일 여부 확인 */
+const needsServerCompression = (fileSize: number) => fileSize > COMPRESSION_THRESHOLD;
 
 interface TextbookUploadModalProps {
   isOpen: boolean;
@@ -54,10 +54,11 @@ export function TextbookUploadModal({
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // 압축 관련 상태
-  const [isCompressing, setIsCompressing] = useState(false);
-  const [compressionProgress, setCompressionProgress] = useState<CompressionProgress | null>(null);
-  const [compressionResult, setCompressionResult] = useState<CompressionResult | null>(null);
+  // 업로드 진행률 상태 (Railway 압축 포함)
+  const [uploadProgress, setUploadProgress] = useState<{
+    progress: number;
+    message: string;
+  } | null>(null);
 
   // 자동완성 필터링
   useEffect(() => {
@@ -100,7 +101,7 @@ export function TextbookUploadModal({
   // 파일 드롭 핸들러
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: unknown[]) => {
     setFileError(null);
-    setCompressionResult(null);
+    setUploadProgress(null);
 
     if (rejectedFiles.length > 0) {
       setFileError('PDF 파일만 업로드 가능합니다.');
@@ -129,7 +130,7 @@ export function TextbookUploadModal({
     maxFiles: 1,
   });
 
-  // 폼 제출
+  // 폼 제출 (Stage 46-B: Railway Worker에서 압축)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -143,31 +144,6 @@ export function TextbookUploadModal({
     }
 
     try {
-      let fileToUpload = selectedFile;
-
-      // 50MB 초과 시 자동 압축
-      if (checkNeedsCompression(selectedFile.size)) {
-        setIsCompressing(true);
-        setCompressionProgress({ stage: 'loading', progress: 0, message: '압축 준비 중...' });
-
-        try {
-          const result = await compressPdf(selectedFile, {
-            onProgress: setCompressionProgress,
-          });
-
-          setCompressionResult(result);
-          fileToUpload = result.file;
-
-          // 압축 결과 표시를 위해 잠시 대기
-          await new Promise((r) => setTimeout(r, 500));
-        } catch (compressError) {
-          console.warn('압축 실패, 원본 파일로 업로드:', compressError);
-          // 압축 실패해도 원본으로 계속 진행
-        } finally {
-          setIsCompressing(false);
-        }
-      }
-
       // 교재명 자동 생성: 교재명_과정_과목 (예: 베이직쎈_공통수학1_수학)
       const finalDisplayName = [
         displayName.trim(),
@@ -175,11 +151,15 @@ export function TextbookUploadModal({
         subject,
       ].filter(Boolean).join('_');
 
+      // useCreateTextbook에서 Railway 압축 수행
       await createMutation.mutateAsync({
         displayName: finalDisplayName,
-        file: fileToUpload,
+        file: selectedFile, // 원본 파일, 훅에서 Railway 압축
         subject: subject || undefined,
         curriculum: curriculum || undefined,
+        onProgress: (progress, message) => {
+          setUploadProgress({ progress, message });
+        },
       });
 
       // 성공 시 초기화 및 닫기
@@ -188,6 +168,7 @@ export function TextbookUploadModal({
       onClose();
     } catch (error) {
       console.error('업로드 실패:', error);
+      setFileError(error instanceof Error ? error.message : '업로드 중 오류가 발생했습니다.');
     }
   };
 
@@ -198,9 +179,7 @@ export function TextbookUploadModal({
     setCurriculum('');
     setSelectedFile(null);
     setFileError(null);
-    setCompressionProgress(null);
-    setCompressionResult(null);
-    setIsCompressing(false);
+    setUploadProgress(null);
     setShowSuggestions(false);
   };
 
@@ -358,26 +337,35 @@ export function TextbookUploadModal({
                   </button>
                 </div>
 
-                {/* 압축 필요 안내 */}
-                {checkNeedsCompression(selectedFile.size) && !compressionResult && (
+                {/* 50MB 초과 시 압축 안내 */}
+                {needsServerCompression(selectedFile.size) && !uploadProgress && (
                   <div className="mt-3 flex items-start gap-2 p-3 bg-amber-50 rounded-lg">
                     <FileDown className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-amber-700">
                       <p className="font-medium">파일 크기가 50MB를 초과합니다</p>
                       <p className="mt-0.5 text-amber-600">
-                        업로드 시 자동으로 압축됩니다.
+                        업로드 시 서버에서 자동으로 압축됩니다.
                       </p>
                     </div>
                   </div>
                 )}
 
-                {/* 압축 진행률 / 결과 */}
-                {(isCompressing || compressionResult) && (
-                  <div className="mt-3">
-                    <CompressionProgressComponent
-                      progress={compressionProgress}
-                      result={compressionResult}
-                    />
+                {/* 업로드 진행률 (Railway 압축 포함) */}
+                {uploadProgress && (
+                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-2 text-sm text-blue-700">
+                      <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                      {uploadProgress.message}
+                    </div>
+                    <div className="mt-2 h-1.5 bg-blue-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-blue-500 transition-all duration-300"
+                        style={{ width: `${uploadProgress.progress}%` }}
+                      />
+                    </div>
+                    <div className="mt-1 text-xs text-blue-500 text-right">
+                      {uploadProgress.progress.toFixed(0)}%
+                    </div>
                   </div>
                 )}
               </div>
@@ -423,18 +411,13 @@ export function TextbookUploadModal({
             </button>
             <button
               type="submit"
-              disabled={!selectedFile || !displayName.trim() || createMutation.isPending || isCompressing}
+              disabled={!selectedFile || !displayName.trim() || createMutation.isPending}
               className="px-5 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {isCompressing ? (
+              {createMutation.isPending ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  압축 중...
-                </>
-              ) : createMutation.isPending ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  업로드 중...
+                  {uploadProgress?.message || '처리 중...'}
                 </>
               ) : (
                 <>
