@@ -224,6 +224,16 @@ export function useCreateTextbook() {
     ): Promise<Textbook> => {
       const { onProgress } = input;
 
+      // ========== 디버그 로그 Stage 46-C ==========
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('[CREATE-TEXTBOOK] 🔍 mutationFn 시작');
+      console.log('[CREATE-TEXTBOOK] isSupabaseConfigured:', isSupabaseConfigured);
+      console.log('[CREATE-TEXTBOOK] 파일명:', input.file.name);
+      console.log('[CREATE-TEXTBOOK] 파일크기:', (input.file.size / 1024 / 1024).toFixed(1), 'MB');
+      console.log('[CREATE-TEXTBOOK] 50MB 초과?:', input.file.size > 50 * 1024 * 1024);
+      console.log('═══════════════════════════════════════════════════════');
+      // ============================================
+
       // Supabase 미연결 시 Mock 업로드
       if (!isSupabaseConfigured) {
         console.log('[Mock] 교재 업로드:', input.displayName);
@@ -267,6 +277,7 @@ export function useCreateTextbook() {
 
       try {
         // Railway Worker에서 압축 (JPEG 90)
+        console.log('[CREATE-TEXTBOOK] 🚀 compressPdfOnServer 호출 직전');
         const result = await compressPdfOnServer(input.file, {
           quality: 90,
           onProgress: (p, msg) => onProgress?.(5 + p * 0.5, msg), // 5-55%
@@ -280,6 +291,7 @@ export function useCreateTextbook() {
           `${(result.compressedSize / 1024 / 1024).toFixed(1)}MB (${result.compressionRatio}% 감소)`
         );
       } catch (error) {
+        console.error('[CREATE-TEXTBOOK] ❌ compressPdfOnServer 에러:', error);
         console.warn('⚠️ PDF 압축 실패:', error);
 
         // 압축 실패 + 50MB 초과 = 업로드 불가
@@ -297,6 +309,8 @@ export function useCreateTextbook() {
       // ========================================
       // Supabase Storage 업로드
       // ========================================
+      console.log('[CREATE-TEXTBOOK] 📤 Supabase Storage 업로드 시작');
+      console.log('[CREATE-TEXTBOOK] 업로드 파일 크기:', (fileToUpload.size / 1024 / 1024).toFixed(1), 'MB');
       onProgress?.(60, 'Supabase에 업로드 중...');
 
       const timestamp = Date.now();

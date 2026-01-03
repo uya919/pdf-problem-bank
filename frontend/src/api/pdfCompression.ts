@@ -11,12 +11,16 @@
  */
 
 // Tree-shaking 방지: 이 로그는 모듈이 로드될 때 실행됨
+console.log('═══════════════════════════════════════════════════════');
 console.log('[PDF-COMPRESS-MODULE] Railway PDF 압축 모듈 로드됨');
 
 /** Railway Worker URL (환경변수 또는 기본값) */
 const RAILWAY_WORKER_URL =
   import.meta.env.VITE_RAILWAY_WORKER_URL ||
   'https://makeedu-worker-production.up.railway.app';
+
+console.log('[PDF-COMPRESS-MODULE] RAILWAY_URL:', RAILWAY_WORKER_URL);
+console.log('═══════════════════════════════════════════════════════');
 
 /** 압축 결과 */
 export interface CompressionResult {
@@ -55,7 +59,13 @@ export async function compressPdfOnServer(
 ): Promise<CompressionResult> {
   const { quality = 90, onProgress } = options;
 
-  console.log(`[COMPRESS] 시작: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('[COMPRESS] 🚀 함수 호출됨!');
+  console.log(`[COMPRESS] 파일명: ${file.name}`);
+  console.log(`[COMPRESS] 파일크기: ${(file.size / 1024 / 1024).toFixed(1)}MB`);
+  console.log(`[COMPRESS] 품질: ${quality}`);
+  console.log(`[COMPRESS] Railway URL: ${RAILWAY_WORKER_URL}`);
+  console.log('═══════════════════════════════════════════════════════');
   onProgress?.(10, 'Railway 서버로 전송 중...');
 
   // FormData 생성
