@@ -12,7 +12,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
-import { compressPdfOnServer, checkRailwayHealth } from '@/api/pdfCompression';
 import type {
   Textbook,
   TextbookWithUsage,
@@ -20,6 +19,9 @@ import type {
   TextbookRow,
 } from '@/types/textbook';
 import { toTextbook } from '@/types/textbook';
+
+// Tree-shaking 방지용 import (실제로 사용하지 않아도 번들에 포함)
+import { compressPdfOnServer, checkRailwayHealth } from '@/api/pdfCompression';
 
 /**
  * Tree-shaking 방지: 전역 객체에 함수 등록
@@ -260,51 +262,25 @@ export function useCreateTextbook() {
       }
 
       // ========================================
-      // Stage 46-B: Railway Worker에서 PDF 압축
-      // 50MB 이상 파일은 반드시 압축 필요 (Supabase Storage 제한)
+      // Stage 46-E: 로컬 앱에서 사전 압축된 파일 업로드
+      // - 50MB 초과 파일은 로컬 PDF압축도구로 미리 압축 필요
+      // - Railway 압축 제거 (502 타임아웃 문제)
       // ========================================
-      onProgress?.(5, 'PDF 압축 준비 중...');
+      const fileToUpload = input.file;
+      const pageCount: number | undefined = undefined;
 
-      let fileToUpload = input.file;
-      let pageCount: number | undefined;
+      const FILE_SIZE_LIMIT = 50 * 1024 * 1024; // 50MB (Supabase Storage 제한)
 
-      const FILE_SIZE_LIMIT = 50 * 1024 * 1024; // 50MB
-      const needsCompression = input.file.size > FILE_SIZE_LIMIT;
-
-      if (needsCompression) {
-        console.log(`[UPLOAD] 파일 크기 ${(input.file.size / 1024 / 1024).toFixed(1)}MB > 50MB, 압축 필수`);
-      }
-
-      try {
-        // Railway Worker에서 압축 (JPEG 90)
-        console.log('[CREATE-TEXTBOOK] 🚀 compressPdfOnServer 호출 직전');
-        const result = await compressPdfOnServer(input.file, {
-          quality: 90,
-          onProgress: (p, msg) => onProgress?.(5 + p * 0.5, msg), // 5-55%
-        });
-
-        fileToUpload = result.file;
-        pageCount = result.pageCount;
-
-        console.log(
-          `✅ PDF 압축 완료: ${(result.originalSize / 1024 / 1024).toFixed(1)}MB → ` +
-          `${(result.compressedSize / 1024 / 1024).toFixed(1)}MB (${result.compressionRatio}% 감소)`
+      if (input.file.size > FILE_SIZE_LIMIT) {
+        console.error(`[UPLOAD] 파일 크기 ${(input.file.size / 1024 / 1024).toFixed(1)}MB > 50MB`);
+        throw new Error(
+          `파일이 50MB를 초과합니다 (${(input.file.size / 1024 / 1024).toFixed(1)}MB).\n\n` +
+          `로컬 PDF압축도구(tools/PDF압축도구.pyw)로 먼저 압축 후 업로드해주세요.`
         );
-      } catch (error) {
-        console.error('[CREATE-TEXTBOOK] ❌ compressPdfOnServer 에러:', error);
-        console.warn('⚠️ PDF 압축 실패:', error);
-
-        // 압축 실패 + 50MB 초과 = 업로드 불가
-        if (needsCompression) {
-          throw new Error(
-            `파일이 50MB를 초과하여 압축이 필요하지만 압축에 실패했습니다. ` +
-            `에러: ${error instanceof Error ? error.message : '알 수 없는 오류'}`
-          );
-        }
-
-        // 50MB 이하면 원본으로 업로드 시도
-        onProgress?.(55, '압축 스킵, 원본 업로드 중...');
       }
+
+      console.log(`[UPLOAD] 파일 크기: ${(input.file.size / 1024 / 1024).toFixed(1)}MB (50MB 이하, 업로드 가능)`);
+      onProgress?.(10, '업로드 준비 중...');
 
       // ========================================
       // Supabase Storage 업로드
