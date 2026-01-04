@@ -337,7 +337,8 @@ export async function updateExamStatus(
   examId: string,
   status: 'draft' | 'scoring' | 'completed'
 ): Promise<void> {
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('exams')
     .update({ status, updated_at: new Date().toISOString() })
     .eq('id', examId);

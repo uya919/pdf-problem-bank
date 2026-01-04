@@ -162,36 +162,45 @@ export function useStudentStats(studentId: string | null) {
       const startDate = thirtyDaysAgo.toISOString().split('T')[0];
 
       // 출결 데이터 조회
-      const { data: attendanceData } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: attendanceData } = await (supabase as any)
         .from('attendance')
         .select('status')
         .eq('student_id', studentId)
         .gte('date', startDate);
 
-      const totalAttendance = attendanceData?.length || 0;
-      const presentCount = attendanceData?.filter(a => a.status === 'present').length || 0;
-      const absenceCount = attendanceData?.filter(a => a.status === 'absent').length || 0;
+      interface AttendanceRow { status: string }
+      const typedAttendance = (attendanceData || []) as AttendanceRow[];
+      const totalAttendance = typedAttendance.length;
+      const presentCount = typedAttendance.filter(a => a.status === 'present').length;
+      const absenceCount = typedAttendance.filter(a => a.status === 'absent').length;
       const attendanceRate = totalAttendance > 0 ? Math.round((presentCount / totalAttendance) * 100) : 100;
 
       // 숙제 제출 데이터 조회
-      const { data: homeworkData } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: homeworkData } = await (supabase as any)
         .from('homework_submissions')
         .select('status')
         .eq('student_id', studentId);
 
-      const totalHomework = homeworkData?.length || 0;
-      const submittedCount = homeworkData?.filter(h => h.status === 'submitted' || h.status === 'graded').length || 0;
+      interface HomeworkRow { status: string }
+      const typedHomework = (homeworkData || []) as HomeworkRow[];
+      const totalHomework = typedHomework.length;
+      const submittedCount = typedHomework.filter(h => h.status === 'submitted' || h.status === 'graded').length;
       const homeworkRate = totalHomework > 0 ? Math.round((submittedCount / totalHomework) * 100) : 100;
 
       // 시험 성적 조회
-      const { data: scoresData } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: scoresData } = await (supabase as any)
         .from('exam_scores')
         .select('score, created_at')
         .eq('student_id', studentId)
         .order('created_at', { ascending: false })
         .limit(10);
 
-      const scores = scoresData?.map(s => s.score) || [];
+      interface ScoreRow { score: number; created_at: string }
+      const typedScores = (scoresData || []) as ScoreRow[];
+      const scores = typedScores.map(s => s.score);
       const averageScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
       const recentScore = scores[0] || 0;
 
@@ -229,7 +238,8 @@ export function useStudentScores(studentId: string | null, limit = 10) {
     queryFn: async (): Promise<ScoreRecord[]> => {
       if (!studentId) return [];
 
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('exam_scores')
         .select('score, created_at')
         .eq('student_id', studentId)
@@ -238,7 +248,8 @@ export function useStudentScores(studentId: string | null, limit = 10) {
 
       if (error) throw error;
 
-      return (data || []).map(s => ({
+      interface ExamScoreRow { score: number; created_at: string }
+      return ((data || []) as ExamScoreRow[]).map(s => ({
         date: s.created_at.split('T')[0],
         score: s.score,
       }));
@@ -259,14 +270,16 @@ export function useStudentActivities(studentId: string | null, limit = 20) {
       const activities: ActivityRecord[] = [];
 
       // 출결 조회
-      const { data: attendanceData } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: attendanceData } = await (supabase as any)
         .from('attendance')
         .select('id, date, status, note')
         .eq('student_id', studentId)
         .order('date', { ascending: false })
         .limit(limit);
 
-      (attendanceData || []).forEach(a => {
+      interface AttendanceActivityRow { id: string; date: string; status: string; note: string | null }
+      ((attendanceData || []) as AttendanceActivityRow[]).forEach(a => {
         activities.push({
           id: `att-${a.id}`,
           date: a.date,
@@ -277,15 +290,16 @@ export function useStudentActivities(studentId: string | null, limit = 20) {
       });
 
       // 숙제 제출 조회
-      const { data: homeworkData } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: homeworkData } = await (supabase as any)
         .from('homework_submissions')
         .select('id, submitted_at, status, homework:homework(title)')
         .eq('student_id', studentId)
         .order('submitted_at', { ascending: false })
         .limit(limit);
 
-      (homeworkData || []).forEach(h => {
-        const hw = h as { id: string; submitted_at: string; status: string; homework: { title: string } | null };
+      interface HomeworkActivityRow { id: string; submitted_at: string; status: string; homework: { title: string } | null }
+      ((homeworkData || []) as HomeworkActivityRow[]).forEach(hw => {
         activities.push({
           id: `hw-${hw.id}`,
           date: hw.submitted_at?.split('T')[0] || '',
