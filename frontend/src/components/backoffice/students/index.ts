@@ -136,6 +136,8 @@ export function getScoreColor(score: number): string {
 // ============ 컴포넌트 export ============
 
 export { StudentCard } from './StudentCard';
+export { StudentTable } from './StudentTable';
+export { StudentDetailModal } from './StudentDetailModal';
 export { StudentProfileCard } from './StudentProfileCard';
 export { StudentStatsCard } from './StudentStatsCard';
 export { ScoreChart } from './ScoreChart';
