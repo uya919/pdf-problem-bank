@@ -90,7 +90,7 @@ export function useSaveAttendance() {
       student_id: string;
       date: string;
       status: AttendanceStatus;
-      notes?: string;
+      note?: string;
     }[]) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)

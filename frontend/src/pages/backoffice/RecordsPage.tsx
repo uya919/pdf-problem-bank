@@ -10,11 +10,11 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useBreakpoint } from '../../hooks/useIsMobile';
 import { BottomNavBar } from './components/BottomNavBar';
-import { useClasses, useProgress, useHomework, useExamScores, useAttendanceByDate, useProgressForTeacherByDate } from '../../hooks/useBackofficeData';
+import { useClasses, useAttendanceByDate, useProgressForTeacherByDate } from '../../hooks/useBackofficeData';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { ClassAttendanceData } from '../../hooks/useBackofficeData';
-import type { ClassWithDetails, Progress, Homework, ExamScore } from '../../types/database';
+import type { ClassWithDetails } from '../../types/database';
 
 type TabId = 'attendance' | 'progress' | 'homework' | 'grade';
 
@@ -50,11 +50,6 @@ interface ClassInfo {
   studentCount: number;
 }
 
-const MOCK_CLASSES: ClassInfo[] = [
-  { id: '1', name: '중3A반', shortName: '3A', color: '#3182F6', studentCount: 8 },
-  { id: '2', name: '중2A반', shortName: '2A', color: '#00C896', studentCount: 6 },
-  { id: '3', name: '중1A반', shortName: '1A', color: '#FF9800', studentCount: 5 },
-];
 
 // ============ 출결 타입 & 데이터 ============
 
@@ -74,130 +69,6 @@ interface ClassAttendance {
   time: string;
   records: AttendanceRecord[];
 }
-
-const DUMMY_ATTENDANCE: ClassAttendance[] = [
-  {
-    classId: '1',
-    className: '중3A반',
-    time: '17:00 - 19:00',
-    records: [
-      { studentId: '1', studentName: '박성빈', studentColor: '#3182F6', status: 'absent', note: '무단' },
-      { studentId: '2', studentName: '이사랑', studentColor: '#00C896', status: 'present' },
-      { studentId: '3', studentName: '김민수', studentColor: '#FF9800', status: 'present' },
-      { studentId: '4', studentName: '이영희', studentColor: '#9C27B0', status: 'late', note: '10분' },
-    ],
-  },
-  {
-    classId: '2',
-    className: '중2A반',
-    time: '18:00 - 20:00',
-    records: [
-      { studentId: '7', studentName: '정우성', studentColor: '#607D8B', status: 'present' },
-      { studentId: '8', studentName: '한지민', studentColor: '#795548', status: 'present' },
-      { studentId: '9', studentName: '송중기', studentColor: '#00BCD4', status: 'present' },
-    ],
-  },
-];
-
-// ============ 진도 타입 & 데이터 ============
-
-interface ClassProgress {
-  classId: string;
-  className: string;
-  currentUnit: number;
-  totalUnits: number;
-  recentTopic: string;
-}
-
-interface ProgressRecord {
-  id: string;
-  classId: string;
-  className: string;
-  date: string;
-  unitNumber: number;
-  unitTitle: string;
-}
-
-const DUMMY_CLASS_PROGRESS: ClassProgress[] = [
-  { classId: '1', className: '중3A반', currentUnit: 17, totalUnits: 25, recentTopic: '이차함수의 그래프' },
-  { classId: '2', className: '중2A반', currentUnit: 20, totalUnits: 25, recentTopic: '연립방정식 풀이' },
-  { classId: '3', className: '중1A반', currentUnit: 10, totalUnits: 25, recentTopic: '정수와 유리수' },
-];
-
-const DUMMY_PROGRESS_HISTORY: ProgressRecord[] = [
-  { id: 'p1', classId: '1', className: '중3A반', date: '12/11', unitNumber: 17, unitTitle: '이차함수의 그래프' },
-  { id: 'p2', classId: '2', className: '중2A반', date: '12/11', unitNumber: 20, unitTitle: '연립방정식 풀이' },
-  { id: 'p3', classId: '1', className: '중3A반', date: '12/9', unitNumber: 16, unitTitle: '이차함수의 정의' },
-  { id: 'p4', classId: '3', className: '중1A반', date: '12/9', unitNumber: 10, unitTitle: '정수와 유리수' },
-];
-
-// ============ 숙제 타입 & 데이터 ============
-
-interface HomeworkRecord {
-  id: string;
-  classId: string;
-  className: string;
-  date: string;
-  assignment: string;
-  submittedCount: number;
-  totalCount: number;
-}
-
-interface UnsubmittedStudent {
-  studentId: string;
-  studentName: string;
-  classId: string;
-  className: string;
-  consecutiveMissCount: number;
-}
-
-const DUMMY_HOMEWORK: HomeworkRecord[] = [
-  { id: 'h1', classId: '1', className: '중3A반', date: '12/11', assignment: 'p.42~45', submittedCount: 5, totalCount: 6 },
-  { id: 'h2', classId: '2', className: '중2A반', date: '12/11', assignment: 'p.38~41', submittedCount: 3, totalCount: 3 },
-  { id: 'h3', classId: '1', className: '중3A반', date: '12/9', assignment: 'p.38~41', submittedCount: 4, totalCount: 6 },
-];
-
-const DUMMY_UNSUBMITTED: UnsubmittedStudent[] = [
-  { studentId: '1', studentName: '박성빈', classId: '1', className: '중3A반', consecutiveMissCount: 3 },
-  { studentId: '2', studentName: '이사랑', classId: '1', className: '중3A반', consecutiveMissCount: 2 },
-  { studentId: '11', studentName: '이준혁', classId: '3', className: '중1A반', consecutiveMissCount: 2 },
-];
-
-// ============ 성적 타입 & 데이터 ============
-
-interface StudentScore {
-  studentId: string;
-  studentName: string;
-  score: number;
-  previousScore?: number;
-}
-
-interface TestRecord {
-  id: string;
-  classId: string;
-  className: string;
-  date: string;
-  testName: string;
-  scores: StudentScore[];
-}
-
-const DUMMY_TESTS: TestRecord[] = [
-  {
-    id: 't1',
-    classId: '1',
-    className: '중3A반',
-    date: '12/11',
-    testName: '월간 테스트',
-    scores: [
-      { studentId: '1', studentName: '박성빈', score: 68, previousScore: 83 },
-      { studentId: '2', studentName: '이사랑', score: 72, previousScore: 75 },
-      { studentId: '3', studentName: '김민수', score: 95, previousScore: 90 },
-      { studentId: '4', studentName: '이영희', score: 88, previousScore: 85 },
-      { studentId: '5', studentName: '박철수', score: 82, previousScore: 80 },
-      { studentId: '6', studentName: '최수진', score: 78, previousScore: 80 },
-    ],
-  },
-];
 
 // ============ 탭 정의 ============
 
@@ -230,13 +101,13 @@ export default function RecordsPage() {
   });
 
   // =====================
-  // Mock Fallback 패턴
+  // Supabase 데이터 사용
   // =====================
   const classes: ClassInfo[] = useMemo(() => {
     if (supabaseClasses && supabaseClasses.length > 0) {
       return supabaseClasses.map((cls, index) => toClassInfo(cls, index));
     }
-    return MOCK_CLASSES;
+    return [];
   }, [supabaseClasses]);
 
   const selectedClass = classes.find(c => c.id === selectedClassId);
@@ -551,24 +422,12 @@ function AttendanceTab({ selectedClassId, teacherId }: { selectedClassId: string
   // Supabase 데이터 조회 (Stage 35-B: 실제 teacherId 사용)
   const { data: supabaseAttendance } = useAttendanceByDate(teacherId, dateStr);
 
-  // Mock Fallback 패턴: Supabase 데이터가 있으면 사용
+  // Supabase 데이터 사용
   const attendanceData: ClassAttendanceData[] = useMemo(() => {
     if (supabaseAttendance && supabaseAttendance.length > 0) {
       return supabaseAttendance;
     }
-    // Fallback: Mock 데이터 (타입 변환)
-    return DUMMY_ATTENDANCE.map(cls => ({
-      classId: cls.classId,
-      className: cls.className,
-      time: cls.time,
-      records: cls.records.map(r => ({
-        studentId: r.studentId,
-        studentName: r.studentName,
-        studentColor: r.studentColor,
-        status: r.status,
-        note: r.note,
-      })),
-    }));
+    return [];
   }, [supabaseAttendance]);
 
   // 필터링 적용
@@ -781,7 +640,7 @@ function ProgressTab({ selectedClassId, teacherId }: { selectedClassId: string |
     fetchRecentProgress();
   }, [teacherId]);
 
-  // Mock Fallback 패턴
+  // Supabase 데이터 사용
   type ClassProgressItem = {
     classId: string;
     className: string;
@@ -800,15 +659,7 @@ function ProgressTab({ selectedClassId, teacherId }: { selectedClassId: string |
         recorded: progressData.recorded.some(r => r.id === cls.id),
       }));
     }
-    // Fallback to Mock
-    return DUMMY_CLASS_PROGRESS.map(p => ({
-      classId: p.classId,
-      className: p.className,
-      recorded: false,
-      currentUnit: p.currentUnit,
-      totalUnits: p.totalUnits,
-      recentTopic: p.recentTopic,
-    }));
+    return [];
   }, [progressData]);
 
   // 필터링 적용
@@ -819,20 +670,6 @@ function ProgressTab({ selectedClassId, teacherId }: { selectedClassId: string |
   const filteredHistory = selectedClassId
     ? recentProgress.filter(h => h.classId === selectedClassId)
     : recentProgress;
-
-  // Fallback history if no Supabase data
-  const displayHistory = filteredHistory.length > 0 ? filteredHistory : (
-    selectedClassId
-      ? DUMMY_PROGRESS_HISTORY.filter(h => h.classId === selectedClassId)
-      : DUMMY_PROGRESS_HISTORY
-  ).map(h => ({
-    id: h.id,
-    classId: h.classId,
-    className: h.className,
-    date: h.date,
-    pages: `${h.unitNumber}단원`,
-    topic: h.unitTitle,
-  }));
 
   const formatDate = (date: Date) => {
     const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -910,7 +747,7 @@ function ProgressTab({ selectedClassId, teacherId }: { selectedClassId: string |
           <div className="text-[13px] font-semibold text-[#191F28]">최근 진도 기록</div>
         </div>
         <div className="divide-y divide-[#F2F4F6]">
-          {displayHistory.map((record) => (
+          {filteredHistory.map((record) => (
             <div key={record.id} className="px-4 py-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -924,7 +761,7 @@ function ProgressTab({ selectedClassId, teacherId }: { selectedClassId: string |
               )}
             </div>
           ))}
-          {displayHistory.length === 0 && (
+          {filteredHistory.length === 0 && (
             <div className="px-4 py-6 text-center text-[#8B95A1] text-[13px]">
               진도 기록이 없습니다
             </div>
@@ -1050,24 +887,10 @@ function HomeworkTab({ selectedClassId, teacherId }: { selectedClassId: string |
     fetchHomework();
   }, [teacherId]);
 
-  // Mock Fallback
-  const displayHomework = homeworkData.length > 0 ? homeworkData : DUMMY_HOMEWORK.map(h => ({
-    id: h.id,
-    classId: h.classId,
-    className: h.className,
-    date: h.date,
-    title: h.assignment,
-    submitted: h.submittedCount,
-    total: h.totalCount,
-    notSubmittedStudents: DUMMY_UNSUBMITTED
-      .filter(s => s.classId === h.classId)
-      .map(s => ({ id: s.studentId, name: s.studentName })),
-  }));
-
   // 필터링 적용
   const filteredHomework = selectedClassId
-    ? displayHomework.filter(h => h.classId === selectedClassId)
-    : displayHomework;
+    ? homeworkData.filter(h => h.classId === selectedClassId)
+    : homeworkData;
 
   // 반별로 숙제 데이터 그룹화
   const groupedByClass = useMemo(() => {
@@ -1340,25 +1163,10 @@ function GradeTab({ selectedClassId, teacherId }: { selectedClassId: string | nu
     fetchExamScores();
   }, [teacherId]);
 
-  // Mock Fallback
-  const displayTests: ExamTestData[] = examData.length > 0 ? examData : DUMMY_TESTS.map(t => ({
-    id: t.id,
-    classId: t.classId,
-    className: t.className,
-    date: t.date,
-    testName: t.testName,
-    scores: t.scores.map(s => ({
-      studentId: s.studentId,
-      studentName: s.studentName,
-      score: s.score,
-      previousScore: s.previousScore,
-    })),
-  }));
-
   // 필터링 적용
   const filteredTests = selectedClassId
-    ? displayTests.filter(t => t.classId === selectedClassId)
-    : displayTests;
+    ? examData.filter(t => t.classId === selectedClassId)
+    : examData;
 
   // 전체 성적 하락 학생 (필터된 반 기준)
   const allDecliningStudents = useMemo(() => {

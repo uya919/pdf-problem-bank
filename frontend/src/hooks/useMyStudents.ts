@@ -124,6 +124,9 @@ const MOCK_STUDENTS: MyStudent[] = [
 /**
  * 담당 학생 목록 조회 훅
  *
+ * 로그인한 강사의 담당 반 학생만 조회합니다.
+ * 로그인 필수 - 미로그인 시 빈 배열 반환 (페이지에서 로그인 리다이렉트 처리)
+ *
  * @param options.enabled - 쿼리 활성화 여부 (기본: true)
  * @returns 학생 목록, 로딩 상태, 에러
  */
@@ -135,9 +138,15 @@ export function useMyStudents(options?: { enabled?: boolean }) {
     queryKey: ['my-students', teacherId],
     queryFn: async (): Promise<MyStudent[]> => {
       // Supabase 미설정 시 Mock 데이터 반환
-      if (!isSupabaseConfigured || !teacherId) {
-        console.log('[useMyStudents] Mock 모드 또는 인증 안됨, Mock 데이터 반환');
+      if (!isSupabaseConfigured) {
+        console.log('[useMyStudents] Supabase 미설정, Mock 데이터 반환');
         return MOCK_STUDENTS;
+      }
+
+      // 로그인 안됨 - 빈 배열 반환 (페이지에서 리다이렉트 처리)
+      if (!teacherId) {
+        console.log('[useMyStudents] 로그인 필요');
+        return [];
       }
 
       try {
@@ -147,7 +156,7 @@ export function useMyStudents(options?: { enabled?: boolean }) {
           .from('classes')
           .select('id, name, subject')
           .or(`teacher_id.eq.${teacherId},assistant_teacher_id.eq.${teacherId},homeroom_teacher_id.eq.${teacherId}`)
-          .eq('status', 'active');
+          .eq('is_active', true);
 
         if (classError) {
           console.error('[useMyStudents] 반 조회 에러:', classError);
@@ -165,11 +174,12 @@ export function useMyStudents(options?: { enabled?: boolean }) {
         console.log('[useMyStudents] 담당 반:', classesData.length, '개');
 
         // Step 2: 해당 반에 등록된 학생 ID 조회
+        // 테이블명: enrollments (class_enrollments 아님)
         const { data: enrollments, error: enrollError } = await supabase
-          .from('class_enrollments')
+          .from('enrollments')
           .select('student_id, class_id')
           .in('class_id', classIds)
-          .eq('status', 'active');
+          .eq('is_active', true);
 
         if (enrollError) {
           console.error('[useMyStudents] 등록 조회 에러:', enrollError);
@@ -239,7 +249,7 @@ export function useMyStudents(options?: { enabled?: boolean }) {
         return MOCK_STUDENTS;
       }
     },
-    enabled: options?.enabled !== false && !!teacherId,
+    enabled: options?.enabled !== false && !!teacherId,  // teacherId 있을 때만 쿼리 실행
     staleTime: 1000 * 60 * 5, // 5분간 캐시
   });
 }
