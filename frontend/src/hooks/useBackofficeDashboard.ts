@@ -56,7 +56,7 @@ interface UseBackofficeDashboardResult {
   dashboardStats: ReturnType<typeof useDashboardStats>['data'];
 
   // 스케줄 날짜
-  realClassScheduleDates: string[] | undefined;
+  realClassScheduleDates: Date[] | undefined;
 
   // 주간 데이터
   realClassesByDate: Record<string, ClassSchedule[]> | null;

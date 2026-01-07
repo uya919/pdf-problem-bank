@@ -977,11 +977,6 @@ export function BackofficeDemo() {
       } else {
         console.log('Mock 모드 - Supabase 저장 건너뜀');
       }
-
-      // UI 업데이트 (항상 실행)
-      setAttendances((prev) =>
-        prev.map((a) => (a.className === selectedAttendanceClass.className ? { ...a, checked: true } : a))
-      );
     }
   };
 
@@ -1030,17 +1025,6 @@ export function BackofficeDemo() {
       } else {
         console.log('Mock 모드 또는 숙제 데이터 없음 - Supabase 저장 건너뜀');
       }
-
-      // UI 업데이트 (항상 실행)
-      const submitted = students.filter(s => s.submitted === true).length;
-      const notSubmitted = students.filter(s => s.submitted === false).length;
-      setHomeworks((prev) =>
-        prev.map((h) =>
-          h.className === selectedHomeworkClass.className
-            ? { ...h, submitted, notSubmitted, checked: true }
-            : h
-        )
-      );
     }
   };
 
