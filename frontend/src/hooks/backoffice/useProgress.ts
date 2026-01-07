@@ -40,6 +40,8 @@ export function useProgress(classId: string | null) {
 
 /**
  * 진도 저장 mutation
+ *
+ * Stage 50: pages → start_page, end_page 분리 (Supabase 스키마 일치)
  */
 export function useSaveProgress() {
   const queryClient = useQueryClient();
@@ -49,7 +51,8 @@ export function useSaveProgress() {
       class_id: string;
       date: string;
       textbook: string;
-      pages: string;
+      startPage?: string;
+      endPage?: string;
       topic?: string;
       notes?: string;
     }) => {
@@ -58,7 +61,8 @@ export function useSaveProgress() {
         class_id: data.class_id,
         date: data.date,
         textbook: data.textbook,
-        pages: data.pages,
+        start_page: data.startPage ? parseInt(data.startPage, 10) : null,
+        end_page: data.endPage ? parseInt(data.endPage, 10) : null,
         topic: data.topic || '',
         notes: data.notes || '',
         created_by: null,

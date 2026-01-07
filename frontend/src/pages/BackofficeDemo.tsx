@@ -1284,12 +1284,14 @@ export function BackofficeDemo() {
         selectedDate={selectedDate}
         onSave={(data) => {
           // Phase 310-B: 선택된 날짜로 Supabase에 저장
+          // Stage 50: pages → startPage, endPage 분리 (Supabase 스키마 일치)
           if (selectedClassId) {
             saveProgress.mutate({
               class_id: selectedClassId,
               date: selectedDate.toISOString().split('T')[0],
               textbook: data.textbook,
-              pages: `${data.startPage}-${data.endPage}`,
+              startPage: data.startPage,
+              endPage: data.endPage,
               topic: data.topic,
               notes: data.notes,
             });
