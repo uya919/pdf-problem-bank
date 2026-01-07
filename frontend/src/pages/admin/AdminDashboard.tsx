@@ -42,7 +42,7 @@ import type { TimeSlotGroup, ClassScheduleDetail } from '../../types/admin';
 import { extractLevel, LEVEL_ORDER } from '../../types/admin';
 // Stage 35: viewMode 연동
 import { useViewModeStore } from '../../stores/viewModeStore';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 // Stage 35-수정: 강사 모드 순환수업 담당 반 표시용
 import { useClasses } from '../../hooks/useClasses';
 

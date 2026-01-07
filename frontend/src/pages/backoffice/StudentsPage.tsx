@@ -10,11 +10,10 @@
  * - 모바일 (<768px): 카드 리스트 + 전화 버튼
  * - 태블릿/PC (≥768px): 테이블 + 복사 버튼
  */
-import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { useBreakpoint } from '../../hooks/useIsMobile';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 import { BottomNavBar } from './components/BottomNavBar';
 import { StudentCard } from '../../components/backoffice/students/StudentCard';
 import { StudentTable } from '../../components/backoffice/students/StudentTable';
@@ -22,16 +21,10 @@ import { StudentDetailModal } from '../../components/backoffice/students/Student
 import { useMyStudents, filterStudents, type MyStudent } from '../../hooks/useMyStudents';
 
 export default function StudentsPage() {
-  const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { isLoading: authLoading } = useAuth();
   const { isMobile, isTabletOrAbove } = useBreakpoint();
 
-  // 로그인 체크 - 미로그인 시 로그인 페이지로 이동
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login', { replace: true });
-    }
-  }, [authLoading, user, navigate]);
+  // 로그인 체크는 ProtectedRoute에서 처리하므로 제거
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
 
