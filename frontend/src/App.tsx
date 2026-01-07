@@ -99,157 +99,157 @@ function App() {
                     <BackofficeDemo />
                   </ProtectedRoute>
                 } />
-                <Route path="classes" element={
+                <Route path="/backoffice/classes" element={
                   <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
                     <ClassesPage />
                   </ProtectedRoute>
                 } />
-                <Route path="students" element={
+                <Route path="/backoffice/students" element={
                   <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
                     <StudentsPage />
                   </ProtectedRoute>
                 } />
-                <Route path="students/:studentId" element={
+                <Route path="/backoffice/students/:studentId" element={
                   <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
                     <StudentDetailPage />
                   </ProtectedRoute>
                 } />
-                <Route path="records" element={
+                <Route path="/backoffice/records" element={
                   <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
                     <RecordsPage />
                   </ProtectedRoute>
                 } />
-                <Route path="more" element={
+                <Route path="/backoffice/more" element={
                   <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
                     <MorePage />
                   </ProtectedRoute>
                 } />
 
                 {/* ===== 관리자용 (반응형: 모바일/PC 자동전환) - 관리자/원장만 ===== */}
-                <Route path="admin" element={
+                <Route path="/admin" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <AdminResponsivePage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/grade-overview" element={
+                <Route path="/admin/grade-overview" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <GradeOverview />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/grades" element={
+                <Route path="/admin/grades" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <GradeOverview />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/students" element={
+                <Route path="/admin/students" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <AdminStudentsPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/class-assignment" element={
+                <Route path="/admin/class-assignment" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <ClassAssignmentPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/subject-assignment" element={
+                <Route path="/admin/subject-assignment" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <ClassAssignmentPageV3 />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/subject-assignment-v1" element={
+                <Route path="/admin/subject-assignment-v1" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <ClassAssignmentPageDnd />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/attendance" element={
+                <Route path="/admin/attendance" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <AttendancePage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/operations" element={
+                <Route path="/admin/operations" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <OperationsPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/classes" element={
+                <Route path="/admin/classes" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <ClassManagementPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/settlement" element={
+                <Route path="/admin/settlement" element={
                   <ProtectedRoute roles={['owner']}>
                     <SettlementPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/reports" element={
+                <Route path="/admin/reports" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <ReportsPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/users" element={
+                <Route path="/admin/users" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <UsersPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/rotation" element={
+                <Route path="/admin/rotation" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <RotationManagement />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/textbooks" element={
+                <Route path="/admin/textbooks" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <TextbookManagement />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/exams" element={
+                <Route path="/admin/exams" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <ExamManagement />
                   </ProtectedRoute>
                 } />
 
                 {/* ===== Stage 33: 상담 관리 ===== */}
-                <Route path="admin/consultations" element={
+                <Route path="/admin/consultations" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <ConsultationListPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/consultation/new" element={
+                <Route path="/admin/consultation/new" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <NewConsultationPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/consultation/student" element={
+                <Route path="/admin/consultation/student" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <StudentConsultationPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/consultation/list" element={
+                <Route path="/admin/consultation/list" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <ConsultationListPage />
                   </ProtectedRoute>
                 } />
-                <Route path="admin/consultation/edit/:id" element={
+                <Route path="/admin/consultation/edit/:id" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <EditConsultationPage />
                   </ProtectedRoute>
                 } />
 
                 {/* ===== Stage 33: 설정 ===== */}
-                <Route path="admin/settings/subject-managers" element={
+                <Route path="/admin/settings/subject-managers" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <SubjectManagerSettingsPage />
                   </ProtectedRoute>
                 } />
 
-                <Route path="admin/*" element={
+                <Route path="/admin/*" element={
                   <ProtectedRoute roles={['admin', 'owner']}>
                     <AdminResponsivePage />
                   </ProtectedRoute>
                 } />
 
                 {/* ===== /admin-mobile → /admin 리다이렉트 (Stage 11-3, 29-D) ===== */}
-                <Route path="admin-mobile" element={<Navigate to="/admin" replace />} />
-                <Route path="admin-mobile/*" element={<Navigate to="/admin" replace />} />
+                <Route path="/admin-mobile" element={<Navigate to="/admin" replace />} />
+                <Route path="/admin-mobile/*" element={<Navigate to="/admin" replace />} />
 
                 {/* 모든 알 수 없는 경로 → 로그인으로 */}
                 <Route path="*" element={<Navigate to="/login" replace />} />
