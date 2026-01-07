@@ -10,7 +10,7 @@
  * - 모달 내부에서 useLastProgressBefore, useProgressByDate 훅 호출
  * - classId 변경 시 자동으로 새 데이터 로드 (stale data 방지)
  */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { BookIcon, NoteIcon } from '../../ui/Icons';
 import { FileText, Loader2 } from 'lucide-react';
 import { BottomSheet } from './BottomSheet';
@@ -142,6 +142,26 @@ export function ProgressModal({
     homeworkEndPage: '',
     notes: '',
   });
+
+  // Stage 49: classId 변경 시 폼 초기화 (스와이프 후 이전 반 데이터 잔류 버그 수정)
+  const prevClassIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    // classId가 실제로 변경되었을 때만 리셋
+    if (classId !== prevClassIdRef.current) {
+      setFormData({
+        topic: '',
+        textbook: '',
+        startPage: '',
+        endPage: '',
+        homeworkTextbook: '',
+        homeworkStartPage: '',
+        homeworkEndPage: '',
+        notes: '',
+      });
+      prevClassIdRef.current = classId;
+    }
+  }, [classId]);
 
   // 시험 토글 상태
   const [testEnabled, setTestEnabled] = useState(false);
