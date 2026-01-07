@@ -21,10 +21,10 @@ export function BottomNavBar({ active }: BottomNavBarProps) {
 
   const tabs: { id: TabId; icon: string; label: string; path: string }[] = [
     { id: 'home', icon: 'home', label: '홈', path: '/backoffice' },
-    { id: 'classes', icon: 'book', label: '수업', path: '/classes' },
-    { id: 'students', icon: 'users', label: '학생', path: '/students' },
-    { id: 'records', icon: 'edit', label: '기록', path: '/records' },
-    { id: 'more', icon: 'more', label: '더보기', path: '/more' },
+    { id: 'classes', icon: 'book', label: '수업', path: '/backoffice/classes' },
+    { id: 'students', icon: 'users', label: '학생', path: '/backoffice/students' },
+    { id: 'records', icon: 'edit', label: '기록', path: '/backoffice/records' },
+    { id: 'more', icon: 'more', label: '더보기', path: '/backoffice/more' },
   ];
 
   return (
