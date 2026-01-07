@@ -1,0 +1,95 @@
+# 메이크에듀 학생 데이터 자동 동기화
+# 매일 새벽 1시 (KST 기준, UTC 16:00) 실행
+# 또는 GitHub UI에서 수동 실행 가능
+
+name: MakeEdu Sync
+
+on:
+  schedule:
+    # 매일 새벽 1시 KST (UTC 16:00 전일)
+    - cron: '0 16 * * *'
+
+  workflow_dispatch:
+    # 수동 실행 옵션
+    inputs:
+      preview:
+        description: '미리보기 모드 (DB 변경 없음)'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  MAKEEDU_USERNAME: ${{ secrets.MAKEEDU_USERNAME }}
+  MAKEEDU_PASSWORD: ${{ secrets.MAKEEDU_PASSWORD }}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        working-directory: railway-worker
+        run: |
+          pip install playwright beautifulsoup4 lxml supabase python-dotenv
+          python -m playwright install chromium
+          python -m playwright install-deps chromium
+
+      - name: Run MakeEdu Scraper
+        id: scrape
+        working-directory: railway-worker
+        run: |
+          echo "Starting MakeEdu scraping..."
+          python scrape_makeedu.py > scraping_output.txt 2>&1
+
+          # Extract JSON result
+          if grep -q "STEP:5:완료!" scraping_output.txt; then
+            echo "Scraping completed successfully"
+            # Extract JSON after the marker
+            sed -n '/STEP:5:완료!/,$p' scraping_output.txt | tail -n +2 > temp/scraping_result.json
+            echo "scrape_success=true" >> $GITHUB_OUTPUT
+          else
+            echo "Scraping failed"
+            cat scraping_output.txt
+            echo "scrape_success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Run Sync to Supabase
+        if: steps.scrape.outputs.scrape_success == 'true'
+        working-directory: railway-worker
+        run: |
+          echo "Syncing to Supabase..."
+
+          # preview 모드 체크
+          if [ "${{ github.event.inputs.preview }}" == "true" ]; then
+            python sync_api.py --preview
+          else
+            python sync_api.py --execute
+          fi
+
+      - name: Upload scraping result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraping-result-${{ github.run_number }}
+          path: |
+            railway-worker/temp/scraping_result.json
+            railway-worker/scraping_output.txt
+          retention-days: 7
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::MakeEdu sync failed. Check the logs for details."

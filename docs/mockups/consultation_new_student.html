@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신규상담 - 혜윰 백오피스</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            grey: {
+              50: '#f9fafb', 100: '#f3f4f6', 200: '#e5e7eb',
+              300: '#d1d5db', 400: '#9ca3af', 500: '#6b7280',
+              600: '#4b5563', 700: '#374151', 800: '#1f2937', 900: '#111827'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      ring: 2px;
+      ring-color: #3b82f6;
+    }
+  </style>
+</head>
+<body class="bg-grey-50 min-h-screen">
+  <!-- 상단 네비게이션 -->
+  <header class="bg-white border-b border-grey-200 sticky top-0 z-50">
+    <div class="flex items-center justify-between px-6 py-3">
+      <div class="flex items-center gap-6">
+        <h1 class="text-xl font-bold text-grey-900">혜윰</h1>
+        <nav class="flex items-center gap-1">
+          <a href="#" class="px-4 py-2 text-grey-600 hover:text-grey-900 rounded-lg hover:bg-grey-100">대시보드</a>
+          <a href="#" class="px-4 py-2 text-grey-600 hover:text-grey-900 rounded-lg hover:bg-grey-100">수업 관리</a>
+          <a href="#" class="px-4 py-2 text-grey-600 hover:text-grey-900 rounded-lg hover:bg-grey-100">학생 관리</a>
+          <a href="#" class="px-4 py-2 text-grey-600 hover:text-grey-900 rounded-lg hover:bg-grey-100">운영 관리</a>
+          <a href="#" class="px-4 py-2 text-blue-600 bg-blue-50 rounded-lg font-medium">상담 관리</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- 역할 토글 -->
+        <div class="flex items-center gap-2 bg-grey-100 rounded-lg p-1">
+          <button class="px-3 py-1.5 text-sm text-grey-500 rounded-md">강사</button>
+          <button class="px-3 py-1.5 text-sm bg-white text-grey-900 rounded-md shadow-sm font-medium">관리자</button>
+        </div>
+        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+          김
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- 좌측 사이드바 -->
+    <aside class="w-56 bg-white border-r border-grey-200 min-h-[calc(100vh-57px)] p-4">
+      <div class="space-y-1">
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 bg-blue-50 text-blue-700 rounded-lg font-medium">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+          </svg>
+          신규 상담
+        </a>
+        <a href="consultation_existing_student.html" class="flex items-center gap-3 px-3 py-2.5 text-grey-600 hover:bg-grey-100 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          학생 상담
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-grey-600 hover:bg-grey-100 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          상담 목록
+        </a>
+      </div>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="flex-1 p-6">
+      <div class="max-w-2xl mx-auto">
+        <!-- 헤더 -->
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-grey-900">신규 상담 등록</h2>
+          <p class="text-grey-500 mt-1">새로운 학생의 상담 정보를 입력해주세요.</p>
+        </div>
+
+        <!-- 폼 -->
+        <form class="space-y-6">
+          <!-- 학생 정보 섹션 -->
+          <div class="bg-white rounded-2xl border border-grey-200 p-6">
+            <h3 class="text-lg font-semibold text-grey-900 mb-4 flex items-center gap-2">
+              <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">1</span>
+              학생 정보
+            </h3>
+            <div class="space-y-4">
+              <!-- 학생 이름 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">
+                  학생 이름 <span class="text-red-500">*</span>
+                </label>
+                <input type="text" placeholder="이름을 입력하세요"
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+
+              <!-- 학년 & 학교명 -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-grey-700 mb-1.5">학년</label>
+                  <select class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+                    <option value="">선택</option>
+                    <optgroup label="초등부">
+                      <option>초4</option>
+                      <option>초5</option>
+                      <option>초6</option>
+                    </optgroup>
+                    <optgroup label="중등부">
+                      <option>중1</option>
+                      <option>중2</option>
+                      <option>중3</option>
+                    </optgroup>
+                    <optgroup label="고등부">
+                      <option>고1</option>
+                      <option>고2</option>
+                      <option>고3</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-grey-700 mb-1.5">학교명</label>
+                  <input type="text" placeholder="예: 혜윰중학교"
+                    class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 연락처 섹션 -->
+          <div class="bg-white rounded-2xl border border-grey-200 p-6">
+            <h3 class="text-lg font-semibold text-grey-900 mb-4 flex items-center gap-2">
+              <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">2</span>
+              연락처
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">학생 휴대폰</label>
+                <input type="tel" placeholder="010-0000-0000"
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">보호자 연락처</label>
+                <input type="tel" placeholder="010-0000-0000"
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+            </div>
+          </div>
+
+          <!-- 상담 정보 섹션 -->
+          <div class="bg-white rounded-2xl border border-grey-200 p-6">
+            <h3 class="text-lg font-semibold text-grey-900 mb-4 flex items-center gap-2">
+              <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">3</span>
+              상담 정보
+            </h3>
+            <div class="space-y-4">
+              <!-- 상담 일자 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">
+                  상담 일자 <span class="text-red-500">*</span>
+                </label>
+                <input type="date" value="2025-12-27"
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+
+              <!-- 희망 수업 요일/시간 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">희망 수업 요일/시간</label>
+                <input type="text" placeholder="예: 월수금 오후 5시"
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+
+              <!-- 수강 과목 & 반배정 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">수강 과목 및 반배정</label>
+                <p class="text-xs text-grey-500 mb-3">과목을 선택하면 해당 학년의 반 목록이 표시됩니다.</p>
+
+                <div class="space-y-3">
+                  <!-- 국어 -->
+                  <div class="border border-grey-200 rounded-xl overflow-hidden">
+                    <label class="flex items-center gap-3 px-4 py-3 bg-grey-50 cursor-pointer hover:bg-grey-100">
+                      <input type="checkbox" id="subject-korean" class="w-5 h-5 text-blue-600 rounded" onchange="toggleSubject('korean')">
+                      <span class="font-medium text-grey-900">국어</span>
+                    </label>
+                    <div id="class-korean" class="hidden px-4 py-3 border-t border-grey-200 bg-white">
+                      <select class="w-full px-4 py-2.5 border border-grey-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm">
+                        <option value="">반 선택 (상담 후 결정)</option>
+                        <option>고1 국어 심화반</option>
+                        <option>고1 국어 정규1반</option>
+                        <option>고1 국어 정규2반</option>
+                        <option>고1 국어 기초반</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- 영어 -->
+                  <div class="border border-grey-200 rounded-xl overflow-hidden">
+                    <label class="flex items-center gap-3 px-4 py-3 bg-grey-50 cursor-pointer hover:bg-grey-100">
+                      <input type="checkbox" id="subject-english" class="w-5 h-5 text-blue-600 rounded" onchange="toggleSubject('english')">
+                      <span class="font-medium text-grey-900">영어</span>
+                    </label>
+                    <div id="class-english" class="hidden px-4 py-3 border-t border-grey-200 bg-white">
+                      <select class="w-full px-4 py-2.5 border border-grey-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm">
+                        <option value="">반 선택 (상담 후 결정)</option>
+                        <option>고1 영어 심화반</option>
+                        <option>고1 영어 정규1반</option>
+                        <option>고1 영어 정규2반</option>
+                        <option>고1 영어 기초반</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- 수학 -->
+                  <div class="border border-blue-200 rounded-xl overflow-hidden bg-blue-50">
+                    <label class="flex items-center gap-3 px-4 py-3 cursor-pointer">
+                      <input type="checkbox" id="subject-math" class="w-5 h-5 text-blue-600 rounded" checked onchange="toggleSubject('math')">
+                      <span class="font-medium text-grey-900">수학</span>
+                      <span class="ml-auto text-xs text-blue-600 font-medium">선택됨</span>
+                    </label>
+                    <div id="class-math" class="px-4 py-3 border-t border-blue-200 bg-white">
+                      <select class="w-full px-4 py-2.5 border border-grey-200 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm">
+                        <option value="">반 선택 (상담 후 결정)</option>
+                        <option>고1 수학 심화반</option>
+                        <option selected>고1 수학 정규1반</option>
+                        <option>고1 수학 정규2반</option>
+                        <option>고1 수학 기초반</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            function toggleSubject(subject) {
+              const checkbox = document.getElementById('subject-' + subject);
+              const classDiv = document.getElementById('class-' + subject);
+              const container = checkbox.closest('.border');
+
+              if (checkbox.checked) {
+                classDiv.classList.remove('hidden');
+                container.classList.remove('border-grey-200');
+                container.classList.add('border-blue-200', 'bg-blue-50');
+              } else {
+                classDiv.classList.add('hidden');
+                container.classList.remove('border-blue-200', 'bg-blue-50');
+                container.classList.add('border-grey-200');
+              }
+            }
+          </script>
+
+          <!-- 등원 정보 섹션 -->
+          <div class="bg-white rounded-2xl border border-grey-200 p-6">
+            <h3 class="text-lg font-semibold text-grey-900 mb-4 flex items-center gap-2">
+              <span class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm">4</span>
+              등원 정보
+            </h3>
+            <div class="space-y-4">
+              <!-- 등원 예정일 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">등원 예정일</label>
+                <input type="date"
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <p class="text-xs text-grey-500 mt-1">등원 날짜가 확정되면 입력해주세요.</p>
+              </div>
+
+              <!-- 알림 설정 -->
+              <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded mt-0.5">
+                  <div>
+                    <p class="font-medium text-grey-900">등원 확정 시 담당 선생님께 알림</p>
+                    <p class="text-sm text-grey-600 mt-0.5">
+                      등원 확정 시, 전날(D-1), 당일(D-day)에 담당 반 선생님께 알림이 전송됩니다.
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              <!-- 알림 미리보기 -->
+              <div class="p-4 bg-grey-50 rounded-xl border border-grey-200">
+                <p class="text-xs text-grey-500 mb-2">알림 미리보기</p>
+                <div class="bg-white rounded-lg p-3 border border-grey-200 shadow-sm">
+                  <div class="flex items-center gap-2 text-sm">
+                    <span class="text-lg">📌</span>
+                    <span class="font-medium text-grey-900">신규 등원 안내</span>
+                  </div>
+                  <p class="text-sm text-grey-700 mt-1">
+                    신규 <span class="font-medium text-blue-600">김민수</span> 학생이
+                    <span class="font-medium">1월 2일 (목)</span>
+                    <span class="text-blue-600">고1 수학 기초반</span>에 등원 예정입니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 비고 섹션 -->
+          <div class="bg-white rounded-2xl border border-grey-200 p-6">
+            <h3 class="text-lg font-semibold text-grey-900 mb-4 flex items-center gap-2">
+              <span class="w-6 h-6 bg-grey-100 text-grey-600 rounded-full flex items-center justify-center text-sm">5</span>
+              비고
+            </h3>
+            <textarea rows="4" placeholder="상담 내용, 특이사항 등을 자유롭게 기록해주세요."
+              class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+          </div>
+
+          <!-- 버튼 -->
+          <div class="flex gap-3">
+            <button type="button" class="flex-1 py-3.5 bg-grey-100 text-grey-700 font-medium rounded-xl hover:bg-grey-200 transition-colors">
+              취소
+            </button>
+            <button type="submit" class="flex-1 py-3.5 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600 transition-colors">
+              상담 저장
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

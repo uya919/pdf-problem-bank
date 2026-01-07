@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시험 관리 시스템 - 혜윰학원</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            grey: {
+              50: '#F9FAFB',
+              100: '#F2F4F6',
+              200: '#E5E8EB',
+              300: '#D1D6DB',
+              400: '#B0B8C1',
+              500: '#8B95A1',
+              600: '#6B7684',
+              700: '#4E5968',
+              800: '#333D4B',
+              900: '#191F28',
+            },
+            toss: {
+              blue: '#3182F6',
+              blueDark: '#1B64DA',
+              green: '#00C853',
+              mint: '#00C9A7',
+              yellow: '#FFB800',
+              red: '#F04452',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+    .tab-active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    /* 드래그 스타일 */
+    .draggable { cursor: grab; }
+    .draggable:active { cursor: grabbing; }
+    .drop-zone { transition: all 0.2s; }
+    .drop-zone.drag-over { background: #EFF6FF; border-color: #3182F6; }
+
+    /* 입력 포커스 */
+    input:focus { outline: none; box-shadow: 0 0 0 2px #3182F6; }
+
+    /* 프로그레스 바 */
+    .progress-bar { transition: width 0.3s ease; }
+  </style>
+</head>
+<body class="bg-grey-50 min-h-screen">
+
+  <!-- 탭 네비게이션 -->
+  <div class="fixed top-0 left-0 right-0 bg-white border-b border-grey-200 z-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex items-center gap-2 py-3">
+        <button onclick="showView('list')" id="tab-list" class="px-4 py-2 text-sm font-medium rounded-lg tab-active">
+          시험 목록
+        </button>
+        <button onclick="showView('create')" id="tab-create" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-600 hover:bg-grey-100">
+          시험 생성
+        </button>
+        <button onclick="showView('input')" id="tab-input" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-600 hover:bg-grey-100">
+          성적 입력
+        </button>
+        <button onclick="showView('analysis')" id="tab-analysis" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-600 hover:bg-grey-100">
+          결과 분석
+        </button>
+        <button onclick="showView('assign')" id="tab-assign" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-600 hover:bg-grey-100">
+          반배정
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="pt-20 pb-12 max-w-7xl mx-auto px-6">
+
+    <!-- ========== 1. 시험 목록 ========== -->
+    <section id="view-list" class="view">
+      <!-- 헤더 -->
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-grey-900">시험 관리</h1>
+        <button onclick="showView('create')" class="px-4 py-2.5 bg-toss-blue text-white text-sm font-medium rounded-xl hover:bg-toss-blueDark transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          새 시험
+        </button>
+      </div>
+
+      <!-- 필터 -->
+      <div class="flex items-center gap-4 mb-6">
+        <!-- 과목 탭 -->
+        <div class="flex bg-grey-100 p-1 rounded-xl">
+          <button class="px-4 py-2 text-sm font-medium rounded-lg tab-active">전체</button>
+          <button class="px-4 py-2 text-sm font-medium rounded-lg text-grey-600">국어</button>
+          <button class="px-4 py-2 text-sm font-medium rounded-lg text-grey-600">영어</button>
+          <button class="px-4 py-2 text-sm font-medium rounded-lg text-grey-600">수학</button>
+        </div>
+
+        <!-- 월 선택 -->
+        <select class="px-4 py-2.5 border border-grey-200 rounded-xl text-sm bg-white">
+          <option>2025년 12월</option>
+          <option>2025년 11월</option>
+          <option>2025년 10월</option>
+        </select>
+
+        <!-- 검색 -->
+        <div class="relative flex-1 max-w-md">
+          <input type="text" placeholder="시험명 검색..." class="w-full pl-10 pr-4 py-2.5 border border-grey-200 rounded-xl text-sm">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-grey-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 시험 카드 목록 -->
+      <div class="space-y-4">
+        <!-- 카드 1: 완료 -->
+        <div class="bg-white rounded-2xl border border-grey-200 p-5 card-hover transition-all cursor-pointer" onclick="showView('analysis')">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-toss-blue/10 rounded-xl flex items-center justify-center">
+                <span class="text-lg">📊</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-grey-900">중1 12월 레벨테스트</h3>
+                <p class="text-sm text-grey-500">2025.12.20</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">채점 완료</span>
+              <span class="px-2.5 py-1 bg-toss-blue/10 text-toss-blue text-xs font-medium rounded-full">반배정 완료</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-6 text-sm text-grey-600 mb-4">
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 bg-toss-blue rounded-full"></span>
+              수학
+            </span>
+            <span>20문항</span>
+            <span>응시 45/48명</span>
+            <span class="font-medium text-grey-900">평균 72점</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1.5 bg-toss-blue/10 text-toss-blue text-xs font-semibold rounded-lg">A반 12명</span>
+            <span class="px-3 py-1.5 bg-toss-mint/10 text-toss-mint text-xs font-semibold rounded-lg">B반 15명</span>
+            <span class="px-3 py-1.5 bg-toss-yellow/10 text-yellow-700 text-xs font-semibold rounded-lg">C반 18명</span>
+          </div>
+        </div>
+
+        <!-- 카드 2: 입력 중 -->
+        <div class="bg-white rounded-2xl border border-grey-200 p-5 card-hover transition-all cursor-pointer" onclick="showView('input')">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+                <span class="text-lg">📝</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-grey-900">중2 주간 테스트 #48</h3>
+                <p class="text-sm text-grey-500">2025.12.18</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full pulse"></span>
+              입력 중
+            </span>
+          </div>
+
+          <div class="flex items-center gap-6 text-sm text-grey-600 mb-4">
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+              영어
+            </span>
+            <span>10문항</span>
+            <span>응시 32/35명</span>
+            <span class="text-grey-400">평균 -</span>
+          </div>
+
+          <!-- 진행률 -->
+          <div class="mt-3">
+            <div class="flex items-center justify-between text-xs text-grey-500 mb-1.5">
+              <span>성적 입력 진행률</span>
+              <span class="font-medium text-toss-blue">28/32명 (87%)</span>
+            </div>
+            <div class="w-full h-2 bg-grey-100 rounded-full overflow-hidden">
+              <div class="h-full bg-toss-blue rounded-full progress-bar" style="width: 87%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 카드 3: 채점 완료 -->
+        <div class="bg-white rounded-2xl border border-grey-200 p-5 card-hover transition-all cursor-pointer">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                <span class="text-lg">📋</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-grey-900">고1 월말평가</h3>
+                <p class="text-sm text-grey-500">2025.12.15</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">채점 완료</span>
+          </div>
+
+          <div class="flex items-center gap-6 text-sm text-grey-600">
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+              국어
+            </span>
+            <span>25문항</span>
+            <span>응시 28/28명</span>
+            <span class="font-medium text-grey-900">평균 68점</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 2. 시험 생성 ========== -->
+    <section id="view-create" class="view hidden">
+      <div class="max-w-2xl mx-auto">
+        <!-- 헤더 -->
+        <div class="flex items-center justify-between mb-8">
+          <h1 class="text-2xl font-bold text-grey-900">새 시험 만들기</h1>
+          <button onclick="showView('list')" class="p-2 text-grey-400 hover:text-grey-600 hover:bg-grey-100 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Stepper -->
+        <div class="flex items-center justify-center mb-10">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-toss-blue text-white rounded-full flex items-center justify-center text-sm font-semibold">1</div>
+              <span class="text-sm font-medium text-grey-900">기본 정보</span>
+            </div>
+            <div class="w-12 h-0.5 bg-grey-200"></div>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-grey-200 text-grey-500 rounded-full flex items-center justify-center text-sm font-semibold">2</div>
+              <span class="text-sm text-grey-500">문항 설정</span>
+            </div>
+            <div class="w-12 h-0.5 bg-grey-200"></div>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-grey-200 text-grey-500 rounded-full flex items-center justify-center text-sm font-semibold">3</div>
+              <span class="text-sm text-grey-500">응시자</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 폼 -->
+        <div class="bg-white rounded-2xl border border-grey-200 p-8">
+          <div class="space-y-6">
+            <!-- 시험명 -->
+            <div>
+              <label class="block text-sm font-medium text-grey-700 mb-2">시험명 <span class="text-toss-red">*</span></label>
+              <input type="text" placeholder="예: 중1 12월 레벨테스트" class="w-full px-4 py-3 border border-grey-200 rounded-xl text-sm">
+            </div>
+
+            <!-- 시험 일자 & 과목 -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-2">시험 일자 <span class="text-toss-red">*</span></label>
+                <input type="date" value="2025-12-22" class="w-full px-4 py-3 border border-grey-200 rounded-xl text-sm">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-2">과목 <span class="text-toss-red">*</span></label>
+                <select class="w-full px-4 py-3 border border-grey-200 rounded-xl text-sm bg-white">
+                  <option>수학</option>
+                  <option>영어</option>
+                  <option>국어</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 시험 유형 -->
+            <div>
+              <label class="block text-sm font-medium text-grey-700 mb-3">시험 유형 <span class="text-toss-red">*</span></label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="flex items-center gap-3 p-4 border-2 border-toss-blue bg-toss-blue/5 rounded-xl cursor-pointer">
+                  <input type="radio" name="examType" checked class="w-4 h-4 text-toss-blue">
+                  <div>
+                    <div class="text-sm font-medium text-grey-900">레벨테스트 (반배정)</div>
+                    <div class="text-xs text-grey-500">점수 기반 반배정용</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-4 border border-grey-200 rounded-xl cursor-pointer hover:border-grey-300">
+                  <input type="radio" name="examType" class="w-4 h-4 text-toss-blue">
+                  <div>
+                    <div class="text-sm font-medium text-grey-900">주간 테스트</div>
+                    <div class="text-xs text-grey-500">주 1회 진행</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-4 border border-grey-200 rounded-xl cursor-pointer hover:border-grey-300">
+                  <input type="radio" name="examType" class="w-4 h-4 text-toss-blue">
+                  <div>
+                    <div class="text-sm font-medium text-grey-900">월말 평가</div>
+                    <div class="text-xs text-grey-500">월 1회 정기 평가</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-4 border border-grey-200 rounded-xl cursor-pointer hover:border-grey-300">
+                  <input type="radio" name="examType" class="w-4 h-4 text-toss-blue">
+                  <div>
+                    <div class="text-sm font-medium text-grey-900">모의고사</div>
+                    <div class="text-xs text-grey-500">실전 모의</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- 학년 선택 -->
+            <div>
+              <label class="block text-sm font-medium text-grey-700 mb-2">대상 학년 <span class="text-toss-red">*</span></label>
+              <select class="w-full px-4 py-3 border border-grey-200 rounded-xl text-sm bg-white">
+                <option>중1</option>
+                <option>중2</option>
+                <option>중3</option>
+                <option>고1</option>
+                <option>고2</option>
+                <option>고3</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 버튼 -->
+          <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-grey-100">
+            <button onclick="showView('list')" class="px-5 py-2.5 text-sm font-medium text-grey-600 hover:bg-grey-100 rounded-xl transition-colors">
+              취소
+            </button>
+            <button class="px-5 py-2.5 bg-toss-blue text-white text-sm font-medium rounded-xl hover:bg-toss-blueDark transition-colors">
+              다음 단계
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 3. 성적 입력 ========== -->
+    <section id="view-input" class="view hidden">
+      <!-- 헤더 -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-grey-900">중1 12월 레벨테스트</h1>
+          <p class="text-sm text-grey-500 mt-1">성적 입력</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="px-4 py-2.5 border border-grey-200 text-grey-600 text-sm font-medium rounded-xl hover:bg-grey-50 transition-colors">
+            임시저장
+          </button>
+          <button class="px-4 py-2.5 bg-toss-blue text-white text-sm font-medium rounded-xl hover:bg-toss-blueDark transition-colors">
+            저장 완료
+          </button>
+        </div>
+      </div>
+
+      <!-- 진행률 -->
+      <div class="bg-white rounded-2xl border border-grey-200 p-5 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-sm font-medium text-grey-700">입력 진행률</span>
+          <span class="text-sm font-semibold text-toss-blue">38/45명 (84%)</span>
+        </div>
+        <div class="w-full h-3 bg-grey-100 rounded-full overflow-hidden">
+          <div class="h-full bg-toss-blue rounded-full progress-bar" style="width: 84%"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-12 gap-6">
+        <!-- 학생 선택 영역 -->
+        <div class="col-span-4 bg-white rounded-2xl border border-grey-200 p-5">
+          <h3 class="text-sm font-semibold text-grey-900 mb-4">학생 선택</h3>
+
+          <!-- 검색 -->
+          <div class="relative mb-4">
+            <input type="text" placeholder="학생 검색..." class="w-full pl-9 pr-4 py-2.5 border border-grey-200 rounded-xl text-sm">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-grey-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+
+          <!-- 학생 그리드 -->
+          <div class="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto">
+            <!-- 완료 -->
+            <div class="p-3 bg-green-50 border border-green-200 rounded-xl text-center cursor-pointer hover:bg-green-100">
+              <div class="text-xs font-medium text-grey-900">김민수</div>
+              <div class="text-xs text-green-600 font-semibold mt-1">92점</div>
+            </div>
+            <div class="p-3 bg-green-50 border border-green-200 rounded-xl text-center cursor-pointer hover:bg-green-100">
+              <div class="text-xs font-medium text-grey-900">이영희</div>
+              <div class="text-xs text-green-600 font-semibold mt-1">88점</div>
+            </div>
+            <div class="p-3 bg-green-50 border border-green-200 rounded-xl text-center cursor-pointer hover:bg-green-100">
+              <div class="text-xs font-medium text-grey-900">박철수</div>
+              <div class="text-xs text-green-600 font-semibold mt-1">75점</div>
+            </div>
+            <!-- 선택됨 (입력 중) -->
+            <div class="p-3 bg-toss-blue text-white border-2 border-toss-blue rounded-xl text-center cursor-pointer">
+              <div class="text-xs font-medium">최지원</div>
+              <div class="text-xs mt-1 opacity-80">입력 중</div>
+            </div>
+            <!-- 미입력 -->
+            <div class="p-3 bg-grey-50 border border-grey-200 rounded-xl text-center cursor-pointer hover:bg-grey-100">
+              <div class="text-xs font-medium text-grey-900">정수진</div>
+              <div class="text-xs text-grey-400 mt-1">미입력</div>
+            </div>
+            <div class="p-3 bg-grey-50 border border-grey-200 rounded-xl text-center cursor-pointer hover:bg-grey-100">
+              <div class="text-xs font-medium text-grey-900">강동원</div>
+              <div class="text-xs text-grey-400 mt-1">미입력</div>
+            </div>
+            <div class="p-3 bg-grey-50 border border-grey-200 rounded-xl text-center cursor-pointer hover:bg-grey-100">
+              <div class="text-xs font-medium text-grey-900">한소희</div>
+              <div class="text-xs text-grey-400 mt-1">미입력</div>
+            </div>
+            <!-- 미응시 -->
+            <div class="p-3 bg-grey-100 border border-grey-200 rounded-xl text-center opacity-50">
+              <div class="text-xs font-medium text-grey-500">송중기</div>
+              <div class="text-xs text-grey-400 mt-1">미응시</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 답안 입력 영역 -->
+        <div class="col-span-8 bg-white rounded-2xl border border-grey-200 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-grey-900">최지원 정오 입력</h3>
+              <p class="text-sm text-grey-500">O/X 버튼을 클릭하거나 키보드 O, X로 입력</p>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-toss-blue">72<span class="text-base font-normal text-grey-400">/100점</span></div>
+              <div class="text-xs text-grey-500">정답 14개 / 오답 6개</div>
+            </div>
+          </div>
+
+          <!-- O/X 그리드 입력 -->
+          <div class="mb-4 p-4 bg-grey-50 rounded-xl">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-medium text-grey-700">빠른 입력</span>
+              <div class="flex items-center gap-2">
+                <button onclick="setAllCorrect()" class="px-3 py-1.5 text-xs font-medium text-green-600 bg-green-100 hover:bg-green-200 rounded-lg transition-colors">전체 O</button>
+                <button onclick="setAllWrong()" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors">전체 X</button>
+                <button onclick="resetAll()" class="px-3 py-1.5 text-xs font-medium text-grey-600 bg-grey-200 hover:bg-grey-300 rounded-lg transition-colors">초기화</button>
+              </div>
+            </div>
+
+            <!-- O/X 버튼 그리드 (20문항) -->
+            <div class="grid grid-cols-10 gap-2">
+              <!-- 1번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">1</div>
+                <button onclick="toggleAnswer(this)" data-q="1" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 2번 - 오답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">2</div>
+                <button onclick="toggleAnswer(this)" data-q="2" data-status="wrong" class="w-10 h-10 rounded-lg font-bold text-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors">X</button>
+              </div>
+              <!-- 3번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">3</div>
+                <button onclick="toggleAnswer(this)" data-q="3" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 4번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">4</div>
+                <button onclick="toggleAnswer(this)" data-q="4" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 5번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">5</div>
+                <button onclick="toggleAnswer(this)" data-q="5" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 6번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">6</div>
+                <button onclick="toggleAnswer(this)" data-q="6" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 7번 - 오답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">7</div>
+                <button onclick="toggleAnswer(this)" data-q="7" data-status="wrong" class="w-10 h-10 rounded-lg font-bold text-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors">X</button>
+              </div>
+              <!-- 8번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">8</div>
+                <button onclick="toggleAnswer(this)" data-q="8" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 9번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">9</div>
+                <button onclick="toggleAnswer(this)" data-q="9" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 10번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">10</div>
+                <button onclick="toggleAnswer(this)" data-q="10" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 11번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">11</div>
+                <button onclick="toggleAnswer(this)" data-q="11" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 12번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">12</div>
+                <button onclick="toggleAnswer(this)" data-q="12" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 13번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">13</div>
+                <button onclick="toggleAnswer(this)" data-q="13" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 14번 - 정답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">14</div>
+                <button onclick="toggleAnswer(this)" data-q="14" data-status="correct" class="w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors">O</button>
+              </div>
+              <!-- 15번 - 오답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">15</div>
+                <button onclick="toggleAnswer(this)" data-q="15" data-status="wrong" class="w-10 h-10 rounded-lg font-bold text-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors">X</button>
+              </div>
+              <!-- 16번 - 미입력 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">16</div>
+                <button onclick="toggleAnswer(this)" data-q="16" data-status="none" class="w-10 h-10 rounded-lg font-bold text-lg bg-grey-100 text-grey-400 hover:bg-grey-200 transition-colors">-</button>
+              </div>
+              <!-- 17번 - 미입력 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">17</div>
+                <button onclick="toggleAnswer(this)" data-q="17" data-status="none" class="w-10 h-10 rounded-lg font-bold text-lg bg-grey-100 text-grey-400 hover:bg-grey-200 transition-colors">-</button>
+              </div>
+              <!-- 18번 - 오답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">18</div>
+                <button onclick="toggleAnswer(this)" data-q="18" data-status="wrong" class="w-10 h-10 rounded-lg font-bold text-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors">X</button>
+              </div>
+              <!-- 19번 - 미입력 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">19</div>
+                <button onclick="toggleAnswer(this)" data-q="19" data-status="none" class="w-10 h-10 rounded-lg font-bold text-lg bg-grey-100 text-grey-400 hover:bg-grey-200 transition-colors">-</button>
+              </div>
+              <!-- 20번 - 오답 -->
+              <div class="text-center">
+                <div class="text-xs text-grey-500 mb-1">20</div>
+                <button onclick="toggleAnswer(this)" data-q="20" data-status="wrong" class="w-10 h-10 rounded-lg font-bold text-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors">X</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 요약 정보 -->
+          <div class="flex items-center gap-6 p-4 bg-grey-50 rounded-xl">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center font-bold">O</span>
+              <span class="text-sm text-grey-700">정답 <strong class="text-green-600" id="correctCount">14</strong>개</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-red-500 text-white rounded-lg flex items-center justify-center font-bold">X</span>
+              <span class="text-sm text-grey-700">오답 <strong class="text-red-600" id="wrongCount">6</strong>개</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-grey-300 text-grey-500 rounded-lg flex items-center justify-center font-bold">-</span>
+              <span class="text-sm text-grey-700">미입력 <strong class="text-grey-500" id="noneCount">0</strong>개</span>
+            </div>
+            <div class="ml-auto text-sm text-grey-500">
+              오답 문항: <span class="font-medium text-red-600" id="wrongList">2, 7, 15, 18, 20</span>
+            </div>
+          </div>
+
+          <!-- 하단 네비게이션 -->
+          <div class="flex items-center justify-between mt-6 pt-4 border-t border-grey-100">
+            <button class="px-4 py-2 text-sm font-medium text-grey-600 hover:bg-grey-100 rounded-lg transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              이전 학생
+            </button>
+            <button class="px-4 py-2 text-sm font-medium text-white bg-toss-blue hover:bg-toss-blueDark rounded-lg transition-colors flex items-center gap-2">
+              다음 학생
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 4. 결과 분석 ========== -->
+    <section id="view-analysis" class="view hidden">
+      <!-- 헤더 -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-grey-900">중1 12월 레벨테스트</h1>
+          <p class="text-sm text-grey-500 mt-1">결과 분석</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="px-4 py-2.5 border border-grey-200 text-grey-600 text-sm font-medium rounded-xl hover:bg-grey-50 transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            엑셀 내보내기
+          </button>
+          <button onclick="showView('assign')" class="px-4 py-2.5 bg-toss-blue text-white text-sm font-medium rounded-xl hover:bg-toss-blueDark transition-colors">
+            반배정 하기
+          </button>
+        </div>
+      </div>
+
+      <!-- 요약 통계 -->
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-2xl border border-grey-200 p-5">
+          <div class="text-sm text-grey-500 mb-1">응시 인원</div>
+          <div class="text-3xl font-bold text-grey-900">45<span class="text-base font-normal text-grey-400">명</span></div>
+          <div class="text-xs text-grey-400 mt-1">전체 48명 중</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-grey-200 p-5">
+          <div class="text-sm text-grey-500 mb-1">평균 점수</div>
+          <div class="text-3xl font-bold text-toss-blue">72<span class="text-base font-normal text-grey-400">점</span></div>
+          <div class="text-xs text-grey-400 mt-1">100점 만점</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-grey-200 p-5">
+          <div class="text-sm text-grey-500 mb-1">최고 점수</div>
+          <div class="text-3xl font-bold text-green-600">98<span class="text-base font-normal text-grey-400">점</span></div>
+          <div class="text-xs text-grey-400 mt-1">김민수</div>
+        </div>
+        <div class="bg-white rounded-2xl border border-grey-200 p-5">
+          <div class="text-sm text-grey-500 mb-1">최저 점수</div>
+          <div class="text-3xl font-bold text-toss-red">34<span class="text-base font-normal text-grey-400">점</span></div>
+          <div class="text-xs text-grey-400 mt-1">정수진</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-12 gap-6">
+        <!-- 점수 분포 -->
+        <div class="col-span-5 bg-white rounded-2xl border border-grey-200 p-5">
+          <h3 class="text-sm font-semibold text-grey-900 mb-4">점수 분포</h3>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-sm text-grey-600">90점 이상</span>
+              <div class="flex-1 h-6 bg-grey-100 rounded-full overflow-hidden">
+                <div class="h-full bg-toss-blue rounded-full" style="width: 18%"></div>
+              </div>
+              <span class="w-16 text-sm text-grey-900 text-right font-medium">8명 (18%)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-sm text-grey-600">80~89점</span>
+              <div class="flex-1 h-6 bg-grey-100 rounded-full overflow-hidden">
+                <div class="h-full bg-toss-mint rounded-full" style="width: 27%"></div>
+              </div>
+              <span class="w-16 text-sm text-grey-900 text-right font-medium">12명 (27%)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-sm text-grey-600">70~79점</span>
+              <div class="flex-1 h-6 bg-grey-100 rounded-full overflow-hidden">
+                <div class="h-full bg-toss-yellow rounded-full" style="width: 33%"></div>
+              </div>
+              <span class="w-16 text-sm text-grey-900 text-right font-medium">15명 (33%)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-sm text-grey-600">60~69점</span>
+              <div class="flex-1 h-6 bg-grey-100 rounded-full overflow-hidden">
+                <div class="h-full bg-orange-400 rounded-full" style="width: 13%"></div>
+              </div>
+              <span class="w-16 text-sm text-grey-900 text-right font-medium">6명 (13%)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-sm text-grey-600">60점 미만</span>
+              <div class="flex-1 h-6 bg-grey-100 rounded-full overflow-hidden">
+                <div class="h-full bg-toss-red rounded-full" style="width: 9%"></div>
+              </div>
+              <span class="w-16 text-sm text-grey-900 text-right font-medium">4명 (9%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 오답률 TOP 5 -->
+        <div class="col-span-7 bg-white rounded-2xl border border-grey-200 p-5">
+          <h3 class="text-sm font-semibold text-grey-900 mb-4">문항별 오답률 TOP 5</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-grey-200">
+                <th class="py-2 text-left text-grey-500 font-medium">순위</th>
+                <th class="py-2 text-left text-grey-500 font-medium">문항</th>
+                <th class="py-2 text-left text-grey-500 font-medium">오답률</th>
+                <th class="py-2 text-left text-grey-500 font-medium">오답 분석</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-grey-100">
+                <td class="py-3">
+                  <span class="w-6 h-6 bg-toss-red text-white text-xs font-bold rounded-full inline-flex items-center justify-center">1</span>
+                </td>
+                <td class="py-3 font-medium">15번</td>
+                <td class="py-3"><span class="text-toss-red font-semibold">71%</span></td>
+                <td class="py-3 text-grey-600">정답 2, 가장 많은 오답 <span class="text-toss-red font-medium">4</span> (58%)</td>
+              </tr>
+              <tr class="border-b border-grey-100">
+                <td class="py-3">
+                  <span class="w-6 h-6 bg-orange-500 text-white text-xs font-bold rounded-full inline-flex items-center justify-center">2</span>
+                </td>
+                <td class="py-3 font-medium">8번</td>
+                <td class="py-3"><span class="text-orange-600 font-semibold">64%</span></td>
+                <td class="py-3 text-grey-600">정답 3, 가장 많은 오답 <span class="text-orange-600 font-medium">1</span> (42%)</td>
+              </tr>
+              <tr class="border-b border-grey-100">
+                <td class="py-3">
+                  <span class="w-6 h-6 bg-yellow-500 text-white text-xs font-bold rounded-full inline-flex items-center justify-center">3</span>
+                </td>
+                <td class="py-3 font-medium">12번</td>
+                <td class="py-3"><span class="text-yellow-600 font-semibold">53%</span></td>
+                <td class="py-3 text-grey-600">정답 24, 가장 많은 오답 <span class="text-yellow-600 font-medium">12</span> (38%)</td>
+              </tr>
+              <tr class="border-b border-grey-100">
+                <td class="py-3">
+                  <span class="w-6 h-6 bg-grey-400 text-white text-xs font-bold rounded-full inline-flex items-center justify-center">4</span>
+                </td>
+                <td class="py-3 font-medium">20번</td>
+                <td class="py-3"><span class="text-grey-600 font-semibold">47%</span></td>
+                <td class="py-3 text-grey-600">정답 1, 가장 많은 오답 3 (31%)</td>
+              </tr>
+              <tr>
+                <td class="py-3">
+                  <span class="w-6 h-6 bg-grey-400 text-white text-xs font-bold rounded-full inline-flex items-center justify-center">5</span>
+                </td>
+                <td class="py-3 font-medium">3번</td>
+                <td class="py-3"><span class="text-grey-600 font-semibold">42%</span></td>
+                <td class="py-3 text-grey-600">정답 4, 가장 많은 오답 2 (29%)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 전체 순위 -->
+      <div class="bg-white rounded-2xl border border-grey-200 p-5 mt-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-grey-900">전체 순위</h3>
+          <div class="flex items-center gap-2">
+            <input type="text" placeholder="학생 검색..." class="px-3 py-2 border border-grey-200 rounded-lg text-sm w-48">
+          </div>
+        </div>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-grey-200">
+              <th class="py-3 text-left text-grey-500 font-medium w-16">순위</th>
+              <th class="py-3 text-left text-grey-500 font-medium">이름</th>
+              <th class="py-3 text-center text-grey-500 font-medium w-20">점수</th>
+              <th class="py-3 text-left text-grey-500 font-medium">오답 문항</th>
+              <th class="py-3 text-center text-grey-500 font-medium w-24">추천반</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-grey-100 hover:bg-grey-50">
+              <td class="py-3 font-semibold text-toss-blue">1</td>
+              <td class="py-3 font-medium">김민수</td>
+              <td class="py-3 text-center font-bold text-toss-blue">98</td>
+              <td class="py-3 text-grey-600">15</td>
+              <td class="py-3 text-center"><span class="px-2.5 py-1 bg-toss-blue/10 text-toss-blue text-xs font-semibold rounded-full">A반</span></td>
+            </tr>
+            <tr class="border-b border-grey-100 hover:bg-grey-50">
+              <td class="py-3 font-semibold text-toss-blue">2</td>
+              <td class="py-3 font-medium">이영희</td>
+              <td class="py-3 text-center font-bold">95</td>
+              <td class="py-3 text-grey-600">8, 15</td>
+              <td class="py-3 text-center"><span class="px-2.5 py-1 bg-toss-blue/10 text-toss-blue text-xs font-semibold rounded-full">A반</span></td>
+            </tr>
+            <tr class="border-b border-grey-100 hover:bg-grey-50">
+              <td class="py-3 font-semibold text-toss-blue">3</td>
+              <td class="py-3 font-medium">박철수</td>
+              <td class="py-3 text-center font-bold">92</td>
+              <td class="py-3 text-grey-600">12, 15</td>
+              <td class="py-3 text-center"><span class="px-2.5 py-1 bg-toss-blue/10 text-toss-blue text-xs font-semibold rounded-full">A반</span></td>
+            </tr>
+            <tr class="border-b border-grey-100 hover:bg-grey-50">
+              <td class="py-3">4</td>
+              <td class="py-3 font-medium">최지원</td>
+              <td class="py-3 text-center font-bold">88</td>
+              <td class="py-3 text-grey-600">3, 8, 15</td>
+              <td class="py-3 text-center"><span class="px-2.5 py-1 bg-toss-mint/10 text-toss-mint text-xs font-semibold rounded-full">B반</span></td>
+            </tr>
+            <tr class="border-b border-grey-100 hover:bg-grey-50 text-grey-400">
+              <td class="py-3">...</td>
+              <td class="py-3">...</td>
+              <td class="py-3 text-center">...</td>
+              <td class="py-3">...</td>
+              <td class="py-3 text-center">...</td>
+            </tr>
+            <tr class="hover:bg-grey-50">
+              <td class="py-3">45</td>
+              <td class="py-3 font-medium">정수진</td>
+              <td class="py-3 text-center font-bold text-toss-red">34</td>
+              <td class="py-3 text-grey-600">1, 2, 3, 5, 7, 8, ...</td>
+              <td class="py-3 text-center"><span class="px-2.5 py-1 bg-grey-100 text-grey-600 text-xs font-semibold rounded-full">C반</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========== 5. 반배정 ========== -->
+    <section id="view-assign" class="view hidden">
+      <!-- 헤더 -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-grey-900">중1 12월 레벨테스트</h1>
+          <p class="text-sm text-grey-500 mt-1">반배정</p>
+        </div>
+        <button class="px-4 py-2.5 bg-toss-blue text-white text-sm font-medium rounded-xl hover:bg-toss-blueDark transition-colors">
+          배정 적용하기
+        </button>
+      </div>
+
+      <!-- 배정 기준 설정 -->
+      <div class="bg-white rounded-2xl border border-grey-200 p-5 mb-6">
+        <h3 class="text-sm font-semibold text-grey-900 mb-4">배정 기준 설정</h3>
+
+        <div class="grid grid-cols-2 gap-6">
+          <!-- 반 개수 -->
+          <div>
+            <label class="block text-sm text-grey-600 mb-3">반 개수</label>
+            <div class="flex gap-3">
+              <label class="flex items-center gap-2 px-4 py-2.5 border border-grey-200 rounded-xl cursor-pointer hover:border-grey-300">
+                <input type="radio" name="classCount" class="w-4 h-4 text-toss-blue">
+                <span class="text-sm">3개 (상/중/하)</span>
+              </label>
+              <label class="flex items-center gap-2 px-4 py-2.5 border-2 border-toss-blue bg-toss-blue/5 rounded-xl cursor-pointer">
+                <input type="radio" name="classCount" checked class="w-4 h-4 text-toss-blue">
+                <span class="text-sm font-medium">4개 (A/B/C/D)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 배정 방식 -->
+          <div>
+            <label class="block text-sm text-grey-600 mb-3">배정 방식</label>
+            <select class="w-full px-4 py-2.5 border border-grey-200 rounded-xl text-sm bg-white">
+              <option>비율 배정 (상위 25% / 25~50% / 50~75% / 하위 25%)</option>
+              <option>점수 컷 (90점 / 75점 / 60점)</option>
+              <option>인원수 배정 (10명 / 12명 / 13명 / 10명)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 mt-4 pt-4 border-t border-grey-100">
+          <button class="px-4 py-2 text-sm font-medium text-toss-blue hover:bg-toss-blue/10 rounded-lg transition-colors">
+            다시 계산
+          </button>
+          <span class="text-xs text-grey-400">* 학생을 드래그하여 다른 반으로 수동 조정할 수 있습니다</span>
+        </div>
+      </div>
+
+      <!-- 반배정 미리보기 -->
+      <div class="grid grid-cols-4 gap-4">
+        <!-- A반 -->
+        <div class="bg-white rounded-2xl border-2 border-toss-blue/30 p-4 drop-zone">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-toss-blue text-white text-sm font-bold rounded-lg flex items-center justify-center">A</span>
+              <div>
+                <div class="text-sm font-semibold text-grey-900">A반 (심화)</div>
+                <div class="text-xs text-grey-500">11명 · 평균 91점</div>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-2 max-h-72 overflow-y-auto">
+            <div class="flex items-center justify-between p-2.5 bg-toss-blue/5 rounded-lg draggable hover:bg-toss-blue/10 transition-colors">
+              <span class="text-sm font-medium">김민수</span>
+              <span class="text-sm font-bold text-toss-blue">98</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-blue/5 rounded-lg draggable hover:bg-toss-blue/10 transition-colors">
+              <span class="text-sm font-medium">이영희</span>
+              <span class="text-sm font-bold text-toss-blue">95</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-blue/5 rounded-lg draggable hover:bg-toss-blue/10 transition-colors">
+              <span class="text-sm font-medium">박철수</span>
+              <span class="text-sm font-bold text-toss-blue">92</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-blue/5 rounded-lg draggable hover:bg-toss-blue/10 transition-colors">
+              <span class="text-sm font-medium">홍길동</span>
+              <span class="text-sm font-bold text-toss-blue">90</span>
+            </div>
+            <div class="text-center text-xs text-grey-400 py-2">... 외 7명</div>
+          </div>
+        </div>
+
+        <!-- B반 -->
+        <div class="bg-white rounded-2xl border-2 border-toss-mint/30 p-4 drop-zone">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-toss-mint text-white text-sm font-bold rounded-lg flex items-center justify-center">B</span>
+              <div>
+                <div class="text-sm font-semibold text-grey-900">B반 (정규)</div>
+                <div class="text-xs text-grey-500">12명 · 평균 78점</div>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-2 max-h-72 overflow-y-auto">
+            <div class="flex items-center justify-between p-2.5 bg-toss-mint/5 rounded-lg draggable hover:bg-toss-mint/10 transition-colors">
+              <span class="text-sm font-medium">최지원</span>
+              <span class="text-sm font-bold text-toss-mint">88</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-mint/5 rounded-lg draggable hover:bg-toss-mint/10 transition-colors">
+              <span class="text-sm font-medium">강동원</span>
+              <span class="text-sm font-bold text-toss-mint">82</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-mint/5 rounded-lg draggable hover:bg-toss-mint/10 transition-colors">
+              <span class="text-sm font-medium">송지효</span>
+              <span class="text-sm font-bold text-toss-mint">80</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-mint/5 rounded-lg draggable hover:bg-toss-mint/10 transition-colors">
+              <span class="text-sm font-medium">전소민</span>
+              <span class="text-sm font-bold text-toss-mint">78</span>
+            </div>
+            <div class="text-center text-xs text-grey-400 py-2">... 외 8명</div>
+          </div>
+        </div>
+
+        <!-- C반 -->
+        <div class="bg-white rounded-2xl border-2 border-toss-yellow/30 p-4 drop-zone">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-toss-yellow text-white text-sm font-bold rounded-lg flex items-center justify-center">C</span>
+              <div>
+                <div class="text-sm font-semibold text-grey-900">C반 (기초)</div>
+                <div class="text-xs text-grey-500">12명 · 평균 66점</div>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-2 max-h-72 overflow-y-auto">
+            <div class="flex items-center justify-between p-2.5 bg-toss-yellow/5 rounded-lg draggable hover:bg-toss-yellow/10 transition-colors">
+              <span class="text-sm font-medium">한소희</span>
+              <span class="text-sm font-bold text-yellow-600">68</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-yellow/5 rounded-lg draggable hover:bg-toss-yellow/10 transition-colors">
+              <span class="text-sm font-medium">유재석</span>
+              <span class="text-sm font-bold text-yellow-600">65</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-yellow/5 rounded-lg draggable hover:bg-toss-yellow/10 transition-colors">
+              <span class="text-sm font-medium">하하</span>
+              <span class="text-sm font-bold text-yellow-600">62</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-toss-yellow/5 rounded-lg draggable hover:bg-toss-yellow/10 transition-colors">
+              <span class="text-sm font-medium">이광수</span>
+              <span class="text-sm font-bold text-yellow-600">60</span>
+            </div>
+            <div class="text-center text-xs text-grey-400 py-2">... 외 8명</div>
+          </div>
+        </div>
+
+        <!-- D반 -->
+        <div class="bg-white rounded-2xl border-2 border-grey-200 p-4 drop-zone">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 bg-grey-400 text-white text-sm font-bold rounded-lg flex items-center justify-center">D</span>
+              <div>
+                <div class="text-sm font-semibold text-grey-900">D반 (보충)</div>
+                <div class="text-xs text-grey-500">10명 · 평균 52점</div>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-2 max-h-72 overflow-y-auto">
+            <div class="flex items-center justify-between p-2.5 bg-grey-50 rounded-lg draggable hover:bg-grey-100 transition-colors">
+              <span class="text-sm font-medium">김태희</span>
+              <span class="text-sm font-bold text-grey-500">58</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-grey-50 rounded-lg draggable hover:bg-grey-100 transition-colors">
+              <span class="text-sm font-medium">송혜교</span>
+              <span class="text-sm font-bold text-grey-500">55</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-grey-50 rounded-lg draggable hover:bg-grey-100 transition-colors">
+              <span class="text-sm font-medium">전지현</span>
+              <span class="text-sm font-bold text-grey-500">48</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-grey-50 rounded-lg draggable hover:bg-grey-100 transition-colors">
+              <span class="text-sm font-medium text-toss-red">정수진</span>
+              <span class="text-sm font-bold text-toss-red">34</span>
+            </div>
+            <div class="text-center text-xs text-grey-400 py-2">... 외 6명</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 안내 메시지 -->
+      <div class="mt-6 p-4 bg-toss-blue/5 rounded-xl flex items-center gap-3">
+        <span class="text-toss-blue text-xl">💡</span>
+        <p class="text-sm text-grey-700">
+          학생을 드래그하여 다른 반으로 이동할 수 있습니다.
+          배정 완료 후 <strong>'배정 적용하기'</strong> 버튼을 클릭하면 수업 반에 자동으로 반영됩니다.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function showView(viewId) {
+      // 모든 뷰 숨기기
+      document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+      // 선택된 뷰 표시
+      document.getElementById('view-' + viewId).classList.remove('hidden');
+
+      // 탭 스타일 업데이트
+      document.querySelectorAll('[id^="tab-"]').forEach(tab => {
+        tab.classList.remove('tab-active');
+        tab.classList.add('text-grey-600');
+      });
+      document.getElementById('tab-' + viewId).classList.add('tab-active');
+      document.getElementById('tab-' + viewId).classList.remove('text-grey-600');
+    }
+
+    // 드래그 앤 드롭 기본 설정
+    document.querySelectorAll('.draggable').forEach(el => {
+      el.draggable = true;
+    });
+
+    // O/X 토글 함수
+    function toggleAnswer(btn) {
+      const status = btn.dataset.status;
+
+      if (status === 'none' || status === 'wrong') {
+        // 미입력/오답 → 정답
+        btn.dataset.status = 'correct';
+        btn.textContent = 'O';
+        btn.className = 'w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors';
+      } else if (status === 'correct') {
+        // 정답 → 오답
+        btn.dataset.status = 'wrong';
+        btn.textContent = 'X';
+        btn.className = 'w-10 h-10 rounded-lg font-bold text-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors';
+      }
+
+      updateSummary();
+    }
+
+    // 전체 O
+    function setAllCorrect() {
+      document.querySelectorAll('[data-q]').forEach(btn => {
+        btn.dataset.status = 'correct';
+        btn.textContent = 'O';
+        btn.className = 'w-10 h-10 rounded-lg font-bold text-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors';
+      });
+      updateSummary();
+    }
+
+    // 전체 X
+    function setAllWrong() {
+      document.querySelectorAll('[data-q]').forEach(btn => {
+        btn.dataset.status = 'wrong';
+        btn.textContent = 'X';
+        btn.className = 'w-10 h-10 rounded-lg font-bold text-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors';
+      });
+      updateSummary();
+    }
+
+    // 초기화
+    function resetAll() {
+      document.querySelectorAll('[data-q]').forEach(btn => {
+        btn.dataset.status = 'none';
+        btn.textContent = '-';
+        btn.className = 'w-10 h-10 rounded-lg font-bold text-lg bg-grey-100 text-grey-400 hover:bg-grey-200 transition-colors';
+      });
+      updateSummary();
+    }
+
+    // 요약 업데이트
+    function updateSummary() {
+      let correct = 0, wrong = 0, none = 0;
+      const wrongQuestions = [];
+
+      document.querySelectorAll('[data-q]').forEach(btn => {
+        const q = btn.dataset.q;
+        const status = btn.dataset.status;
+
+        if (status === 'correct') correct++;
+        else if (status === 'wrong') {
+          wrong++;
+          wrongQuestions.push(q);
+        } else none++;
+      });
+
+      document.getElementById('correctCount').textContent = correct;
+      document.getElementById('wrongCount').textContent = wrong;
+      document.getElementById('noneCount').textContent = none;
+      document.getElementById('wrongList').textContent = wrongQuestions.length > 0 ? wrongQuestions.join(', ') : '-';
+
+      // 점수 계산 (문항당 5점, 20문항 = 100점)
+      const score = correct * 5;
+      const scoreEl = document.querySelector('#view-input .text-2xl.font-bold');
+      if (scoreEl) {
+        scoreEl.innerHTML = score + '<span class="text-base font-normal text-grey-400">/100점</span>';
+      }
+    }
+
+    // 키보드 입력 지원
+    document.addEventListener('keydown', function(e) {
+      if (document.getElementById('view-input').classList.contains('hidden')) return;
+
+      const key = e.key.toUpperCase();
+      if (key === 'O' || key === 'X') {
+        // 미입력 상태인 첫 번째 버튼 찾기
+        const noneBtn = document.querySelector('[data-status="none"]');
+        if (noneBtn) {
+          if (key === 'O') {
+            noneBtn.dataset.status = 'correct';
+            noneBtn.textContent = 'O';
+            noneBtn.className = 'w-10 h-10 rounded-lg font-bold text-lg bg-green-500 text-white hover:bg-green-600 transition-colors';
+          } else {
+            noneBtn.dataset.status = 'wrong';
+            noneBtn.textContent = 'X';
+            noneBtn.className = 'w-10 h-10 rounded-lg font-bold text-lg bg-red-500 text-white hover:bg-red-600 transition-colors';
+          }
+          updateSummary();
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

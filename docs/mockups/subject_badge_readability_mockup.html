@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>과목 뱃지 가독성 비교 목업</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="max-w-6xl mx-auto space-y-8">
+
+    <!-- 헤더 -->
+    <div class="text-center mb-12">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">과목 뱃지 가독성 비교</h1>
+      <p class="text-gray-500">어떤 방식이 더 이해하기 쉬운가요?</p>
+    </div>
+
+    <!-- Option 비교 카드 -->
+    <div class="grid grid-cols-2 gap-6">
+
+      <!-- Option A: 현재 방식 (극단적 약어) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 bg-red-50 border-b border-red-100">
+          <div class="flex items-center gap-2">
+            <span class="text-red-500 text-xl">❌</span>
+            <h2 class="font-bold text-gray-900">Option A: 현재 방식</h2>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">극단적 약어 (수심, 국정, 영정)</p>
+        </div>
+        <div class="p-6">
+          <!-- 테이블 예시 -->
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-xs text-gray-500 border-b">
+                <th class="text-left py-2">학생</th>
+                <th class="text-left py-2">학년</th>
+                <th class="text-left py-2">수강 과목</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr>
+                <td class="py-3 font-medium">김민준</td>
+                <td class="py-3 text-gray-500">중2</td>
+                <td class="py-3">
+                  <div class="flex gap-1">
+                    <span class="px-1.5 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수심</span>
+                    <span class="px-1.5 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국정</span>
+                    <span class="px-1.5 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영정</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 font-medium">이서윤</td>
+                <td class="py-3 text-gray-500">중2</td>
+                <td class="py-3">
+                  <div class="flex gap-1">
+                    <span class="px-1.5 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수정</span>
+                    <span class="px-1.5 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영심</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 font-medium">박지훈</td>
+                <td class="py-3 text-gray-500">중3</td>
+                <td class="py-3">
+                  <div class="flex gap-1">
+                    <span class="px-1.5 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수기</span>
+                    <span class="px-1.5 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국심</span>
+                    <span class="px-1.5 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영정</span>
+                    <span class="px-1.5 py-0.5 bg-orange-500 text-white text-xs rounded font-medium">과정</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 문제점 -->
+          <div class="mt-6 p-4 bg-red-50 rounded-xl">
+            <h4 class="font-medium text-red-700 mb-2">문제점</h4>
+            <ul class="text-sm text-red-600 space-y-1">
+              <li>• "수정"이 뭐지? 수학 정규? 수정(correction)?</li>
+              <li>• "영정"은? 영어 정규?</li>
+              <li>• 약어 해독에 시간 소요</li>
+              <li>• 신규 사용자 학습 비용 높음</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Option E: 권장 방식 -->
+      <div class="bg-white rounded-2xl shadow-sm border-2 border-blue-500 overflow-hidden">
+        <div class="px-6 py-4 bg-blue-50 border-b border-blue-100">
+          <div class="flex items-center gap-2">
+            <span class="text-blue-500 text-xl">✅</span>
+            <h2 class="font-bold text-gray-900">Option E: 권장 방식</h2>
+            <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded-full">추천</span>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">과목 약어 + 레벨 풀네임 (수 심화, 국 정규)</p>
+        </div>
+        <div class="p-6">
+          <!-- 테이블 예시 -->
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-xs text-gray-500 border-b">
+                <th class="text-left py-2">학생</th>
+                <th class="text-left py-2">학년</th>
+                <th class="text-left py-2">수강 과목</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr>
+                <td class="py-3 font-medium">김민준</td>
+                <td class="py-3 text-gray-500">중2</td>
+                <td class="py-3">
+                  <div class="flex gap-1.5">
+                    <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수 심화</span>
+                    <span class="px-2 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국 정규</span>
+                    <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영 정규</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 font-medium">이서윤</td>
+                <td class="py-3 text-gray-500">중2</td>
+                <td class="py-3">
+                  <div class="flex gap-1.5">
+                    <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수 정규</span>
+                    <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영 심화</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 font-medium">박지훈</td>
+                <td class="py-3 text-gray-500">중3</td>
+                <td class="py-3">
+                  <div class="flex gap-1.5 flex-wrap">
+                    <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수 기초</span>
+                    <span class="px-2 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국 심화</span>
+                    <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영 정규</span>
+                    <span class="px-2 py-0.5 bg-orange-500 text-white text-xs rounded font-medium">과 정규</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 장점 -->
+          <div class="mt-6 p-4 bg-blue-50 rounded-xl">
+            <h4 class="font-medium text-blue-700 mb-2">장점</h4>
+            <ul class="text-sm text-blue-600 space-y-1">
+              <li>• 즉시 이해 가능 (해석 불필요)</li>
+              <li>• "수 심화" = 수학 심화반 (명확)</li>
+              <li>• 신규 사용자도 바로 이해</li>
+              <li>• 색상 + 텍스트로 이중 구분</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전체 테이블 비교 -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-100">
+        <h2 class="font-bold text-gray-900">실제 테이블 미리보기</h2>
+        <p class="text-sm text-gray-500">학생 관리 페이지에서 보이는 모습</p>
+      </div>
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 text-xs font-semibold text-gray-500 uppercase">
+              <th class="px-5 py-3 text-left">학생</th>
+              <th class="px-5 py-3 text-left">학년/학교</th>
+              <th class="px-5 py-3 text-left">수강 과목</th>
+              <th class="px-5 py-3 text-left">상태</th>
+              <th class="px-5 py-3 text-center">액션</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <!-- 학생 1: 3과목 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">김</div>
+                  <div>
+                    <div class="font-semibold text-gray-900">김민준</div>
+                    <div class="text-sm text-gray-500">010-1234-5678</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="text-gray-900">중2</div>
+                <div class="text-sm text-gray-500">혜윰중학교</div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="flex gap-1.5 flex-wrap">
+                  <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수 심화</span>
+                  <span class="px-2 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국 정규</span>
+                  <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영 정규</span>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <span class="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-700">재원</span>
+              </td>
+              <td class="px-5 py-4 text-center">
+                <button class="px-3 py-1.5 text-sm text-blue-500 hover:bg-blue-50 rounded-lg">상세</button>
+              </td>
+            </tr>
+
+            <!-- 학생 2: 2과목 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">이</div>
+                  <div>
+                    <div class="font-semibold text-gray-900">이서윤</div>
+                    <div class="text-sm text-gray-500">010-2345-6789</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="text-gray-900">중2</div>
+                <div class="text-sm text-gray-500">혜윰중학교</div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="flex gap-1.5">
+                  <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수 정규</span>
+                  <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영 심화</span>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <span class="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-700">재원</span>
+              </td>
+              <td class="px-5 py-4 text-center">
+                <button class="px-3 py-1.5 text-sm text-blue-500 hover:bg-blue-50 rounded-lg">상세</button>
+              </td>
+            </tr>
+
+            <!-- 학생 3: 4과목 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">박</div>
+                  <div>
+                    <div class="font-semibold text-gray-900">박지훈</div>
+                    <div class="text-sm text-gray-500">010-3456-7890</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="text-gray-900">중3</div>
+                <div class="text-sm text-gray-500">다른중학교</div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="flex gap-1.5 flex-wrap">
+                  <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수 기초</span>
+                  <span class="px-2 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국 심화</span>
+                  <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영 정규</span>
+                  <span class="px-2 py-0.5 bg-orange-500 text-white text-xs rounded font-medium">과 정규</span>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <span class="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-700">재원</span>
+              </td>
+              <td class="px-5 py-4 text-center">
+                <button class="px-3 py-1.5 text-sm text-blue-500 hover:bg-blue-50 rounded-lg">상세</button>
+              </td>
+            </tr>
+
+            <!-- 학생 4: 1과목 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">최</div>
+                  <div>
+                    <div class="font-semibold text-gray-900">최수아</div>
+                    <div class="text-sm text-gray-500">010-4567-8901</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="text-gray-900">고1</div>
+                <div class="text-sm text-gray-500">혜윰고등학교</div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="flex gap-1.5">
+                  <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수 심화</span>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <span class="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-700">재원</span>
+              </td>
+              <td class="px-5 py-4 text-center">
+                <button class="px-3 py-1.5 text-sm text-blue-500 hover:bg-blue-50 rounded-lg">상세</button>
+              </td>
+            </tr>
+
+            <!-- 학생 5: 미배정 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">정</div>
+                  <div>
+                    <div class="font-semibold text-gray-900">정하은</div>
+                    <div class="text-sm text-gray-500">010-5678-9012</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <div class="text-gray-900">고2</div>
+                <div class="text-sm text-gray-500">혜윰고등학교</div>
+              </td>
+              <td class="px-5 py-4">
+                <span class="text-gray-400">-</span>
+              </td>
+              <td class="px-5 py-4">
+                <span class="px-2 py-1 text-xs font-medium rounded bg-orange-100 text-orange-700">휴원</span>
+              </td>
+              <td class="px-5 py-4 text-center">
+                <button class="px-3 py-1.5 text-sm text-blue-500 hover:bg-blue-50 rounded-lg">상세</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 다른 옵션들 -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-100">
+        <h2 class="font-bold text-gray-900">다른 옵션 비교</h2>
+      </div>
+      <div class="p-6 grid grid-cols-3 gap-6">
+
+        <!-- Option B -->
+        <div class="p-4 border border-gray-200 rounded-xl">
+          <h4 class="font-medium text-gray-700 mb-3">Option B: 과목 풀네임 + 레벨 약어</h4>
+          <div class="flex gap-1.5 flex-wrap">
+            <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수학·심</span>
+            <span class="px-2 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국어·정</span>
+            <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영어·정</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-3">가운데점(·)으로 구분</p>
+        </div>
+
+        <!-- Option C -->
+        <div class="p-4 border border-gray-200 rounded-xl">
+          <h4 class="font-medium text-gray-700 mb-3">Option C: 과목 약어 + 가운데점 + 레벨</h4>
+          <div class="flex gap-1.5 flex-wrap">
+            <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수·심화</span>
+            <span class="px-2 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국·정규</span>
+            <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영·정규</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-3">Option E와 유사, 가운데점 추가</p>
+        </div>
+
+        <!-- Option D -->
+        <div class="p-4 border border-gray-200 rounded-xl">
+          <h4 class="font-medium text-gray-700 mb-3">Option D: 모두 풀네임</h4>
+          <div class="flex gap-1.5 flex-wrap">
+            <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded font-medium">수학 심화</span>
+            <span class="px-2 py-0.5 bg-green-500 text-white text-xs rounded font-medium">국어 정규</span>
+            <span class="px-2 py-0.5 bg-purple-500 text-white text-xs rounded font-medium">영어 정규</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-3">가장 명확, 공간 많이 차지</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결론 -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-8 text-white">
+      <h2 class="text-2xl font-bold mb-4">권장: Option E</h2>
+      <div class="grid grid-cols-2 gap-8">
+        <div>
+          <h3 class="font-semibold mb-2">포맷</h3>
+          <div class="flex gap-2 mb-4">
+            <span class="px-3 py-1 bg-white/20 rounded-lg font-medium">수 심화</span>
+            <span class="px-3 py-1 bg-white/20 rounded-lg font-medium">국 정규</span>
+            <span class="px-3 py-1 bg-white/20 rounded-lg font-medium">영 정규</span>
+          </div>
+          <p class="text-blue-100 text-sm">과목 약어(수/국/영/과) + 공백 + 레벨 풀네임(심화/정규/기초)</p>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">이유</h3>
+          <ul class="text-blue-100 text-sm space-y-1">
+            <li>• 과목 약어는 색상으로 이미 구분됨</li>
+            <li>• 레벨(심화/정규/기초)이 핵심 정보 → 풀네임</li>
+            <li>• 공백으로 시각적 분리</li>
+            <li>• 토스 "한눈에" 철학 부합</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div class="text-center text-gray-400 text-sm py-4">
+      <p>이 목업이 마음에 드시면 구현을 진행하겠습니다.</p>
+    </div>
+
+  </div>
+</body>
+</html>

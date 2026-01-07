@@ -84,6 +84,7 @@ export function usePageGroups(documentId: string, pageIndex: number) {
 }
 
 // 페이지 그룹 저장
+// Phase 68-E: 그룹 삭제 시 문제은행 캐시도 갱신
 export function useSavePageGroups() {
   const queryClient = useQueryClient();
 
@@ -101,6 +102,13 @@ export function useSavePageGroups() {
       // 해당 페이지의 그룹 데이터 갱신
       queryClient.invalidateQueries({
         queryKey: ['groups', variables.documentId, variables.pageIndex],
+      });
+      // Phase 68-E: 그룹 삭제가 있을 수 있으므로 문제은행 캐시도 갱신
+      queryClient.invalidateQueries({
+        queryKey: ['allExportedProblems'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['problems', variables.documentId],
       });
     },
   });
@@ -229,6 +237,37 @@ export function useExportGroup() {
     }) => api.exportGroup(documentId, pageIndex, groupId),
     onSuccess: (_, variables) => {
       // 해당 페이지의 그룹 데이터 갱신 (status가 confirmed로 변경됨)
+      queryClient.invalidateQueries({
+        queryKey: ['groups', variables.documentId, variables.pageIndex],
+      });
+      // 전체 문제 목록 갱신
+      queryClient.invalidateQueries({
+        queryKey: ['allExportedProblems'],
+      });
+      // 개별 문서 문제 목록 갱신
+      queryClient.invalidateQueries({
+        queryKey: ['problems', variables.documentId],
+      });
+    },
+  });
+}
+
+// Phase 59-B: 페이지 내 여러 그룹 일괄 내보내기
+export function useBulkExportGroups() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      documentId,
+      pageIndex,
+      groupIds,
+    }: {
+      documentId: string;
+      pageIndex: number;
+      groupIds?: string[];
+    }) => api.bulkExportGroups(documentId, pageIndex, groupIds),
+    onSuccess: (_, variables) => {
+      // 해당 페이지의 그룹 데이터 갱신
       queryClient.invalidateQueries({
         queryKey: ['groups', variables.documentId, variables.pageIndex],
       });

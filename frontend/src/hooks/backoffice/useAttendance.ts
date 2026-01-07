@@ -33,7 +33,7 @@ export function useAttendance(options: {
         .from('attendance')
         .select(`
           *,
-          student:students(id, name, grade)
+          student:students!attendance_student_id_fkey(id, name)
         `)
         .eq('class_id', options.classId)
         .order('date', { ascending: false });
@@ -62,12 +62,14 @@ export function useTodayAttendance() {
   return useQuery({
     queryKey: ['attendance', 'today', today],
     queryFn: async () => {
+      // PGRST201 방지: 명시적 FK 이름 사용
+      // students 테이블에 grade 컬럼이 없으므로 제거 (grade_id만 존재)
       const { data, error } = await supabase
         .from('attendance')
         .select(`
           *,
-          student:students(id, name, grade),
-          class:classes(id, name)
+          student:students!attendance_student_id_fkey(id, name),
+          class:classes!attendance_class_id_fkey(id, name)
         `)
         .eq('date', today);
 
@@ -102,8 +104,19 @@ export function useSaveAttendance() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['attendance'] });
+    onSuccess: async () => {
+      // 모든 attendance 관련 쿼리 무효화 + 즉시 refetch
+      // invalidateQueries는 prefix 매칭을 지원하므로 ['attendance']로 시작하는 모든 쿼리가 무효화됨
+      await queryClient.invalidateQueries({
+        queryKey: ['attendance'],
+        refetchType: 'all',
+      });
+      // predicate를 사용하여 모든 attendance 관련 쿼리 강제 refetch
+      await queryClient.refetchQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === 'attendance',
+      });
     },
   });
 }
@@ -308,6 +321,31 @@ export function useTodayAttendanceForTeacher(teacherId: string | null) {
  * @param teacherId - 선생님 ID
  * @param date - 선택된 날짜 (YYYY-MM-DD)
  */
+/**
+ * 특정 수업의 특정 날짜 출결 데이터 조회 (모달용)
+ *
+ * @param classId - 수업 ID
+ * @param date - 날짜 (YYYY-MM-DD)
+ */
+export function useAttendanceByClassAndDate(classId: string | null, date: string | null) {
+  return useQuery({
+    queryKey: ['attendance', 'class', classId, 'date', date],
+    queryFn: async () => {
+      if (!classId || !date) return [];
+
+      const { data, error } = await supabase
+        .from('attendance')
+        .select('student_id, status, note')
+        .eq('class_id', classId)
+        .eq('date', date);
+
+      if (error) throw error;
+      return data as { student_id: string; status: string; note: string | null }[];
+    },
+    enabled: isSupabaseConfigured && !!classId && !!date,
+  });
+}
+
 export function useAttendanceForTeacherByDate(teacherId: string | null, date: string | null) {
   return useQuery({
     queryKey: ['attendance', 'byDate', 'teacher', teacherId, date],

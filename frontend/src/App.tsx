@@ -1,34 +1,68 @@
 /**
  * Main Application
- * Phase 21.5: 새로운 미니멀 UI with 3-메뉴 사이드바
- * Phase 22-H: 듀얼 윈도우 뷰어 라우트 추가
- * Phase 34: 메인 페이지 UX 리디자인
+ * Backoffice Only - PDF 라벨링은 별도 프로젝트로 이동
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastProvider } from './components/Toast';
-import { MinimalLayout } from './components/layout/MinimalLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
-// Pages - 새로운 구조
-import { MainPage } from './pages/MainPage';  // Phase 34: 새 메인 페이지
-import { RegistrationPage } from './pages/RegistrationPage';  // Legacy (백업용)
-import { LabelingPage } from './pages/LabelingPage';
-import { ViewerPage } from './pages/ViewerPage';  // Phase 22-H
-import { UnifiedMatchingPage } from './pages/UnifiedMatchingPage';  // Phase 31
-import { IntegratedProblemBankPage } from './pages/IntegratedProblemBankPage';
-import { ProblemBankHub } from './pages/ProblemBankHub';  // Phase 23-D
-import { ExamBuilderPage } from './pages/ExamBuilderPage';
-import { ExamEditorPage } from './pages/ExamEditorPage';
-import { SettingsPage } from './pages/SettingsPage';
+// Auth Pages
+import LoginPage from './pages/auth/LoginPage';
+import UnauthorizedPage from './pages/auth/UnauthorizedPage';
 
-// Phase 32: 작업 세션 워크플로우
-import { WorkSessionDashboard } from './pages/WorkSessionDashboard';
-import { WorkSessionLabelingPage } from './pages/WorkSessionLabelingPage';
-import { WorkSessionSetupPage } from './pages/WorkSessionSetupPage';
-import { WorkSessionMatchingPage } from './pages/WorkSessionMatchingPage';
-// Phase 33: 통합 작업 페이지
-import { UnifiedWorkPage } from './pages/UnifiedWorkPage';
+// Home Page (역할별 분기)
+import HomePage from './pages/HomePage';
+
+// Backoffice Pages (강사용 모바일)
+import { BackofficeDemo } from './pages/BackofficeDemo';
+import ClassesPage from './pages/backoffice/ClassesPage';
+import StudentsPage from './pages/backoffice/StudentsPage';
+import StudentDetailPage from './pages/backoffice/StudentDetailPage';
+import RecordsPage from './pages/backoffice/RecordsPage';
+import MorePage from './pages/backoffice/MorePage';
+
+// Admin Pages (관리자용 PC)
+import {
+  AdminDashboard,
+  GradeOverview,
+  OperationsPage,
+  AttendancePage,
+  AdminStudentsPage,
+  SettlementPage,
+  ReportsPage,
+  UsersPage,
+  ClassManagementPage,
+} from './pages/admin';
+import ClassAssignmentPage from './pages/admin/ClassAssignmentPage';
+
+// Phase 7-9: 과목별 반 배정 (드래그&드롭)
+import { ClassAssignmentPageDnd, ClassAssignmentPageV2, ClassAssignmentPageV3 } from './components/classAssignment';
+
+// Admin Responsive Page (Stage 11-2: 반응형 통합 - 모바일/PC 자동전환)
+import AdminResponsivePage from './pages/admin/AdminResponsivePage';
+
+// Stage 12: 순환수업 관리
+import RotationManagement from './pages/admin/RotationManagement';
+
+// Stage 18: 교재 관리
+import TextbookManagement from './pages/admin/TextbookManagement';
+
+// Stage 19: 시험 관리
+import ExamManagement from './pages/admin/ExamManagement';
+
+// Stage 33: 상담 관리
+import {
+  NewConsultationPage,
+  StudentConsultationPage,
+  ConsultationListPage,
+  EditConsultationPage,
+} from './pages/admin/consultation';
+
+// Stage 33: 설정 (과목별 관리자)
+import { SubjectManagerSettingsPage } from './pages/admin/settings';
 
 // React Query Client
 const queryClient = new QueryClient({
@@ -44,53 +78,185 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          <BrowserRouter>
-            <Routes>
-              {/* Phase 22-H: 듀얼 윈도우 뷰어 (사이드바 없음) */}
-              <Route path="viewer/:documentId" element={<ViewerPage />} />
+        <AuthProvider>
+          <ToastProvider>
+            <BrowserRouter>
+              <Routes>
+                {/* ===== 공개 페이지 ===== */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-              {/* Phase 31: 싱글 탭 매칭 (사이드바 없음) */}
-              <Route path="matching/:problemDocId/:solutionDocId" element={<UnifiedMatchingPage />} />
+                {/* ===== 홈 (역할별 자동 분기) ===== */}
+                <Route path="/" element={
+                  <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
+                    <HomePage />
+                  </ProtectedRoute>
+                } />
 
-              {/* Phase 33: 통합 작업 페이지 (사이드바 없음) */}
-              <Route path="work/:sessionId" element={<UnifiedWorkPage />} />
+                {/* ===== 강사용 모바일 (/backoffice) - 강사/관리자/원장 ===== */}
+                <Route path="/backoffice" element={
+                  <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
+                    <BackofficeDemo />
+                  </ProtectedRoute>
+                } />
+                <Route path="classes" element={
+                  <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
+                    <ClassesPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="students" element={
+                  <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
+                    <StudentsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="students/:studentId" element={
+                  <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
+                    <StudentDetailPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="records" element={
+                  <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
+                    <RecordsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="more" element={
+                  <ProtectedRoute roles={['teacher', 'admin', 'owner']}>
+                    <MorePage />
+                  </ProtectedRoute>
+                } />
 
-              {/* Phase 32: 기존 작업 세션 워크플로우 (하위 호환) */}
-              <Route path="work/:sessionId/labeling" element={<WorkSessionLabelingPage />} />
-              <Route path="work/:sessionId/setup" element={<WorkSessionSetupPage />} />
-              <Route path="work/:sessionId/matching" element={<WorkSessionMatchingPage />} />
+                {/* ===== 관리자용 (반응형: 모바일/PC 자동전환) - 관리자/원장만 ===== */}
+                <Route path="admin" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <AdminResponsivePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/grade-overview" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <GradeOverview />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/grades" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <GradeOverview />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/students" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <AdminStudentsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/class-assignment" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <ClassAssignmentPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/subject-assignment" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <ClassAssignmentPageV3 />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/subject-assignment-v1" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <ClassAssignmentPageDnd />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/attendance" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <AttendancePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/operations" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <OperationsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/classes" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <ClassManagementPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/settlement" element={
+                  <ProtectedRoute roles={['owner']}>
+                    <SettlementPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/reports" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <ReportsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/users" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <UsersPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/rotation" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <RotationManagement />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/textbooks" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <TextbookManagement />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/exams" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <ExamManagement />
+                  </ProtectedRoute>
+                } />
 
-              {/* Phase 21.5: 미니멀 레이아웃 (사이드바 있는 페이지들) */}
-              <Route element={<MinimalLayout />}>
-                {/* Phase 34-D: 메인 페이지 (사이드바 포함) */}
-                <Route path="/" element={<MainPage />} />
-                <Route index element={<MainPage />} />
+                {/* ===== Stage 33: 상담 관리 ===== */}
+                <Route path="admin/consultations" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <ConsultationListPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/consultation/new" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <NewConsultationPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/consultation/student" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <StudentConsultationPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/consultation/list" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <ConsultationListPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/consultation/edit/:id" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <EditConsultationPage />
+                  </ProtectedRoute>
+                } />
 
-                {/* Legacy: 기존 등록 페이지 (백업용) */}
-                <Route path="registration" element={<RegistrationPage />} />
-                <Route path="labeling/:documentId" element={<LabelingPage />} />
+                {/* ===== Stage 33: 설정 ===== */}
+                <Route path="admin/settings/subject-managers" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <SubjectManagerSettingsPage />
+                  </ProtectedRoute>
+                } />
 
-                {/* Phase 34: /work를 메인으로 리다이렉트 */}
-                <Route path="work" element={<Navigate to="/" replace />} />
+                <Route path="admin/*" element={
+                  <ProtectedRoute roles={['admin', 'owner']}>
+                    <AdminResponsivePage />
+                  </ProtectedRoute>
+                } />
 
-                {/* 문제은행 - Phase 23-D: 허브 UI */}
-                <Route path="bank" element={<ProblemBankHub />} />
-                <Route path="integrated-problem-bank" element={<IntegratedProblemBankPage />} />
+                {/* ===== /admin-mobile → /admin 리다이렉트 (Stage 11-3, 29-D) ===== */}
+                <Route path="admin-mobile" element={<Navigate to="/admin" replace />} />
+                <Route path="admin-mobile/*" element={<Navigate to="/admin" replace />} />
 
-                {/* 시험지 */}
-                <Route path="exam" element={<ExamBuilderPage />} />
-                <Route path="exam/:examId" element={<ExamEditorPage />} />
-
-                {/* 설정 */}
-                <Route path="settings" element={<SettingsPage />} />
-
-                {/* Redirect unknown routes */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </ToastProvider>
+                {/* 모든 알 수 없는 경로 → 로그인으로 */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </ToastProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

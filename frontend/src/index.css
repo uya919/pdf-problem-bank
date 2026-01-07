@@ -82,7 +82,7 @@
 
   /* 선택 영역 스타일 */
   ::selection {
-    @apply bg-toss-blue-light text-toss-blue;
+    @apply bg-toss-blueLight text-toss-blue;
   }
 }
 
@@ -132,5 +132,49 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+  }
+
+  /* ============================================ */
+  /* Studio 캔버스 애니메이션 */
+  /* ============================================ */
+
+  /* 페이드 인 */
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 스케일 인 (모달, 요소 생성) */
+  .animate-scale-in {
+    animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* 캔버스 요소 드래그 */
+  .canvas-element-dragging {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+  }
+
+  /* 캔버스 요소 호버 */
+  .canvas-element-hover {
+    filter: brightness(1.02);
   }
 }

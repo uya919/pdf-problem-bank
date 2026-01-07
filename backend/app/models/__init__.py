@@ -1,19 +1,7 @@
 """
-데이터 모델 패키지
+데이터 모델 패키지 (Hyeyum Backoffice)
 
-Phase 21+: 차세대 문제은행 시스템
+현재 백오피스에서 사용하는 모델은 없음 (Supabase 직접 사용)
 """
 
-from .classification import (
-    ClassificationNode,
-    ClassificationPath,
-    ClassificationSearchResult,
-    ClassificationTreeResponse,
-)
-
-__all__ = [
-    "ClassificationNode",
-    "ClassificationPath",
-    "ClassificationSearchResult",
-    "ClassificationTreeResponse",
-]
+__all__ = []

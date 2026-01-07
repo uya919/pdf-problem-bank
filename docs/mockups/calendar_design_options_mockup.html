@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>캘린더 디자인 개선 옵션 비교</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            grey: {
+              50: '#F9FAFB',
+              100: '#F3F4F6',
+              200: '#E5E7EB',
+              300: '#D1D5DB',
+              400: '#9CA3AF',
+              500: '#6B7280',
+              600: '#4B5563',
+              700: '#374151',
+              800: '#1F2937',
+              900: '#111827',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .option-card {
+      transition: all 0.2s ease;
+    }
+    .option-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .selected-option {
+      border-color: #3182F6 !important;
+      box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.1);
+    }
+    /* 선택 상태 화살표 표시 */
+    .selected-indicator {
+      position: relative;
+    }
+    .selected-indicator::before {
+      content: '선택됨';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #3182F6;
+      color: white;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .selected-indicator::after {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid #3182F6;
+    }
+  </style>
+</head>
+<body class="bg-grey-100 min-h-screen p-8">
+
+  <div class="max-w-7xl mx-auto space-y-8">
+
+    <!-- 헤더 -->
+    <div class="text-center mb-12">
+      <h1 class="text-3xl font-bold text-grey-900 mb-2">캘린더 디자인 개선 옵션</h1>
+      <p class="text-grey-500">Stage 13 - PC 관리자 대시보드 캘린더 UI</p>
+      <p class="text-grey-400 text-sm mt-2">각 옵션에서 "18일(수)"이 선택된 상태입니다</p>
+    </div>
+
+    <!-- ===== 현재 구현 (문제점 표시) ===== -->
+    <div class="bg-white rounded-2xl p-6 border-2 border-red-300">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm font-medium">현재 구현</span>
+        <span class="text-red-500 text-sm font-medium">문제점이 있는 버전</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-grey-200 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-grey-100">
+          <div class="flex items-center gap-2">
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="text-base font-semibold text-grey-900">12월 3주</span>
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <button class="text-sm text-blue-500 font-medium">오늘</button>
+        </div>
+
+        <div class="grid grid-cols-7">
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">월</span>
+              <span class="text-base font-medium text-grey-600">16</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">화</span>
+              <span class="text-base font-medium text-grey-600">17</span>
+            </div>
+            <div class="text-xs text-grey-500 truncate">교재 변경 안내</div>
+          </div>
+
+          <!-- 수 18일: 선택됨 (문제: bg-grey-100 너무 강함) -->
+          <div class="p-3 border-r border-grey-100 bg-grey-200 cursor-pointer min-h-[100px] selected-indicator">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">수</span>
+              <span class="text-base font-medium text-grey-600">18</span>
+            </div>
+            <div class="absolute bottom-1 left-1 right-1 text-center">
+              <span class="text-[9px] bg-red-500 text-white px-1 rounded">bg-grey-200 (너무 강함)</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 bg-blue-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-400">목</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] text-blue-500 font-medium">오늘</span>
+                <span class="text-base font-semibold text-blue-600">19</span>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="text-xs text-orange-600 truncate">⚠ 결석 2명</div>
+              <div class="text-xs text-grey-500 truncate">상담 14:00</div>
+              <div class="text-[10px] text-grey-400 mt-1">
+                +1개 더 <span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1">문제!</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">금</span>
+              <span class="text-base font-medium text-grey-600">20</span>
+            </div>
+            <div class="text-xs text-red-500 truncate">휴원</div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">토</span>
+              <span class="text-base font-medium text-red-400">21</span>
+            </div>
+            <div class="text-xs text-grey-400 truncate">특강 09:00</div>
+          </div>
+
+          <div class="p-3 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">일</span>
+              <span class="text-base font-medium text-red-400">22</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+        <p class="text-sm text-red-700 font-bold mb-2">문제점:</p>
+        <ul class="text-sm text-red-600 list-disc list-inside space-y-1">
+          <li>선택 상태의 <code class="bg-red-100 px-1.5 py-0.5 rounded font-mono text-xs">bg-grey-200</code> 배경이 너무 강하고 칙칙함</li>
+          <li>"+N개 더" 표시가 목업에 없는 요소</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== 옵션 A: 토스 스타일 테두리 ===== -->
+    <div class="option-card bg-white rounded-2xl p-6 border-2 border-blue-200 cursor-pointer" onclick="selectOption(this)">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-4 py-1.5 bg-blue-500 text-white rounded-full text-sm font-bold">옵션 A</span>
+        <span class="text-grey-900 font-bold text-lg">토스 스타일 테두리</span>
+        <span class="px-3 py-1 bg-green-500 text-white text-xs rounded-full font-bold">추천</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-grey-200 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-grey-100">
+          <div class="flex items-center gap-2">
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="text-base font-semibold text-grey-900">12월 3주</span>
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <button class="text-sm text-blue-500 font-medium">오늘</button>
+        </div>
+
+        <div class="grid grid-cols-7">
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">월</span>
+              <span class="text-base font-medium text-grey-600">16</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">화</span>
+              <span class="text-base font-medium text-grey-600">17</span>
+            </div>
+            <div class="text-xs text-grey-500 truncate">교재 변경 안내</div>
+          </div>
+
+          <!-- 선택됨: 굵은 파란 테두리 -->
+          <div class="p-3 border-r border-grey-100 cursor-pointer min-h-[100px] selected-indicator" style="box-shadow: inset 0 0 0 3px #3182F6; background: rgba(49, 130, 246, 0.05);">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-500">수</span>
+              <span class="text-base font-bold text-blue-600">18</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 bg-blue-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-400">목</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] text-blue-500 font-medium">오늘</span>
+                <span class="text-base font-semibold text-blue-600">19</span>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="text-xs text-orange-600 truncate">⚠ 결석 2명</div>
+              <div class="text-xs text-grey-500 truncate">상담 14:00</div>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">금</span>
+              <span class="text-base font-medium text-grey-600">20</span>
+            </div>
+            <div class="text-xs text-red-500 truncate">휴원</div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">토</span>
+              <span class="text-base font-medium text-red-400">21</span>
+            </div>
+            <div class="text-xs text-grey-400 truncate">특강 09:00</div>
+          </div>
+
+          <div class="p-3 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">일</span>
+              <span class="text-base font-medium text-red-400">22</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <p class="text-sm text-blue-800 font-bold mb-2">특징:</p>
+        <ul class="text-sm text-blue-700 list-disc list-inside space-y-1">
+          <li>선택 상태: <code class="bg-blue-100 px-1.5 py-0.5 rounded font-mono text-xs">inset box-shadow 3px #3182F6</code></li>
+          <li>굵은 파란 테두리로 명확한 선택 표시</li>
+          <li>배경은 아주 연한 파란색만</li>
+          <li>토스의 미니멀한 강조 철학 준수</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== 옵션 B: 파란 배경 + 흰글씨 ===== -->
+    <div class="option-card bg-white rounded-2xl p-6 border-2 border-purple-200 cursor-pointer" onclick="selectOption(this)">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-4 py-1.5 bg-purple-500 text-white rounded-full text-sm font-bold">옵션 B</span>
+        <span class="text-grey-900 font-bold text-lg">파란 배경 + 흰글씨 (Apple 캘린더 스타일)</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-grey-200 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-grey-100">
+          <div class="flex items-center gap-2">
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="text-base font-semibold text-grey-900">12월 3주</span>
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <button class="text-sm text-blue-500 font-medium">오늘</button>
+        </div>
+
+        <div class="grid grid-cols-7">
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">월</span>
+              <span class="text-base font-medium text-grey-600">16</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">화</span>
+              <span class="text-base font-medium text-grey-600">17</span>
+            </div>
+            <div class="text-xs text-grey-500 truncate">교재 변경 안내</div>
+          </div>
+
+          <!-- 선택됨: 파란 배경 + 흰글씨 -->
+          <div class="p-3 border-r border-grey-100 bg-blue-500 cursor-pointer min-h-[100px] selected-indicator">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-200">수</span>
+              <span class="text-base font-bold text-white">18</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 bg-blue-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-400">목</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] text-blue-500 font-medium">오늘</span>
+                <span class="text-base font-semibold text-blue-600">19</span>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="text-xs text-orange-600 truncate">⚠ 결석 2명</div>
+              <div class="text-xs text-grey-500 truncate">상담 14:00</div>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">금</span>
+              <span class="text-base font-medium text-grey-600">20</span>
+            </div>
+            <div class="text-xs text-red-500 truncate">휴원</div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">토</span>
+              <span class="text-base font-medium text-red-400">21</span>
+            </div>
+            <div class="text-xs text-grey-400 truncate">특강 09:00</div>
+          </div>
+
+          <div class="p-3 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">일</span>
+              <span class="text-base font-medium text-red-400">22</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+        <p class="text-sm text-purple-800 font-bold mb-2">특징:</p>
+        <ul class="text-sm text-purple-700 list-disc list-inside space-y-1">
+          <li>선택 상태: <code class="bg-purple-100 px-1.5 py-0.5 rounded font-mono text-xs">bg-blue-500 text-white</code></li>
+          <li>강렬한 파란 배경으로 확실한 선택 표시</li>
+          <li>Apple 캘린더와 유사한 스타일</li>
+          <li>가장 명확한 시각적 구분</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== 옵션 C: 하단 액센트 바 ===== -->
+    <div class="option-card bg-white rounded-2xl p-6 border-2 border-green-200 cursor-pointer" onclick="selectOption(this)">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-4 py-1.5 bg-green-500 text-white rounded-full text-sm font-bold">옵션 C</span>
+        <span class="text-grey-900 font-bold text-lg">하단 액센트 바</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-grey-200 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-grey-100">
+          <div class="flex items-center gap-2">
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="text-base font-semibold text-grey-900">12월 3주</span>
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <button class="text-sm text-blue-500 font-medium">오늘</button>
+        </div>
+
+        <div class="grid grid-cols-7">
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">월</span>
+              <span class="text-base font-medium text-grey-600">16</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">화</span>
+              <span class="text-base font-medium text-grey-600">17</span>
+            </div>
+            <div class="text-xs text-grey-500 truncate">교재 변경 안내</div>
+          </div>
+
+          <!-- 선택됨: 하단 굵은 파란 바 -->
+          <div class="p-3 border-r border-grey-100 cursor-pointer min-h-[100px] relative selected-indicator" style="border-bottom: 4px solid #3182F6;">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-500">수</span>
+              <span class="text-base font-bold text-blue-600">18</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 bg-blue-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-400">목</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] text-blue-500 font-medium">오늘</span>
+                <span class="text-base font-semibold text-blue-600">19</span>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="text-xs text-orange-600 truncate">⚠ 결석 2명</div>
+              <div class="text-xs text-grey-500 truncate">상담 14:00</div>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">금</span>
+              <span class="text-base font-medium text-grey-600">20</span>
+            </div>
+            <div class="text-xs text-red-500 truncate">휴원</div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">토</span>
+              <span class="text-base font-medium text-red-400">21</span>
+            </div>
+            <div class="text-xs text-grey-400 truncate">특강 09:00</div>
+          </div>
+
+          <div class="p-3 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">일</span>
+              <span class="text-base font-medium text-red-400">22</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+        <p class="text-sm text-green-800 font-bold mb-2">특징:</p>
+        <ul class="text-sm text-green-700 list-disc list-inside space-y-1">
+          <li>선택 상태: <code class="bg-green-100 px-1.5 py-0.5 rounded font-mono text-xs">border-bottom: 4px solid #3182F6</code></li>
+          <li>하단에 굵은 파란 액센트 라인</li>
+          <li>탭 네비게이션 스타일과 유사</li>
+          <li>깔끔하고 미니멀한 표현</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== 옵션 D: 확대 + 라운드 숫자 ===== -->
+    <div class="option-card bg-white rounded-2xl p-6 border-2 border-orange-200 cursor-pointer" onclick="selectOption(this)">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-4 py-1.5 bg-orange-500 text-white rounded-full text-sm font-bold">옵션 D</span>
+        <span class="text-grey-900 font-bold text-lg">라운드 숫자 배지 (iOS 스타일)</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-grey-200 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-grey-100">
+          <div class="flex items-center gap-2">
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="text-base font-semibold text-grey-900">12월 3주</span>
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <button class="text-sm text-blue-500 font-medium">오늘</button>
+        </div>
+
+        <div class="grid grid-cols-7">
+          <div class="p-4 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[110px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-500">월</span>
+              <span class="text-lg font-medium text-grey-700">16</span>
+            </div>
+          </div>
+
+          <div class="p-4 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[110px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-500">화</span>
+              <span class="text-lg font-medium text-grey-700">17</span>
+            </div>
+            <div class="text-xs text-grey-500 truncate">교재 변경 안내</div>
+          </div>
+
+          <!-- 선택됨: 라운드 숫자 배지 -->
+          <div class="p-4 border-r border-grey-100 cursor-pointer min-h-[110px] selected-indicator">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-500">수</span>
+              <span class="w-8 h-8 flex items-center justify-center bg-blue-500 text-white rounded-full text-lg font-bold">18</span>
+            </div>
+          </div>
+
+          <div class="p-4 border-r border-grey-100 bg-blue-100 cursor-pointer min-h-[110px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-500">목</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] px-1.5 py-0.5 bg-blue-500 text-white rounded-full font-medium">오늘</span>
+                <span class="text-lg font-bold text-blue-700">19</span>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="text-xs text-orange-600 truncate font-medium">⚠ 결석 2명</div>
+              <div class="text-xs text-grey-600 truncate">상담 14:00</div>
+            </div>
+          </div>
+
+          <div class="p-4 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[110px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-500">금</span>
+              <span class="text-lg font-medium text-grey-700">20</span>
+            </div>
+            <div class="text-xs text-red-500 truncate font-medium">휴원</div>
+          </div>
+
+          <div class="p-4 border-r border-grey-100 hover:bg-red-50/50 cursor-pointer min-h-[110px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-400">토</span>
+              <span class="text-lg font-medium text-red-500">21</span>
+            </div>
+            <div class="text-xs text-grey-500 truncate">특강 09:00</div>
+          </div>
+
+          <div class="p-4 hover:bg-red-50/50 cursor-pointer min-h-[110px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-400">일</span>
+              <span class="text-lg font-medium text-red-500">22</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+        <p class="text-sm text-orange-800 font-bold mb-2">특징:</p>
+        <ul class="text-sm text-orange-700 list-disc list-inside space-y-1">
+          <li>선택된 날짜: <code class="bg-orange-100 px-1.5 py-0.5 rounded font-mono text-xs">원형 배경 + 흰글씨</code></li>
+          <li>iOS 캘린더 앱 스타일</li>
+          <li>확대된 셀 높이 (110px)</li>
+          <li>오늘도 라운드 배지 스타일</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== 옵션 E: 연한 파란 배경 (토스 공식) ===== -->
+    <div class="option-card bg-white rounded-2xl p-6 border-2 border-grey-300 cursor-pointer" onclick="selectOption(this)">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-4 py-1.5 bg-grey-700 text-white rounded-full text-sm font-bold">옵션 E</span>
+        <span class="text-grey-900 font-bold text-lg">연한 파란 배경 (토스 공식 스타일)</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-grey-200 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-grey-100">
+          <div class="flex items-center gap-2">
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="text-base font-semibold text-grey-900">12월 3주</span>
+            <button class="p-1.5 rounded-lg hover:bg-grey-100 text-grey-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <button class="text-sm text-blue-500 font-medium">오늘</button>
+        </div>
+
+        <div class="grid grid-cols-7">
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">월</span>
+              <span class="text-base font-medium text-grey-600">16</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">화</span>
+              <span class="text-base font-medium text-grey-600">17</span>
+            </div>
+            <div class="text-xs text-grey-500 truncate">교재 변경 안내</div>
+          </div>
+
+          <!-- 선택됨: 연한 파란 배경 + 파란 글씨 -->
+          <div class="p-3 border-r border-grey-100 bg-blue-100 cursor-pointer min-h-[100px] selected-indicator">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-500">수</span>
+              <span class="text-base font-bold text-blue-600">18</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 bg-blue-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-blue-400">목</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] text-blue-500 font-medium">오늘</span>
+                <span class="text-base font-semibold text-blue-600">19</span>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="text-xs text-orange-600 truncate">⚠ 결석 2명</div>
+              <div class="text-xs text-grey-500 truncate">상담 14:00</div>
+            </div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-grey-400">금</span>
+              <span class="text-base font-medium text-grey-600">20</span>
+            </div>
+            <div class="text-xs text-red-500 truncate">휴원</div>
+          </div>
+
+          <div class="p-3 border-r border-grey-100 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">토</span>
+              <span class="text-base font-medium text-red-400">21</span>
+            </div>
+            <div class="text-xs text-grey-400 truncate">특강 09:00</div>
+          </div>
+
+          <div class="p-3 hover:bg-red-50/50 cursor-pointer min-h-[100px]">
+            <div class="flex items-baseline justify-between mb-2">
+              <span class="text-xs text-red-300">일</span>
+              <span class="text-base font-medium text-red-400">22</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-grey-100 rounded-lg border border-grey-200">
+        <p class="text-sm text-grey-800 font-bold mb-2">특징:</p>
+        <ul class="text-sm text-grey-700 list-disc list-inside space-y-1">
+          <li>선택 상태: <code class="bg-grey-200 px-1.5 py-0.5 rounded font-mono text-xs">bg-blue-100 + text-blue-600</code></li>
+          <li>오늘과 선택의 차이: blue-100 vs blue-50</li>
+          <li>토스 공식 스타일과 가장 유사</li>
+          <li>단순하지만 명확한 구분</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 선택 안내 -->
+    <div class="bg-white rounded-2xl p-6 border-2 border-grey-300">
+      <h3 class="text-xl font-bold mb-6 text-grey-900">옵션 비교 요약</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b-2 border-grey-200">
+              <th class="py-3 px-4 text-left font-bold text-grey-900">옵션</th>
+              <th class="py-3 px-4 text-left font-bold text-grey-900">선택 스타일</th>
+              <th class="py-3 px-4 text-left font-bold text-grey-900">시각적 강도</th>
+              <th class="py-3 px-4 text-left font-bold text-grey-900">스타일 참조</th>
+            </tr>
+          </thead>
+          <tbody class="text-grey-700">
+            <tr class="border-b border-grey-100 hover:bg-grey-50">
+              <td class="py-3 px-4"><span class="px-3 py-1 bg-blue-500 rounded-full text-white text-xs font-bold">A</span></td>
+              <td class="py-3 px-4 font-medium">굵은 파란 테두리</td>
+              <td class="py-3 px-4"><span class="text-green-600 font-medium">중간</span></td>
+              <td class="py-3 px-4">토스 인풋 포커스</td>
+            </tr>
+            <tr class="border-b border-grey-100 hover:bg-grey-50">
+              <td class="py-3 px-4"><span class="px-3 py-1 bg-purple-500 rounded-full text-white text-xs font-bold">B</span></td>
+              <td class="py-3 px-4 font-medium">파란 배경 + 흰글씨</td>
+              <td class="py-3 px-4"><span class="text-red-600 font-medium">강함</span></td>
+              <td class="py-3 px-4">Apple 캘린더</td>
+            </tr>
+            <tr class="border-b border-grey-100 hover:bg-grey-50">
+              <td class="py-3 px-4"><span class="px-3 py-1 bg-green-500 rounded-full text-white text-xs font-bold">C</span></td>
+              <td class="py-3 px-4 font-medium">하단 액센트 바</td>
+              <td class="py-3 px-4"><span class="text-yellow-600 font-medium">약함</span></td>
+              <td class="py-3 px-4">탭 네비게이션</td>
+            </tr>
+            <tr class="border-b border-grey-100 hover:bg-grey-50">
+              <td class="py-3 px-4"><span class="px-3 py-1 bg-orange-500 rounded-full text-white text-xs font-bold">D</span></td>
+              <td class="py-3 px-4 font-medium">원형 숫자 배지</td>
+              <td class="py-3 px-4"><span class="text-red-600 font-medium">강함</span></td>
+              <td class="py-3 px-4">iOS 캘린더</td>
+            </tr>
+            <tr class="hover:bg-grey-50">
+              <td class="py-3 px-4"><span class="px-3 py-1 bg-grey-700 rounded-full text-white text-xs font-bold">E</span></td>
+              <td class="py-3 px-4 font-medium">연한 파란 배경</td>
+              <td class="py-3 px-4"><span class="text-green-600 font-medium">중간</span></td>
+              <td class="py-3 px-4">토스 공식</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <p class="text-sm text-blue-800">
+          <strong class="text-blue-900">권장:</strong>
+          <span class="font-bold">옵션 A</span> (토스 스타일 테두리) 또는 <span class="font-bold">옵션 E</span> (연한 파란 배경) -
+          토스 디자인 철학을 유지하면서 선택 피드백이 명확함
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function selectOption(element) {
+      document.querySelectorAll('.option-card').forEach(card => {
+        card.classList.remove('selected-option');
+      });
+      element.classList.add('selected-option');
+    }
+  </script>
+
+</body>
+</html>

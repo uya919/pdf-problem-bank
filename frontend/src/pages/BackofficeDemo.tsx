@@ -9,7 +9,6 @@
  * Phase 2: hyeyum Supabase 실제 데이터 연동 (2025-12-12)
  */
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { StatusDot, UserIcon } from '../components/ui/Icons';
 import {
   useClasses,
@@ -41,6 +40,8 @@ import {
   useAttendanceForTeacherByDate,
   useProgressForTeacherByDate,
   useHomeworkForTeacherByDate,
+  // 출결 모달용: 기존 출결 데이터 로드
+  useAttendanceByClassAndDate,
 } from '../hooks/useBackofficeData';
 import { useIsTablet } from '../hooks/useIsMobile';
 import { useAuth } from '../hooks/useAuth';
@@ -55,6 +56,7 @@ import {
   TaskBadgeCard,
   HolidayHeroCard,
 } from '../components/backoffice/dashboard';
+import { BottomNav } from '../components/backoffice/navigation';
 import type { ClassSchedule } from '../components/backoffice/dashboard';
 import { TabletDashboard } from '../components/backoffice/tablet';
 import type { Notice } from '../components/backoffice/tablet';
@@ -71,147 +73,6 @@ import { RoleToggle } from '../components/admin/RoleToggle';
 import { useHolidayStatus, useMonthHolidayStatus } from '../hooks/useHolidays';
 import type { TestRecord } from '../types/test';
 
-// 스와이프 캐러셀용 수업 데이터
-const mockClassSchedules: ClassSchedule[] = [
-  {
-    id: '1',
-    name: '중1C반',
-    subject: '수학',
-    studentCount: 6,
-    startTime: '15:00',
-    endTime: '17:00',
-    status: 'completed',
-  },
-  {
-    id: '2',
-    name: '중3A반',
-    subject: '수학',
-    studentCount: 8,
-    startTime: '17:00',
-    endTime: '19:00',
-    status: 'current',
-  },
-  {
-    id: '3',
-    name: '중2B반',
-    subject: '수학',
-    studentCount: 7,
-    startTime: '19:00',
-    endTime: '21:00',
-    status: 'upcoming',
-  },
-];
-
-// TaskBadgeCard용 mock 데이터
-// 공지사항은 실제 Supabase 데이터만 사용 (오늘 날짜 기준)
-const mockNotices: { id: string; title: string; subtitle: string; read: boolean }[] = [];
-
-// 출결/진도/숙제 mock 데이터 - 실제 Supabase 데이터로 대체됨
-// 실제 데이터가 없으면 빈 배열 표시 (섹션은 유지되지만 내용 없음)
-const mockAttendances: { id: string; className: string; studentCount: number; time: string; status: 'completed' | 'upcoming'; checked: boolean }[] = [];
-
-const mockProgresses: { id: string; className: string; time: string; lastProgress: string; recorded: boolean }[] = [];
-
-const mockHomeworks: { id: string; className: string; range: string; submitted: number; notSubmitted: number; checked: boolean }[] = [];
-
-// 출결 모달용 학생 데이터 - 실제 학생은 useClassWithStudents 훅에서 조회
-const mockAttendanceStudents: Record<string, AttendanceStudent[]> = {};
-
-// 숙제 모달용 학생 데이터 - 실제 학생은 useHomeworkByDate 훅에서 조회
-const mockHomeworkStudents: Record<string, HomeworkStudent[]> = {};
-
-// 수업이 있는 날짜들 (점 표시용)
-const mockClassDates = [
-  new Date(2025, 11, 9),
-  new Date(2025, 11, 10),
-  new Date(2025, 11, 11),
-  new Date(2025, 11, 12),
-  new Date(2025, 11, 13),
-  new Date(2025, 11, 15),
-  new Date(2025, 11, 16),
-  new Date(2025, 11, 17),
-];
-
-// 날짜별 수업 개수 (mock)
-const mockClassCountByDate: Record<string, number> = {
-  '2025-12-09': 2,
-  '2025-12-10': 3,
-  '2025-12-11': 3,
-  '2025-12-12': 3,
-  '2025-12-13': 0,
-  '2025-12-14': 0,
-  '2025-12-15': 2,
-};
-
-// 태블릿용 날짜별 수업 데이터
-const mockClassesByDate: Record<string, ClassSchedule[]> = {
-  '2025-12-09': [
-    { id: '1', name: '중1C반', subject: '수학', studentCount: 6, startTime: '15:00', endTime: '17:00', status: 'completed' },
-    { id: '2', name: '중3A반', subject: '수학', studentCount: 8, startTime: '17:00', endTime: '19:00', status: 'completed' },
-  ],
-  '2025-12-10': [
-    { id: '1', name: '중2B반', subject: '수학', studentCount: 7, startTime: '15:00', endTime: '17:00', status: 'completed' },
-    { id: '2', name: '중1C반', subject: '수학', studentCount: 6, startTime: '17:00', endTime: '19:00', status: 'completed' },
-    { id: '3', name: '중3A반', subject: '수학', studentCount: 8, startTime: '19:00', endTime: '21:00', status: 'completed' },
-  ],
-  '2025-12-11': [
-    { id: '1', name: '중1C반', subject: '수학', studentCount: 6, startTime: '15:00', endTime: '17:00', status: 'completed' },
-    { id: '2', name: '중3A반', subject: '수학', studentCount: 8, startTime: '17:00', endTime: '19:00', status: 'current' },
-    { id: '3', name: '중2B반', subject: '수학', studentCount: 7, startTime: '19:00', endTime: '21:00', status: 'upcoming' },
-  ],
-  '2025-12-12': mockClassSchedules,
-  '2025-12-13': [],
-  '2025-12-14': [],
-  '2025-12-15': [
-    { id: '1', name: '중3A반', subject: '수학', studentCount: 8, startTime: '14:00', endTime: '16:00', status: 'upcoming' },
-    { id: '2', name: '중2B반', subject: '수학', studentCount: 7, startTime: '16:00', endTime: '18:00', status: 'upcoming' },
-  ],
-};
-
-// 태블릿용 날짜별 공지 데이터
-const mockNoticesByDate: Record<string, Notice[]> = {
-  '2025-12-09': [
-    { id: '1', title: '12월 정기 테스트 일정 안내', description: '12월 20일 (금) 실시', time: '10:00' },
-  ],
-  '2025-12-10': [],
-  '2025-12-11': [
-    { id: '2', title: '김민수(중3A) 결석 - 병원', description: '어머니께서 연락주심' },
-    { id: '3', title: '전체 회의', description: '14:00 강당에서', time: '14:00' },
-  ],
-  '2025-12-12': [
-    { id: '4', title: '이영희(중2B) 조퇴', description: '병원 예약' },
-  ],
-  '2025-12-13': [
-    { id: '5', title: '토요일 보충 수업 공지', description: '희망자에 한해 14:00-16:00' },
-  ],
-  '2025-12-14': [],
-  '2025-12-15': [
-    { id: '6', title: '다음주 시험 범위 공지', description: '이차방정식 전체' },
-  ],
-};
-
-// 태블릿용 날짜별 출결 이슈 데이터
-const mockAttendanceIssuesByDate: Record<string, Array<{
-  id: string;
-  className: string;
-  studentName: string;
-  issue: string;
-}>> = {
-  '2025-12-09': [],
-  '2025-12-10': [
-    { id: '1', className: '중2B반', studentName: '박철수', issue: '지각' },
-  ],
-  '2025-12-11': [
-    { id: '2', className: '중3A반', studentName: '김민수', issue: '결석' },
-    { id: '3', className: '고1B반', studentName: '이지은', issue: '조퇴' },
-  ],
-  '2025-12-12': [
-    { id: '4', className: '중1C반', studentName: '최지원', issue: '지각' },
-  ],
-  '2025-12-13': [],
-  '2025-12-14': [],
-  '2025-12-15': [],
-};
 
 // 날짜 포맷 헬퍼
 function formatDateKey(date: Date): string {
@@ -227,7 +88,6 @@ const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
 // Phase 310-B: mockLastProgress 제거 - 실제 Supabase 데이터 사용
 
 export function BackofficeDemo() {
-  const navigate = useNavigate();
   const testStore = useTestStore();
   const { user, loading: authLoading } = useAuth();
   const { role } = useAuthContext();
@@ -838,12 +698,6 @@ export function BackofficeDemo() {
     return result.length > 0 ? result : null;
   }, [realHomeworkData, rotationForSelectedDate, rotationDetail, classesData]);
 
-  // TaskBadgeCard 상태 (실제 데이터가 없으면 mock 사용)
-  const [notices, setNotices] = useState(mockNotices);
-  const [attendances, setAttendances] = useState(mockAttendances);
-  const [progresses, setProgresses] = useState(mockProgresses);
-  const [homeworks, setHomeworks] = useState(mockHomeworks);
-
   // 진도 모달 상태
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
@@ -872,7 +726,13 @@ export function BackofficeDemo() {
   const saveAttendance = useSaveAttendance();
   const { data: attendanceClassStudents } = useClassWithStudents(selectedAttendanceClass?.classId || null);
 
-  // Phase 7-1: 실제 학생 데이터 우선 사용 (Mock Fallback 패턴)
+  // 출결 모달용: 기존 출결 데이터 로드
+  const { data: existingAttendanceData } = useAttendanceByClassAndDate(
+    selectedAttendanceClass?.classId || null,
+    selectedDateStr
+  );
+
+  // Phase 7-1: 실제 학생 데이터 우선 사용 + 기존 출결 데이터 병합
   const attendanceModalStudents: AttendanceStudent[] = useMemo(() => {
     // 타입 단언 - useClassWithStudents 응답 형식
     interface EnrollmentWithStudent {
@@ -884,21 +744,46 @@ export function BackofficeDemo() {
     }
     const typedData = attendanceClassStudents as unknown as ClassWithEnrollments | null;
 
+    // 기존 출결 데이터를 Map으로 변환
+    const existingMap = new Map<string, { status: string; note: string | null }>();
+    if (existingAttendanceData) {
+      existingAttendanceData.forEach((att) => {
+        existingMap.set(att.student_id, { status: att.status, note: att.note });
+      });
+    }
+
     // Supabase 학생 데이터가 있으면 사용
     if (typedData?.enrollments && typedData.enrollments.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const students = (typedData.enrollments as any[])
         .filter((e) => e.student !== null && e.student !== undefined)
-        .map((e) => ({
-          id: e.student.id,
-          name: e.student.name,
-          status: null as AttendanceStatus,
-        }));
+        .map((e) => {
+          const existing = existingMap.get(e.student.id);
+          if (existing) {
+            // DB status를 모달 status로 변환
+            let modalStatus: AttendanceStatus = null;
+            if (existing.status === 'present') modalStatus = 'present';
+            else if (existing.status === 'late' || existing.status === 'early_leave') modalStatus = 'late';
+            else if (existing.status === 'absent' || existing.status === 'excused') modalStatus = 'absent';
+
+            return {
+              id: e.student.id,
+              name: e.student.name,
+              status: modalStatus,
+              reason: existing.note || undefined,
+            };
+          }
+          return {
+            id: e.student.id,
+            name: e.student.name,
+            status: null as AttendanceStatus,
+          };
+        });
       return students;
     }
     // Mock fallback
     return selectedAttendanceClass?.students || [];
-  }, [attendanceClassStudents, selectedAttendanceClass?.students]);
+  }, [attendanceClassStudents, selectedAttendanceClass?.students, existingAttendanceData]);
 
   // 숙제 모달 상태
   const [homeworkModalOpen, setHomeworkModalOpen] = useState(false);
@@ -929,23 +814,27 @@ export function BackofficeDemo() {
     const prevDate = new Date(selectedDate);
     prevDate.setDate(prevDate.getDate() - 1);
     const key = formatDateKey(prevDate);
+    // Supabase에서 가져온 실제 데이터 사용
+    const classCount = realClassesByDate?.[key]?.length ?? 0;
     return {
       date: formatDateLabel(prevDate),
       dayOfWeek: DAY_NAMES[prevDate.getDay()],
-      classCount: mockClassCountByDate[key] ?? 0,
+      classCount,
     };
-  }, [selectedDate]);
+  }, [selectedDate, realClassesByDate]);
 
   const nextDayInfo = useMemo(() => {
     const nextDate = new Date(selectedDate);
     nextDate.setDate(nextDate.getDate() + 1);
     const key = formatDateKey(nextDate);
+    // Supabase에서 가져온 실제 데이터 사용
+    const classCount = realClassesByDate?.[key]?.length ?? 0;
     return {
       date: formatDateLabel(nextDate),
       dayOfWeek: DAY_NAMES[nextDate.getDay()],
-      classCount: mockClassCountByDate[key] ?? 0,
+      classCount,
     };
-  }, [selectedDate]);
+  }, [selectedDate, realClassesByDate]);
 
   // 날짜 이동 핸들러 (애니메이션 포함)
   const handlePrevDay = () => {
@@ -992,62 +881,48 @@ export function BackofficeDemo() {
 
   // TaskBadgeCard 핸들러들
   const handleNoticeRead = (id: string) => {
-    setNotices((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    // 공지 읽음 처리는 Supabase에서 관리
+    console.log('공지 읽음:', id);
   };
 
   const handleAttendanceCheck = (id: string) => {
-    // 출결 모달 열기 - Phase 7-1: classId 포함
-    // computedAttendances 또는 mock attendances에서 찾기
-    const realAtt = computedAttendances?.find((a) => a.id === id);
-    const mockAtt = attendances.find((a) => a.id === id);
-    const attendance = realAtt || mockAtt;
+    // 출결 모달 열기 - computedAttendances에서 찾기
+    const attendance = computedAttendances?.find((a) => a.id === id);
 
     if (attendance) {
-      const students = mockAttendanceStudents[attendance.className] || [];
       setSelectedAttendanceClass({
-        classId: id, // Supabase UUID 또는 mock ID
+        classId: id,
         className: attendance.className,
         time: attendance.time,
-        students: students.map(s => ({ ...s, status: null })), // 초기화
+        students: [], // 실제 학생은 useClassWithStudents에서 로드
       });
       setAttendanceModalOpen(true);
     }
   };
 
   const handleProgressRecord = (id: string) => {
-    // Phase 310-B: computedProgresses의 id는 이미 Supabase UUID
-    // id를 직접 사용하여 useLastProgress가 정상 작동하도록 함
+    // 진도 기록 모달 열기
     setSelectedClassId(id);
     setProgressModalOpen(true);
   };
 
   const handleHomeworkCheck = (id: string) => {
-    // 숙제 모달 열기 - Phase 7-3: classId 포함
-    // computedHomeworks 또는 mock homeworks에서 찾기
-    const realHw = computedHomeworks?.find((h) => h.id === id);
-    const mockHw = homeworks.find((h) => h.id === id);
-    const homework = realHw || mockHw;
+    // 숙제 모달 열기 - computedHomeworks에서 찾기
+    const homework = computedHomeworks?.find((h) => h.id === id);
 
     if (homework) {
-      const students = mockHomeworkStudents[homework.className] || [];
       setSelectedHomeworkClass({
-        classId: id, // Supabase UUID 또는 mock ID
+        classId: id,
         className: homework.className,
         range: homework.range || '',
-        students: students.map(s => ({ ...s })), // 복사
+        students: [], // 실제 학생은 useHomeworkByDate에서 로드
       });
       setHomeworkModalOpen(true);
     }
   };
 
-  const handleSaveProgress = (data: unknown) => {
-    console.log('진도 저장:', data);
-    // 진도 기록 완료 처리
-    setProgresses((prev) =>
-      prev.map((p) => (p.className === selectedClass?.name ? { ...p, recorded: true } : p))
-    );
+  const handleSaveProgress = () => {
+    // 진도 저장 후 모달 닫기
     setProgressModalOpen(false);
   };
 
@@ -1223,13 +1098,11 @@ export function BackofficeDemo() {
 
   // HeroCarousel 핸들러 - 출결 모달 열기 (Phase 7-1: classId 포함)
   const handleAttendance = (classId: string) => {
-    // Stage 35: classesData(전체 반) > realClassSchedules(오늘 반) > mock 순으로 찾기
-    // 부담임 반도 classesData에 포함되어 있으므로 먼저 검색
+    // classesData(전체 반) > realClassSchedules(오늘 반) 순으로 찾기
     const dbCls = classesData?.find((c) => c.id === classId);
     const realCls = realClassSchedules?.find((c) => c.id === classId);
-    const mockCls = mockClassSchedules.find((c) => c.id === classId);
 
-    // DB 데이터 우선, 없으면 realClassSchedules, 마지막으로 mock
+    // DB 데이터 우선, 없으면 realClassSchedules
     let cls: { id: string; name: string; startTime: string; endTime: string } | null = null;
     if (dbCls) {
       cls = {
@@ -1240,21 +1113,18 @@ export function BackofficeDemo() {
       };
     } else if (realCls) {
       cls = realCls;
-    } else if (mockCls) {
-      cls = mockCls;
     }
 
     console.log('[handleAttendance] classId:', classId, 'found:', !!cls, 'dbCls:', !!dbCls);
 
     if (cls) {
-      const students = mockAttendanceStudents[cls.name] || [];
       // 시간 문자열 생성
       const timeStr = `${cls.startTime}-${cls.endTime}`;
       setSelectedAttendanceClass({
-        classId, // Supabase UUID 또는 mock ID
+        classId, // Supabase UUID
         className: cls.name,
         time: timeStr,
-        students: students.map(s => ({ ...s, status: null })), // 초기화
+        students: [], // 실제 학생 데이터는 useClassWithStudents에서 로드
       });
       setAttendanceModalOpen(true);
     }
@@ -1293,8 +1163,8 @@ export function BackofficeDemo() {
       if (fromReal) return fromReal;
     }
 
-    // 3. mock fallback
-    return mockClassSchedules.find((c) => c.id === selectedClassId);
+    // 3. 데이터 없음
+    return undefined;
   }, [selectedClassId, classesData, realClassSchedules]);
 
   return (
@@ -1322,14 +1192,14 @@ export function BackofficeDemo() {
         <TabletDashboard
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
-          classesByDate={realClassesByDate || mockClassesByDate}
-          noticesByDate={realNoticesByDate || mockNoticesByDate}
-          attendanceIssuesByDate={realAttendanceIssuesByDate || mockAttendanceIssuesByDate}
+          classesByDate={realClassesByDate || {}}
+          noticesByDate={realNoticesByDate || {}}
+          attendanceIssuesByDate={realAttendanceIssuesByDate || {}}
           onAttendance={handleAttendance}
           onProgress={handleProgress}
           onNoticeClick={(id) => console.log('공지 클릭:', id)}
           onAttendanceIssueClick={(id) => console.log('출결 이슈 클릭:', id)}
-          classScheduleDates={realClassScheduleDates || mockClassDates}
+          classScheduleDates={realClassScheduleDates || []}
           holidayStatusByDate={monthHolidayStatus || {}}
         />
       ) : (
@@ -1340,8 +1210,8 @@ export function BackofficeDemo() {
             selectedDate={selectedDate}
             onDateChange={setSelectedDate}
             onOpenMonthly={() => setMonthlyModalOpen(true)}
-            classScheduleDates={realClassScheduleDates || mockClassDates}
-            noticesByDate={realNoticesByDate || mockNoticesByDate}
+            classScheduleDates={realClassScheduleDates || []}
+            noticesByDate={realNoticesByDate || {}}
             holidayStatusByDate={monthHolidayStatus || {}}
           />
 
@@ -1394,10 +1264,10 @@ export function BackofficeDemo() {
             </div>
           ) : (
             <TaskBadgeCard
-              notices={realNotices || notices}
-              attendances={computedAttendances || attendances}
-              progresses={computedProgresses || progresses}
-              homeworks={computedHomeworks || homeworks}
+              notices={realNotices || []}
+              attendances={computedAttendances || []}
+              progresses={computedProgresses || []}
+              homeworks={computedHomeworks || []}
               onNoticeRead={handleNoticeRead}
               onAttendanceCheck={handleAttendanceCheck}
               onProgressRecord={handleProgressRecord}
@@ -1408,13 +1278,7 @@ export function BackofficeDemo() {
       )}
 
       {/* 하단 네비게이션 */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#F2F4F6] flex h-[60px]">
-        <NavItem icon="home" label="홈" active />
-        <NavItem icon="book" label="수업" onClick={() => navigate('/classes')} />
-        <NavItem icon="users" label="학생" onClick={() => navigate('/students')} />
-        <NavItem icon="edit" label="기록" onClick={() => navigate('/records')} />
-        <NavItem icon="more" label="더보기" onClick={() => navigate('/more')} />
-      </nav>
+      <BottomNav />
 
       {/* 월간 캘린더 모달 */}
       <MonthlyCalendarModal
@@ -1422,8 +1286,8 @@ export function BackofficeDemo() {
         onClose={() => setMonthlyModalOpen(false)}
         selectedDate={selectedDate}
         onDateSelect={setSelectedDate}
-        classScheduleDates={realClassScheduleDates || mockClassDates}
-        noticesByDate={realNoticesByDate || mockNoticesByDate}
+        classScheduleDates={realClassScheduleDates || []}
+        noticesByDate={realNoticesByDate || {}}
       />
 
       {/* 진도 모달 */}
@@ -1437,7 +1301,7 @@ export function BackofficeDemo() {
           studentCount: selectedClass?.studentCount,
           startTime: selectedClass?.startTime,
         }}
-        students={selectedClass ? (mockAttendanceStudents[selectedClass.name] || []).map(s => ({ id: s.id, name: s.name })) : []}
+        students={[]}
         lastProgress={lastProgressData ? {
           date: new Date(lastProgressData.date).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric', weekday: 'short' }),
           topic: lastProgressData.topic || '',
@@ -1467,8 +1331,8 @@ export function BackofficeDemo() {
               notes: data.notes,
             });
           }
-          // 기존 핸들러도 호출 (UI 업데이트)
-          handleSaveProgress(data);
+          // 모달 닫기
+          handleSaveProgress();
         }}
         onSaveTest={handleSaveTest}
         textbooks={textbooks || []}
@@ -1498,55 +1362,6 @@ export function BackofficeDemo() {
         />
       )}
     </div>
-  );
-}
-
-// SVG 아이콘 네비게이션
-function NavItem({ icon, label, active = false, onClick }: { icon: string; label: string; active?: boolean; onClick?: () => void }) {
-  const color = active ? '#3182F6' : '#8B95A1';
-
-  const icons: Record<string, React.ReactNode> = {
-    home: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-      </svg>
-    ),
-    book: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-      </svg>
-    ),
-    users: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-      </svg>
-    ),
-    edit: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <path d="M12 20h9"/>
-        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-      </svg>
-    ),
-    more: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
-        <circle cx="12" cy="12" r="1"/>
-        <circle cx="19" cy="12" r="1"/>
-        <circle cx="5" cy="12" r="1"/>
-      </svg>
-    ),
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      className="flex-1 flex flex-col items-center justify-center gap-1 transition-transform active:scale-95"
-      style={{ color }}
-    >
-      {icons[icon]}
-      <span className="text-xs font-medium">{label}</span>
-    </button>
   );
 }
 

@@ -1,11 +1,12 @@
 """
 Phase 12-2: 파일 I/O 유틸리티
+Phase 68-A: Export 파일 삭제 기능 추가
 
 JSON 파일 읽기/쓰기 표준화
 """
 from pathlib import Path
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 
 def load_json(path: Path) -> Dict[str, Any]:
@@ -64,3 +65,41 @@ def load_json_or_default(
         return load_json(path)
     except (json.JSONDecodeError, Exception):
         return default
+
+
+def delete_exported_problem(
+    problems_dir: Path,
+    document_id: str,
+    page_index: int,
+    group_id: str
+) -> Tuple[bool, int]:
+    """
+    Phase 68-A: Export된 문제 파일 삭제 (PNG + JSON)
+
+    Args:
+        problems_dir: problems 폴더 경로
+        document_id: 문서 ID
+        page_index: 페이지 인덱스
+        group_id: 그룹 ID
+
+    Returns:
+        (성공 여부, 삭제된 파일 수)
+    """
+    if not problems_dir.exists():
+        return (False, 0)
+
+    # 파일 패턴: {document_id}_p{page_index:04d}_{group_id}.{ext}
+    base_name = f"{document_id}_p{page_index:04d}_{group_id}"
+
+    deleted_count = 0
+    for ext in [".png", ".json"]:
+        file_path = problems_dir / f"{base_name}{ext}"
+        if file_path.exists():
+            try:
+                file_path.unlink()
+                deleted_count += 1
+                print(f"[Phase 68-A] 삭제: {file_path.name}")
+            except Exception as e:
+                print(f"[Phase 68-A] 삭제 실패: {file_path.name} - {e}")
+
+    return (deleted_count > 0, deleted_count)

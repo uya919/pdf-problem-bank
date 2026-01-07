@@ -4,7 +4,7 @@
 import axios from 'axios';
 
 // API Base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:7000';
 
 // Phase 59-C: API 타임아웃 설정
 const API_TIMEOUTS = {
@@ -13,6 +13,20 @@ const API_TIMEOUTS = {
   EXPORT: 60000,     // 이미지 내보내기: 1분
   QUICK: 10000,      // 간단한 조회: 10초
 };
+
+/**
+ * API 에러 핸들러
+ */
+export function handleApiError(error: unknown): Error {
+  if (axios.isAxiosError(error)) {
+    const message = error.response?.data?.detail || error.response?.data?.message || error.message;
+    return new Error(message);
+  }
+  if (error instanceof Error) {
+    return error;
+  }
+  return new Error('알 수 없는 오류가 발생했습니다');
+}
 
 // Axios 인스턴스 생성
 export const apiClient = axios.create({
@@ -660,6 +674,30 @@ export const api = {
       `/api/export/documents/${documentId}/pages/${pageIndex}/groups/${groupId}/export-with-data`,
       groupData,
       { timeout: API_TIMEOUTS.EXPORT }
+    );
+    return response.data;
+  },
+
+  // Phase 59-B: 페이지 내 여러 그룹 일괄 내보내기
+  bulkExportGroups: async (
+    documentId: string,
+    pageIndex: number,
+    groupIds?: string[]
+  ): Promise<{
+    success: boolean;
+    exported_count: number;
+    failed_count: number;
+    results: Array<{
+      group_id: string;
+      success: boolean;
+      image_path: string | null;
+      error: string | null;
+    }>;
+  }> => {
+    const response = await apiClient.post(
+      `/api/export/documents/${documentId}/pages/${pageIndex}/bulk-export`,
+      groupIds ? { group_ids: groupIds } : {},
+      { timeout: API_TIMEOUTS.EXPORT * 2 }  // 일괄 처리용 더 긴 타임아웃
     );
     return response.data;
   },

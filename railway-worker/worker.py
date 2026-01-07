@@ -1,9 +1,10 @@
 """
-Railway Python Worker - 메이크에듀 동기화 및 PDF 압축 서버
+Railway Python Worker - 메이크에듀 동기화, PDF 압축, NAS 프록시 서버
 
-이 서버는 Vercel에서 실행할 수 없는 Python/Playwright 작업을 처리합니다.
+이 서버는 Vercel에서 실행할 수 없는 Python 작업을 처리합니다.
 - 메이크에듀 동기화 (Playwright)
 - PDF 압축 (PyMuPDF)
+- NAS 교재 프록시 (Stage 47)
 """
 
 import os
@@ -13,9 +14,12 @@ import asyncio
 import threading
 import subprocess
 from datetime import datetime
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, Response
 from flask_cors import CORS
 from dotenv import load_dotenv
+import requests
+from xml.etree import ElementTree as ET
+from urllib.parse import quote, unquote
 
 # PDF 압축 모듈
 from pdf_compressor import compress_pdf, get_pdf_info

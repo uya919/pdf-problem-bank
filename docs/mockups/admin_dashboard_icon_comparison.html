@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC 대시보드 이모지 vs 아이콘 비교</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', 'sans-serif'],
+          },
+          colors: {
+            toss: {
+              blue: '#3182F6',
+              blueLight: '#E8F3FF',
+              blueDark: '#1B64DA',
+            },
+            grey: {
+              50: '#F9FAFB',
+              100: '#F3F4F6',
+              200: '#E5E7EB',
+              300: '#D1D5DB',
+              400: '#9CA3AF',
+              500: '#6B7280',
+              600: '#4B5563',
+              700: '#374151',
+              800: '#1F2937',
+              900: '#111827',
+            },
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body { font-family: 'Pretendard', sans-serif; }
+    .comparison-label {
+      position: absolute;
+      top: -12px;
+      left: 16px;
+      background: white;
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6B7280;
+    }
+  </style>
+</head>
+<body class="bg-grey-100 p-8">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-2xl font-bold text-grey-900 mb-2">PC 대시보드 아이콘 변경 목업</h1>
+    <p class="text-grey-500 mb-8">이모지 → Lucide 아이콘 비교</p>
+
+    <div class="grid grid-cols-2 gap-8">
+      <!-- ===================== BEFORE (이모지) ===================== -->
+      <div class="relative border-2 border-grey-300 rounded-2xl p-6 bg-white">
+        <span class="comparison-label text-red-500">BEFORE (이모지)</span>
+
+        <!-- 현재 진행 중 섹션 -->
+        <section class="bg-white border border-grey-200 rounded-2xl overflow-hidden mb-4">
+          <div class="px-5 py-4 border-b border-grey-100 flex items-center justify-between">
+            <h3 class="font-semibold text-grey-900 flex items-center gap-2">
+              <span class="text-base">📚</span>
+              현재 진행 중 (14:00 ~ 15:30)
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                진행중
+              </span>
+            </h3>
+            <span class="text-sm text-grey-500">2개 수업</span>
+          </div>
+          <div class="p-5">
+            <div class="grid grid-cols-2 gap-4">
+              <!-- ClassCard 1 -->
+              <div class="bg-grey-50 rounded-xl p-4 border-2 border-transparent">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-semibold text-grey-900">중3A</span>
+                  <span class="px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-500 rounded">상</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-grey-500 mb-3">
+                  <span>👥 8명</span>
+                  <span>·</span>
+                  <span>김수학</span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <span class="text-green-500">✓</span>
+                    <span class="text-grey-600">출석 8/8</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <span class="text-grey-400">⏳</span>
+                    <span class="text-grey-600">진도 미입력</span>
+                  </div>
+                </div>
+              </div>
+              <!-- ClassCard 2 (경고) -->
+              <div class="bg-grey-50 rounded-xl p-4 border-2 border-orange-400">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-semibold text-grey-900">고1B</span>
+                  <span class="px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-500 rounded">중</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-grey-500 mb-3">
+                  <span>👥 6명</span>
+                  <span>·</span>
+                  <span>이수학</span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <span class="text-orange-500">⚠</span>
+                    <span class="text-orange-500 font-medium">결석 1명</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <span class="text-green-500">✓</span>
+                    <span class="text-grey-600">진도 입력 완료</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 다른 과목 요약 -->
+            <div class="flex gap-4 mt-4 p-4 bg-grey-100 rounded-xl">
+              <div class="flex items-center gap-2 text-sm text-grey-600">
+                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                <span>영어</span>
+                <span class="font-semibold">3개</span>
+                <span class="text-xs text-grey-500">✓ 정상</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-grey-600">
+                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                <span>국어</span>
+                <span class="font-semibold">2개</span>
+                <span class="text-xs text-grey-500">✓ 정상</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 수업 일정 섹션 -->
+        <section class="bg-white border border-grey-200 rounded-2xl overflow-hidden">
+          <div class="px-5 py-4 border-b border-grey-100 flex items-center justify-between">
+            <h3 class="font-semibold text-grey-900 flex items-center gap-2">
+              <span class="text-base">📅</span>
+              오늘 수업 일정
+            </h3>
+            <span class="text-sm text-grey-500">2024년 12월 19일 (목)</span>
+          </div>
+          <div class="p-5">
+            <div class="flex items-stretch py-4 border-b border-grey-100 bg-blue-50 -mx-5 px-5 rounded-lg">
+              <div class="w-24 flex-shrink-0">
+                <div class="text-sm font-semibold text-grey-900">14:00</div>
+                <div class="text-xs text-grey-500">~15:30</div>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 text-blue-600">
+                  중3A · 김수학
+                </div>
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 text-blue-600 border border-orange-400">
+                  고1B · 이수학
+                  <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ===================== AFTER (아이콘) ===================== -->
+      <div class="relative border-2 border-toss-blue rounded-2xl p-6 bg-white">
+        <span class="comparison-label text-toss-blue">AFTER (Lucide 아이콘)</span>
+
+        <!-- 현재 진행 중 섹션 -->
+        <section class="bg-white border border-grey-200 rounded-2xl overflow-hidden mb-4">
+          <div class="px-5 py-4 border-b border-grey-100 flex items-center justify-between">
+            <h3 class="font-semibold text-grey-900 flex items-center gap-2">
+              <i data-lucide="book-open" class="w-5 h-5 text-grey-400"></i>
+              현재 진행 중 (14:00 ~ 15:30)
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                진행중
+              </span>
+            </h3>
+            <span class="text-sm text-grey-500">2개 수업</span>
+          </div>
+          <div class="p-5">
+            <div class="grid grid-cols-2 gap-4">
+              <!-- ClassCard 1 -->
+              <div class="bg-grey-50 rounded-xl p-4 border-2 border-transparent">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-semibold text-grey-900">중3A</span>
+                  <span class="px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-500 rounded">상</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-grey-500 mb-3">
+                  <span class="flex items-center gap-1">
+                    <i data-lucide="users" class="w-4 h-4 text-grey-400"></i>
+                    8명
+                  </span>
+                  <span>·</span>
+                  <span>김수학</span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                    <span class="text-grey-600">출석 8/8</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <i data-lucide="clock" class="w-4 h-4 text-grey-400"></i>
+                    <span class="text-grey-600">진도 미입력</span>
+                  </div>
+                </div>
+              </div>
+              <!-- ClassCard 2 (경고) -->
+              <div class="bg-grey-50 rounded-xl p-4 border-2 border-orange-400">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-semibold text-grey-900">고1B</span>
+                  <span class="px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-500 rounded">중</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-grey-500 mb-3">
+                  <span class="flex items-center gap-1">
+                    <i data-lucide="users" class="w-4 h-4 text-grey-400"></i>
+                    6명
+                  </span>
+                  <span>·</span>
+                  <span>이수학</span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-orange-500"></i>
+                    <span class="text-orange-500 font-medium">결석 1명</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                    <span class="text-grey-600">진도 입력 완료</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 다른 과목 요약 -->
+            <div class="flex gap-4 mt-4 p-4 bg-grey-100 rounded-xl">
+              <div class="flex items-center gap-2 text-sm text-grey-600">
+                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                <span>영어</span>
+                <span class="font-semibold">3개</span>
+                <span class="flex items-center gap-0.5 text-xs text-grey-500">
+                  <i data-lucide="check" class="w-3 h-3"></i>
+                  정상
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-grey-600">
+                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                <span>국어</span>
+                <span class="font-semibold">2개</span>
+                <span class="flex items-center gap-0.5 text-xs text-grey-500">
+                  <i data-lucide="check" class="w-3 h-3"></i>
+                  정상
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 수업 일정 섹션 -->
+        <section class="bg-white border border-grey-200 rounded-2xl overflow-hidden">
+          <div class="px-5 py-4 border-b border-grey-100 flex items-center justify-between">
+            <h3 class="font-semibold text-grey-900 flex items-center gap-2">
+              <i data-lucide="calendar" class="w-5 h-5 text-grey-400"></i>
+              오늘 수업 일정
+            </h3>
+            <span class="text-sm text-grey-500">2024년 12월 19일 (목)</span>
+          </div>
+          <div class="p-5">
+            <div class="flex items-stretch py-4 border-b border-grey-100 bg-blue-50 -mx-5 px-5 rounded-lg">
+              <div class="w-24 flex-shrink-0">
+                <div class="text-sm font-semibold text-grey-900">14:00</div>
+                <div class="text-xs text-grey-500">~15:30</div>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 text-blue-600">
+                  중3A · 김수학
+                </div>
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 text-blue-600 border border-orange-400">
+                  고1B · 이수학
+                  <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ===================== 아이콘 변경 요약 ===================== -->
+    <div class="mt-8 bg-white rounded-2xl p-6 border border-grey-200">
+      <h2 class="font-bold text-grey-900 mb-4">변경 요약</h2>
+      <div class="grid grid-cols-6 gap-4">
+        <div class="text-center p-4 bg-grey-50 rounded-xl">
+          <div class="text-2xl mb-2">📚</div>
+          <div class="text-xs text-grey-500 mb-2">BEFORE</div>
+          <div class="flex justify-center mb-2"><i data-lucide="book-open" class="w-6 h-6 text-grey-400"></i></div>
+          <div class="text-xs text-grey-500">AFTER</div>
+          <div class="text-xs font-medium text-toss-blue mt-1">BookOpen</div>
+        </div>
+        <div class="text-center p-4 bg-grey-50 rounded-xl">
+          <div class="text-2xl mb-2">📅</div>
+          <div class="text-xs text-grey-500 mb-2">BEFORE</div>
+          <div class="flex justify-center mb-2"><i data-lucide="calendar" class="w-6 h-6 text-grey-400"></i></div>
+          <div class="text-xs text-grey-500">AFTER</div>
+          <div class="text-xs font-medium text-toss-blue mt-1">Calendar</div>
+        </div>
+        <div class="text-center p-4 bg-grey-50 rounded-xl">
+          <div class="text-2xl mb-2">👥</div>
+          <div class="text-xs text-grey-500 mb-2">BEFORE</div>
+          <div class="flex justify-center mb-2"><i data-lucide="users" class="w-6 h-6 text-grey-400"></i></div>
+          <div class="text-xs text-grey-500">AFTER</div>
+          <div class="text-xs font-medium text-toss-blue mt-1">Users</div>
+        </div>
+        <div class="text-center p-4 bg-grey-50 rounded-xl">
+          <div class="text-2xl mb-2">✓</div>
+          <div class="text-xs text-grey-500 mb-2">BEFORE</div>
+          <div class="flex justify-center mb-2"><i data-lucide="check" class="w-6 h-6 text-green-500"></i></div>
+          <div class="text-xs text-grey-500">AFTER</div>
+          <div class="text-xs font-medium text-toss-blue mt-1">Check</div>
+        </div>
+        <div class="text-center p-4 bg-grey-50 rounded-xl">
+          <div class="text-2xl mb-2">⚠</div>
+          <div class="text-xs text-grey-500 mb-2">BEFORE</div>
+          <div class="flex justify-center mb-2"><i data-lucide="alert-triangle" class="w-6 h-6 text-orange-500"></i></div>
+          <div class="text-xs text-grey-500">AFTER</div>
+          <div class="text-xs font-medium text-toss-blue mt-1">AlertTriangle</div>
+        </div>
+        <div class="text-center p-4 bg-grey-50 rounded-xl">
+          <div class="text-2xl mb-2">⏳</div>
+          <div class="text-xs text-grey-500 mb-2">BEFORE</div>
+          <div class="flex justify-center mb-2"><i data-lucide="clock" class="w-6 h-6 text-grey-400"></i></div>
+          <div class="text-xs text-grey-500">AFTER</div>
+          <div class="text-xs font-medium text-toss-blue mt-1">Clock</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 장점 ===================== -->
+    <div class="mt-6 grid grid-cols-3 gap-4">
+      <div class="bg-toss-blueLight rounded-xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="palette" class="w-5 h-5 text-toss-blue"></i>
+          <span class="font-semibold text-grey-900">일관된 스타일</span>
+        </div>
+        <p class="text-sm text-grey-600">모바일과 PC 모두 동일한 Lucide 아이콘 사용으로 디자인 일관성 확보</p>
+      </div>
+      <div class="bg-green-50 rounded-xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="settings-2" class="w-5 h-5 text-green-600"></i>
+          <span class="font-semibold text-grey-900">커스터마이징</span>
+        </div>
+        <p class="text-sm text-grey-600">크기, 색상, 굵기 등 CSS로 자유롭게 조절 가능</p>
+      </div>
+      <div class="bg-orange-50 rounded-xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="monitor-smartphone" class="w-5 h-5 text-orange-600"></i>
+          <span class="font-semibold text-grey-900">크로스 플랫폼</span>
+        </div>
+        <p class="text-sm text-grey-600">OS별 이모지 렌더링 차이 없이 동일하게 표시</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

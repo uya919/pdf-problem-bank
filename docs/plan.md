@@ -1,1234 +1,579 @@
-# 개발 계획 v2.1
+# Hyeyum 백오피스 개발 계획
 
-**최종 업데이트**: 2025-12-07 (심야)
-**목적**: 현재 및 미래 개발 계획 관리
-
----
-
-## 📍 현재 상태 요약
-
-| 항목 | 상태 |
-|------|------|
-| 핵심 라벨링 기능 | ✅ 안정 (Phase 56-63 완료) |
-| 문제은행 UI | ✅ Phase 57 완료 (해설 연결 표시) |
-| TypeScript 빌드 | ✅ 0 에러 (Phase 62-A 완료) |
-| UI/UX 철학 | ✅ 토스 디자인 시스템 적용 |
-| 코드 안정성 | ✅ Optimistic Update, beforeunload 등 |
-| 연결 배지 버그 | ✅ Phase 63 완료 (수정됨) |
-| **백로그 처리** | ✅ B-1~B-6 전체 완료 (2025-12-07) |
-
-**다음 작업 권장**: Phase 55 (AI 라벨링 자동화)
+**최종 업데이트**: 2026-01-04
+**목적**: 혜윰학원 백오피스 웹앱 개발 (강사용 + 관리자용)
 
 ---
 
-## 핵심 자산 (유지)
+## 전체 진행 현황
 
-| 자산 | 위치 | 상태 |
-|------|------|------|
-| PDF 블록 검출 | `src/density_analyzer.py` | 완성 |
-| HML 파서 | `backend/app/services/hangul/hml_parser.py` | 완성 |
-| HWPX 파서 | `backend/app/services/hangul/hwpx_parser.py` | 완성 |
-| 분류 체계 | `backend/app/data/classification/math_tree.json` | 완성 |
-| 라벨링 시스템 | `frontend/src/pages/PageViewer.tsx` | 완성 |
+| Stage | 내용 | 상태 |
+|-------|------|------|
+| 1 | 강사용 모바일/태블릿 | ✅ 완료 |
+| 2 | 관리자 모바일 목업 | ✅ 완료 |
+| 3 | 관리자 PC 목업 (v5) | ✅ 완료 |
+| 4 | 새 Supabase 통합 | ✅ 완료 |
+| 5 | Timetable Studio 재설계 | ✅ 완료 |
+| 6 | 메이크에듀 동기화 | ✅ 완료 |
+| 7 | 과목별 반 배정 | ✅ 완료 |
+| 8 | 인증 및 권한 시스템 | ✅ 완료 |
+| 9 | 강사 관리 CRUD | ✅ 완료 |
+| 10 | 사용자 관리 시스템 | ✅ 완료 |
+| 11 | 반응형 통합 + 세션 관리 | ✅ 완료 |
+| 12 | 순환수업 시스템 | ✅ 완료 |
+| 13 | PC 대시보드 캘린더 UI | ✅ 완료 |
+| 14 | 순환수업-대시보드 통합 | ✅ 완료 |
+| 15 | 날짜 선택 기반 수업 조회 | ✅ 완료 |
+| 16 | 캘린더 통합 공지사항 | ✅ 완료 |
+| 17 | 공지 모달 + 중요 알림 미리보기 | ✅ 완료 |
+| 18 | PDF 교재 뷰어 + 교재 관리 | ✅ 완료 |
+| 19 | 시험 관리 시스템 (Supabase 연동) | ✅ 완료 |
+| 20 | 월간 캘린더 | ✅ 완료 |
+| 28 | 강사 캘린더 중요공지 반응형 표시 | ✅ 완료 |
+| 29 | 역할 토글 + UI 통합 | ✅ 완료 |
+| 30 | 공휴일 자동 휴강 시스템 | ✅ 완료 |
+| 31 | 초등부 담임/부담임 시스템 | ✅ 완료 |
+| 32 | 학년 승급 + 반 자동 승급 | ✅ 완료 |
+| 33 | 상담 관리 시스템 | ✅ 완료 |
+| 35 | 강사 대시보드 순환수업 연동 | ✅ 완료 |
+| 36 | 강사 기록 페이지 Supabase 연결 | ✅ 완료 |
+| 37 | 학생 상세 페이지 Supabase 연결 | ✅ 완료 |
+| 38 | ClassesPage Mock 제거 | ✅ 완료 |
+| 39 | Supabase 스키마 수정 (404/400 에러 해결) | ✅ 완료 |
 
----
-
-## 현재 상태
-
-### 완료된 Phase
-- Phase 1-55: 기본 시스템 구축 완료
-- Phase 56 (A-K): 모문제 워크플로우 v2 구현 완료
-  - M키: 모문제 생성 + 모드 진입
-  - L키: 하위문제 생성 (모문제 모드에서)
-  - G키: 일반 문제 생성 (모문제 모드 자동 해제)
-- Phase 56-K: displayName "고1" → "베이직쎈" 버그 수정 완료
-- Phase 56-L: 자동 내보내기 안정화 완료 (100ms 지연 + 재시도 로직)
-- Phase 56-M: 모문제 미연결 목록 제외 완료 (isParent 필드 추가)
-- Phase 56-N: displayName 패턴 필터링 완료 (기존 데이터 호환)
-- Phase 56-O: 재동기화 버튼 완료 (🔄 수동 동기화)
-- Phase 56-P: 자동 백그라운드 동기화 완료 (세션 로드 시 자동)
-- Phase 56-Q: 다음 문제 자동 선택 버그 수정 완료
-- Phase 56-R: 해설 삭제 시 자동 연결 해제 완료
-- Phase 56-S: 방어적 코딩 (undefined 에러 수정) 완료
-- Phase 57: 문제은행 UI 개선 전체 완료
-  - 57-A/B: [해설] 뱃지, 모달 정보 표시
-  - 57-C: 문제-해설 연결 API 추가
-  - 57-D: 모달 해설 이미지 통합 표시 (탭 UI)
-- Phase 58: 모문제 하위문제 크로스 페이지 연결 완료
-  - 58-A: Export 로직 보완 (다른 페이지 모문제 검색)
-  - 58-B: XP 그룹 모문제 선택 UI (이전 페이지 모문제 표시)
-- Phase 59: CRITICAL 안정성 이슈 해결 완료
-  - 59-A: Race Condition 수정 (safePageChange 함수 추가)
-  - 59-B: 동기화 검증 API (validate-sync 엔드포인트)
-  - 59-C: API 타임아웃 추가 (기본 30초, 업로드 2분, 내보내기 1분)
-- Phase 60: HIGH 안정성 이슈 해결 완료
-  - 60-A: 이미지 로드 취소 처리 (PageCanvas.tsx - isLoadingFull 상태 관리 개선)
-  - 60-B: 접근성 개선 (aria-label 추가 - GroupPanel, LinkedBadge)
-  - 60-C: Optimistic Update (그룹 생성/삭제 롤백 로직)
-  - 60-D: 페이지 이탈 방지 (beforeunload 핸들러)
-- Phase 61: MEDIUM 안정성 개선 완료
-  - 61-A: PageViewer 컴포넌트 분리 (usePageViewerState, PageViewerSidebar)
-  - 61-B: Toast 시스템 (이미 구현됨)
-  - 61-C: 상수 파일 추출 (ui.ts, timing.ts)
-  - 61-D: ErrorBoundary (이미 구현됨)
+> 완료된 Stage 상세: [plan-archive.md](plan-archive.md)
 
 ---
 
-## Phase 61-A 상세 (PageViewer 분리)
+## 완료: Stage 39 - Supabase 스키마 수정 (404/400 에러 해결) ✅
 
-| 파일 | 역할 | 라인 수 |
-|------|------|---------|
-| `usePageViewerState.ts` | 상태 관리 훅 | 270줄 |
-| `PageViewerSidebar.tsx` | 사이드바 UI 컴포넌트 | 104줄 |
-| `PageViewer.tsx` | 메인 컴포넌트 (리팩토링) | 1311줄 (-90) |
+> [에러 리포트](460_supabase_missing_tables_error_report.md) | [상세 개발 계획](461_supabase_schema_fix_development_plan.md)
 
-> **참조**: [231_stability_improvement_development_plan.md](231_stability_improvement_development_plan.md)
+### 목표
+- 브라우저 콘솔의 Supabase 404/400 API 에러 해결
+- 누락된 테이블 생성 (holidays, holiday_exceptions)
+- 테이블명 차이 해결 (homework_submissions VIEW 생성)
+- 컬럼명 불일치 수정 (notes → note)
 
----
+### Phase 목록
 
-## ✅ 완료: Phase 57 (문제은행 UI 개선)
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 39-A | holidays, holiday_exceptions 테이블 생성 (Supabase SQL) | ✅ |
+| 39-B | homework_submissions VIEW 생성 (submissions 테이블 기반) | ✅ |
+| 39-C | 프론트엔드 컬럼명 수정 (`notes` → `note`) | ✅ |
+| 39-D | 테스트 및 검증 (404/400 에러 해결 확인) | ✅ |
 
-> **참조**: [227_problem_bank_ui_enhancement_report.md](227_problem_bank_ui_enhancement_report.md)
+### 해결된 에러
 
-### 요청 기능
-
-| # | 기능 | 위치 | 상태 |
-|---|------|------|------|
-| 1 | 해설 연결된 문제에 뱃지 표시 | 오른쪽 사이드바 | ✅ |
-| 2 | 모달에서 문제+해설 함께 표시 | 문제은행 이미지 탭 | ✅ |
-| 3 | 교재/과정/페이지 정보 반영 | 모달 하단 정보 | ✅ |
-
-### 구현 완료
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| **57-A** | 사이드바 해설 뱃지 추가 | ProblemListPanel.tsx | ✅ 완료 |
-| **57-B** | 모달 교재/과정/페이지 정보 표시 | ProblemModal.tsx + API | ✅ 완료 |
-| **57-C** | 문제-해설 연결 API 추가 | export.py | ✅ 완료 |
-| **57-D** | 모달 해설 이미지 통합 표시 | ProblemModal.tsx | ✅ 완료 |
+| 에러 | 테이블 | 해결 방법 |
+|------|--------|----------|
+| 404 | holidays | 테이블 생성 + 2025년 공휴일 17개 삽입 |
+| 404 | holiday_exceptions | 테이블 생성 |
+| 404 | homework_submissions | VIEW 생성 (submissions 테이블 참조) |
+| 400 | attendance | `notes` → `note` 수정 |
+| 400 | homework | homework_submissions VIEW로 해결 |
 
 ---
 
-### Step 57-A: 사이드바 해설 뱃지
+## 완료: Stage 37 - 학생 상세 페이지 Supabase 연결 ✅
 
-**현재**:
-```
-✓ 베이직쎈 · 10p · 4번
-   → 해설 연결됨 (작은 텍스트)
-```
+> [상세 개발 계획](459_mock_data_supabase_connection_plan.md)
+> **완료일**: 2026-01-04
 
-**목표**:
-```
-✓ 베이직쎈 · 10p · 4번 [해설]  ← 뱃지
-```
+### 구현 내용
+- StudentDetailPage의 Mock 데이터를 Supabase 실데이터로 교체
+- 학생 정보, 성적 기록, 활동 내역, 메모 기능 연결
 
-**수정 위치**: `ProblemListPanel.tsx` - `LinkedProblemItem` 컴포넌트
+### Phase 목록
 
-```typescript
-// 뱃지 추가
-<span className="px-1.5 py-0.5 text-[10px] font-medium bg-toss-blue/10 text-toss-blue rounded">
-  해설
-</span>
-```
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 37-A | 학생 기본 정보 + 통계 연결 (`useStudent`, `useStudentStats`) | ✅ |
+| 37-B | 성적 기록 연결 (`useStudentScores`) | ✅ |
+| 37-C | 활동 내역 연결 (`useStudentActivities`) | ✅ |
+| 37-D | 메모 연결 (`useStudentNotes`, `useAddStudentNote`) | ✅ |
 
----
+### 신규 훅
 
-### Step 57-B: 모달 정보 표시
-
-**현재**:
-```
-교재: -
-과정: -
-페이지: -
-```
-
-**목표**:
-```
-교재: 베이직쎈
-과정: 공통수학1
-페이지: p9
-```
-
-**수정 방안**:
-1. 백엔드: 내보내기 API 응답에 `problemInfo` 포함
-2. 프론트엔드: 모달에서 `problemInfo` 사용
-
-```python
-# export.py - 응답 확장
-return {
-  "image_path": image_path,
-  "problem_info": {
-    "bookName": group.get("problemInfo", {}).get("bookName"),
-    "course": group.get("problemInfo", {}).get("course"),
-    "page": group.get("problemInfo", {}).get("page")
-  }
-}
-```
+| 훅 | 파일 | 설명 |
+|----|------|------|
+| `useStudentStats` | `useStudents.ts` | 학생 통계 (출결률, 숙제률, 점수 추이) |
+| `useStudentScores` | `useStudents.ts` | 학생 성적 시계열 데이터 |
+| `useStudentActivities` | `useStudents.ts` | 학생 활동 내역 (출결+숙제+시험) |
+| `useStudentNotes` | `useStudents.ts` | 학생 메모 조회 |
+| `useAddStudentNote` | `useStudents.ts` | 학생 메모 추가 |
 
 ---
 
-### Step 57-C: 문제-해설 연결 API
+## 완료: Stage 38 - ClassesPage Mock 제거 ✅
 
-**새 엔드포인트**:
-```python
-GET /api/export/problems/{document_id}/{group_id}/with-solution
-Response:
-{
-  "problem": { ... },
-  "solution": {  // nullable
-    "image_url": "...",
-    "document_id": "...",
-    "page_index": 7,
-    "group_id": "..."
-  }
-}
-```
+> [상세 개발 계획](459_mock_data_supabase_connection_plan.md)
+> **완료일**: 2026-01-04
 
-**연결 로직**:
-1. 세션에서 해당 문제의 링크 정보 조회
-2. 링크 있으면 해설 이미지 URL 반환
+### 구현 내용
+- MOCK_CLASSES, MOCK_SESSIONS 상수 제거 (~150줄)
+- classScheduleDates를 Supabase 세션 데이터 기반으로 변경
+- filteredSessions를 Supabase 데이터만 사용하도록 수정
+
+### Phase 목록
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 38-A | classScheduleDates Supabase 연결 | ✅ |
 
 ---
 
-### Step 57-D: 모달 해설 통합 표시
+## 완료: Stage 30 - 공휴일 자동 휴강 시스템 ✅
 
-**목표 UI**:
-```
-┌─────────────────────────────────────────┐
-│  문제 이미지                            │
-│  ┌─────────────────────────────────────┐│
-│  │         문제 이미지                 ││
-│  └─────────────────────────────────────┘│
-│                                         │
-│  연결된 해설 (있는 경우)                │
-│  ┌─────────────────────────────────────┐│
-│  │         해설 이미지                 ││
-│  └─────────────────────────────────────┘│
-│                                         │
-│  교재: 베이직쎈  과정: 공통수학1        │
-│  페이지: p9                             │
-└─────────────────────────────────────────┘
-```
+> [연구 리포트](434_holiday_auto_management_research.md) | [상세 개발 계획](435_holiday_auto_management_development_plan.md)
 
----
+### 목표
+- 한국 공휴일 자동 휴강 처리
+- 공휴일이지만 수업하는 날 예외 관리 (관리자용)
+- 강사/관리자 대시보드에 휴강일 표시
 
-### 권장 진행 순서
+### Phase 목록
 
-```
-1순위: Phase 57-A + 57-B (즉시 가능, 40분)
-       → 위험 없음, 즉시 효과
-
-2순위: Phase 57-C + 57-D (2시간)
-       → 데이터 연결 로직 필요
-```
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 30-A | holidays, holiday_exceptions 테이블 생성 (Migration) | ✅ |
+| 30-B | checkHolidayStatus 함수 (예외 우선 체크) | ✅ |
+| 30-C | useHolidayStatus, useHolidays 훅 | ✅ |
+| 30-D | getHolidayEmoji 유틸리티 (공휴일별 이모지) | ✅ |
+| 30-E | HolidayHeroCard 컴포넌트 | ✅ |
+| 30-F | BackofficeDemo 휴강일 연동 (강사용) | ✅ |
+| 30-G | AdminDashboard 휴강일 표시 (관리자용) | ✅ |
 
 ---
 
-**명령어**: `Phase 57-A/B 진행해줘` 또는 `Phase 57 진행해줘`
+## 완료: Stage 16 - 캘린더 통합 공지사항 (DB 연동) ✅
+
+> [상세 개발 계획](425_stage16_notice_db_development_plan.md)
+
+### 구현 내용
+- `notices` 테이블 생성 + RLS 정책 설정
+- 공지사항 CRUD API (`api/notices.ts`)
+- useAdminNotices, useCreateNotice Supabase 연결
+- useUpdateNotice, useDeleteNotice 훅 추가
+- NoticeItem 수정/삭제 메뉴 추가
+
+### Phase 목록
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 16-A | notices 테이블 생성 (Migration) | ✅ |
+| 16-B | 공지 API 훅 (api/notices.ts) | ✅ |
+| 16-C | useAdminNotices Supabase 연결 | ✅ |
+| 16-D | useCreateNotice Supabase 연결 | ✅ |
+| 16-E | 공지 수정/삭제 기능 추가 | ✅ |
 
 ---
 
-## 완료됨: Phase 58 (모문제 하위문제 크로스 페이지 연결) ✅
+## 완료: Stage 36 - 강사 기록 페이지 Supabase 연결 ✅
 
-> **참조**: [228_crosspage_child_problem_feasibility.md](228_crosspage_child_problem_feasibility.md)
+> [상세 개발 계획](458_records_page_supabase_integration_plan.md)
 
-### 요청 기능
+### 목표
+- 강사용 기록 페이지의 Mock 데이터를 Supabase 실데이터로 교체
+- 진도/숙제/성적 탭 Supabase 연결 (출결은 이미 완료)
 
-모문제의 하위문제가 다음 페이지까지 이어지는 경우 크로스 페이지로 연결
+### Phase 목록
 
-```
-[페이지 N]                      [페이지 N+1]
-┌─────────────────┐            ┌─────────────────┐
-│ 1~5의 모문제     │            │                 │
-├─────────────────┤            │                 │
-│ 1번, 2번, 3번   │            │                 │
-├─────────────────┤            ├─────────────────┤
-│ 5번 (시작)      │───XP연결───│ 5번 (계속)      │
-└─────────────────┘            └─────────────────┘
-```
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 36-A | 진도 탭 Supabase 연결 (`useProgressForTeacherByDate`) | ✅ |
+| 36-B | 숙제 탭 Supabase 연결 (직접 Supabase 쿼리) | ✅ |
+| 36-C | 성적 탭 Supabase 연결 (직접 Supabase 쿼리) | ✅ |
+| 36-D | 테스트 및 디버깅 | ✅ |
 
-**최종 Export 결과**:
-```
-┌─────────────────────────────┐
-│   [모문제 이미지]           │  ← parentGroupId로 합성
-├─────────────────────────────┤
-│   [5번 문제 - 페이지 N]     │  ← crossPageSegments[0]
-├─────────────────────────────┤
-│   [5번 문제 - 페이지 N+1]   │  ← crossPageSegments[1]
-└─────────────────────────────┘
-```
+### 수정 파일
 
-### 현재 상태
-
-| 기능 | 구현 상태 |
+| 파일 | 수정 내용 |
 |------|----------|
-| 모문제-하위문제 (parentGroupId) | ✅ 완료 |
-| 크로스 페이지 (XP + crossPageSegments) | ✅ 완료 |
-| 두 기능 조합 | ⚠️ 백엔드 지원, **프론트엔드 UI 없음** |
-
-### 구현 계획
-
-| 단계 | 내용 | 파일 | 난이도 | 예상 시간 |
-|------|------|------|--------|----------|
-| **58-A** | Export 로직 보완 (다른 페이지 모문제 검색) | export.py | 쉬움 | 30분 |
-| **58-B** | XP 그룹 모문제 선택 UI | GroupPanel.tsx | 쉬움 | 30분 |
-| **58-C** | 미리보기 확인 | - | 쉬움 | 20분 |
-| **58-D** | 테스트 및 검증 | - | 쉬움 | 30분 |
-
-**총 예상 시간**: 2시간
+| `RecordsPage.tsx` | ProgressTab, HomeworkTab, GradeTab Supabase 연결 |
 
 ---
 
-### Step 58-A: Export 로직 보완
+## 완료: Stage 33 - 상담 관리 시스템 ✅
 
-**현재 문제**: 모문제를 같은 페이지에서만 검색
+> [연구 리포트](444_consultation_management_system_research.md) | [상세 개발 계획](445_consultation_management_development_plan.md)
+> 목업: [신규상담](mockups/consultation_new_student.html) | [학생상담](mockups/consultation_existing_student.html)
 
-```python
-# 현재 코드 (export.py)
-for g in groups_data.get("groups", []):
-    if g["id"] == parent_group_id:
-        parent_group = g  # 같은 페이지만!
-        break
-```
+### 목표
+- 관리자 전용 상담 페이지 (신규상담/학생상담)
+- 과목별 반배정 (국영수) - 다중 과목 선택 지원
+- 등원 알림 (담당 선생님 + 과목별 관리자)
+- 캘린더에 등원 예정 표시 (점 + 학생 이름 일부)
 
-**수정 코드**:
-```python
-# Phase 58-A: 다른 페이지 모문제도 검색
-parent_group = None
-parent_page_index = page_index
+### Phase 목록
 
-# 1. 현재 페이지에서 검색
-for g in groups_data.get("groups", []):
-    if g["id"] == parent_group_id:
-        parent_group = g
-        break
-
-# 2. 없으면 이전 페이지들 검색 (XP 그룹의 경우)
-if not parent_group and group.get("column") == "XP":
-    for other_page in range(page_index - 1, -1, -1):
-        other_groups_file = doc_dir / "groups" / f"page_{other_page:04d}_groups.json"
-        if other_groups_file.exists():
-            other_groups = load_json(other_groups_file)
-            for g in other_groups.get("groups", []):
-                if g["id"] == parent_group_id:
-                    parent_group = g
-                    parent_page_index = other_page
-                    break
-            if parent_group:
-                break
-```
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 33-A | DB 마이그레이션 + 타입 (consultations, consultation_subjects, enrollment_notifications) | ✅ |
+| 33-B | API 함수 + 훅 (useConsultations, useSubjectManagers) | ✅ |
+| 33-C | 네비게이션 수정 (상담추가, 출결숨김) | ✅ |
+| 33-D | 신규상담 폼 UI (과목별 반선택) | ✅ |
+| 33-E | 학생상담 UI (기존 학생 검색, 이력) | ✅ |
+| 33-F | 상담 목록 + 상세 모달 | ✅ |
+| 33-G | 과목별 관리자 설정 UI (다중 선택) | ✅ |
+| 33-H | 알림 생성 로직 (즉시 알림) - RPC confirm_enrollment | ✅ |
+| 33-I | Railway Worker 스케줄러 (D-1, D-day) | ✅ |
+| 33-J | 캘린더 등원 표시 | ✅ |
 
 ---
 
-### Step 58-B: XP 그룹 모문제 선택 UI
+## 완료: Stage 32 - 학년 승급 + 반 자동 승급 ✅
 
-**위치**: `GroupPanel.tsx`
+> [연구 리포트](438_class_promotion_with_grade_research.md) | [상세 개발 계획](439_class_promotion_development_plan.md) | [빠른 배정 리포트](440_class_unassigned_quick_assignment_research.md) | [빠른 배정 계획](441_quick_assignment_development_plan.md)
 
-**현재**: XP 그룹에는 모문제 선택 드롭다운이 표시되지 않음
+### 목표
+- 매년 3월 학년 일괄 승급 시 반(class)도 함께 자동 승급
+- "중1 수학 심화" → "중2 수학 심화" 자동 매칭
+- 번호 반(정규1, 정규2)은 수동 배정 필요로 표시
+- 승급 후 반 해제된 학생 빠른 재배정 UI
 
-**수정**: XP 그룹에도 모문제 선택 가능하도록 UI 추가
+### Phase 목록
 
-```typescript
-// GroupPanel.tsx - renderGroupItem
-{/* Phase 58-B: XP 그룹도 모문제 연결 가능 */}
-{!group.isParent && !group.parentGroupId && (
-  <select
-    className="text-xs border rounded px-1 py-0.5"
-    onChange={(e) => onSetParentGroup(group.id, e.target.value)}
-    defaultValue=""
-  >
-    <option value="">모문제 선택...</option>
-    {parentGroups.map((pg) => (
-      <option key={pg.id} value={pg.id}>
-        {pg.problemInfo?.problemNumber || pg.id}
-      </option>
-    ))}
-  </select>
-)}
-```
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 32-A | class_parser.py (반 이름 파싱 유틸) | ✅ |
+| 32-B | /preview/v2 API (반 승급 미리보기) | ✅ |
+| 32-C | /execute/v2 API (반 승급 실행) | ✅ |
+| 32-D | 프론트엔드 V2 타입 + API 함수 | ✅ |
+| 32-E | usePromotionPreviewV2, useExecutePromotionV2 훅 | ✅ |
+| 32-F | OperationsPage V2 UI 적용 | ✅ |
+| 32-G | result step 빠른 배정 링크 | ✅ |
+| 32-H | batch-assign API | ✅ |
+| 32-I | assign step 퀵 배정 UI | ✅ |
 
 ---
 
-### Step 58-C: 미리보기 확인
+## 완료: Stage 31 - 초등부 담임/부담임 시스템 ✅
 
-**테스트 시나리오**:
-1. 페이지 N에서 모문제 생성 (M 키)
-2. 페이지 N에서 하위문제 시작 → 페이지 N+1로 XP 연결 (P 키)
-3. XP 그룹에 모문제 연결 (드롭다운 선택)
-4. 내보내기 후 이미지 확인
+> [연구 리포트](436_elementary_dual_teacher_research.md) | [상세 개발 계획](437_dual_teacher_development_plan.md)
+> **완료일**: 2026-01-04
 
-**예상 결과**: 모문제 + XP 합성 이미지 생성
+### 구현 내용
+- 초등부 반에 담임(월/수/금)과 부담임(화/목) 배정
+- 반관리 페이지에서 담임/부담임 선택 UI
+- 강사 대시보드에서 오늘 요일 기준 담당 수업만 표시
+
+### Phase 목록
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 31-A | classes 테이블 컬럼 추가 (homeroom_teacher_id, assistant_teacher_id) | ✅ |
+| 31-B | TypeScript 타입 업데이트 (ClassData, CreateClassInput) | ✅ |
+| 31-C | API 쿼리 수정 (담임/부담임 조인 추가) | ✅ |
+| 31-D | ClassManagementPage 테이블 UI (초등부: 담임/부담임 컬럼) | ✅ |
+| 31-E | EditClassModal 수정 (초등부: 담임/부담임 선택) | ✅ |
+| 31-F | CreateClassModal 수정 (초등부: 담임/부담임 선택) | ✅ |
+| 31-G | 강사 대시보드 필터링 (요일별 담당 수업) | ✅ |
+
+### 구현된 파일
+- `api/classes.ts`: homeroom_teacher_id, assistant_teacher_id 타입 + 조인 쿼리
+- `CreateClassModal.tsx`, `EditClassModal.tsx`: 초등부 담임/부담임 선택 UI
+- `BackofficeDemo.tsx`: 요일별 담임/부담임 필터링
+- `useWeekData.ts`, `useAttendance.ts`, `useProgress.ts`: 강사 데이터 필터링
 
 ---
 
-### 제약 조건 (단순화)
+## 완료: Stage 29 - 역할 토글 + UI 통합 ✅
 
-| 제약 | 이유 |
+> [연구 리포트](432_role_toggle_unified_ui_research.md) | [상세 개발 계획](433_role_toggle_unified_ui_development_plan.md)
+
+### 목표
+- 관리자가 강사 모드로 전환하여 본인 수업 확인 가능
+- 관리자 모바일 → 강사용 4탭 UI 사용
+- PC/태블릿 헤더에 강사↔관리자 토글
+
+### Phase 목록
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 29-A | viewModeStore 생성 (zustand + localStorage) | ✅ |
+| 29-B | RoleToggle 컴포넌트 | ✅ |
+| 29-C | HomePage 수정 (모바일 분기 제거) | ✅ |
+| 29-D | App.tsx 라우팅 수정 (admin-mobile 숨김) | ✅ |
+| 29-E | AdminResponsivePage + AdminTopNav 조건부 렌더링 | ✅ |
+| 29-F | BackofficeDemo viewMode 연동 | ✅ |
+
+---
+
+## 완료: Stage 28 - 강사 캘린더 중요공지 반응형 표시
+
+> [상세 개발 계획](430_teacher_calendar_notice_display_development_plan.md)
+
+### 목표
+- 강사용 캘린더에 중요공지를 반응형으로 표시
+- **모바일**: 중요공지 점(dot) 표시
+- **태블릿/PC**: 공지 제목 한 줄 표시 (최대 2개, 나머지 +N)
+
+### Phase 목록
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 28-A | WeekCalendarGrid 개선 (태블릿 공지 텍스트 표시) | ✅ |
+| 28-B | MonthlyCalendarModal 반응형 (모바일=점, 태블릿=텍스트) | ✅ |
+| 28-C | DateSelector 중요공지 필터 (선택) | ⬜ |
+
+---
+
+## 완료: Stage 19 - 시험 관리 시스템 ✅
+
+> [연구 리포트](419_exam_management_system_ux_research.md) | [상세 개발 계획](420_exam_management_development_plan.md) | [목업](mockups/exam_management_system.html)
+> **완료일**: 2026-01-04 (Phase 19-H Supabase 연동)
+
+### 구현 내용
+- **시험 생성**: 기본정보 + 문항수 설정
+- **O/X 채점**: 빠른 정오 입력 (키보드 지원)
+- **결과 분석**: 점수 분포, 오답률 TOP 5, 순위
+- **반배정**: 드래그&드롭으로 학생 배정
+- **Supabase 연동**: exams, exam_answers 테이블 생성 및 API 연결
+
+### Phase 목록
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 19-A | 타입 + Mock API + 훅 | ✅ |
+| 19-B | 시험 목록 UI (카드형) | ✅ |
+| 19-C | 시험 생성 모달 | ✅ |
+| 19-D | 성적 입력 UI (O/X 그리드) | ✅ |
+| 19-E | 결과 분석 UI | ✅ |
+| 19-F | 반배정 UI (드래그&드롭) | ✅ |
+| 19-G | 메인 페이지 + 라우팅 | ✅ |
+| 19-H | Supabase 연동 | ✅ |
+
+### 19-H Supabase 연동 상세
+- **테이블 생성**: exams, exam_answers + RLS 정책
+- **API 수정**: api/exams.ts Mock → Supabase 연결
+- **기능**: 시험 CRUD, 답안 저장 (upsert), 통계 계산
+
+---
+
+## 완료: Stage 20 - 월간 캘린더 ✅
+
+> [구현가능성 리포트](421_monthly_calendar_feasibility_report.md) | [상세 개발 계획](422_monthly_calendar_development_plan.md)
+
+### 구현 내용
+- "오늘" 버튼 → "월간" 버튼으로 변경
+- 드롭다운 방식으로 월간 캘린더 표시 (42일 그리드)
+- 반응형 공지 표시 (모바일: 점, PC: 텍스트)
+- 날짜 선택 시 해당 주로 자동 이동 + 드롭다운 닫기
+- 폰트 스타일 변형 2 적용 (18px/600, 셀 64px)
+
+### Phase 목록
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 20-A | 월간 날짜 유틸리티 (types, weekUtils) | ✅ |
+| 20-B | MonthlyCalendarGrid 컴포넌트 | ✅ |
+| 20-C | 주간 공지 데이터 훅 확장 (useMonthlyNotices) | ✅ |
+| 20-D | WeeklyCalendar 통합 | ✅ |
+| 20-E | 폰트 스타일 변형 2 적용 | ✅ |
+
+---
+
+## 최근 완료: Stage 15 - 날짜 선택 기반 수업 조회 ✅
+
+> [상세 개발 계획](403_selected_date_rotation_development_plan.md) | [버그 분석](402_selected_date_rotation_bug_report.md)
+
+### 구현 내용
+- 캘린더 날짜 클릭 시 해당 날짜의 수업 표시
+- 정규 수업 + 순환수업 모두 선택된 날짜 기준 조회
+- 순환수업 주차 계산도 선택된 날짜 기준
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 15-1 | rotationUtils: getRotationForDate 추가 | ✅ |
+| 15-2 | useAdminData: useClassesByDate 추가 | ✅ |
+| 15-3 | useAdminData: useTodayAllClasses 수정 | ✅ |
+| 15-4 | AdminDashboard: selectedDate 전달 | ✅ |
+| 15-5 | 빌드 테스트 및 검증 | ✅ |
+
+---
+
+## 이전 완료: Stage 14 - 순환수업-대시보드 통합 ✅
+
+> [상세 개발 계획](401_rotation_dashboard_integration_plan.md)
+
+### 구현 내용
+- 순환수업을 관리자 대시보드 "오늘 수업 일정"에 자동 표시
+- 정규 수업과 순환수업 시각적 구분 (보라색 배경)
+- 주간 캘린더에 순환수업 요일 마커 표시
+- 휴일 등록된 날짜는 취소선으로 표시
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 14-1 | 타입 정의 (DashboardClass) | ✅ |
+| 14-2 | 훅 확장 (useTodayAllClasses) | ✅ |
+| 14-3 | UI 컴포넌트 수정 (AdminDashboard) | ✅ |
+| 14-4 | 캘린더 마커 추가 (CalendarDayCell) | ✅ |
+| 14-5 | 휴일 표시 최적화 | ✅ |
+
+---
+
+## 이전 완료: Stage 13 - PC 대시보드 캘린더 UI ✅
+
+> [상세 개발 계획](400_pc_calendar_dashboard_development_plan.md) | [v5 목업](mockups/admin_pc_calendar_dashboard_v5_toss.html)
+
+### 구현 내용
+- PC 관리자 대시보드에 주간 캘린더 추가
+- 캘린더에 공지사항 표시 (PC: 텍스트, 모바일: 점)
+- Toss UX 철학 적용 (시각적 단순화, Progressive Disclosure, 속도감)
+- KPI 카드 v5 스타일로 간소화
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 13-1 | 타입 및 유틸리티 정의 | ✅ |
+| 13-2 | 공지사항 데이터 훅 (useAdminNotices) | ✅ |
+| 13-3 | WeeklyCalendar 컴포넌트 | ✅ |
+| 13-4 | AdminDashboard 통합 + 날짜 연동 | ✅ |
+| 13-5 | KPI 카드 간소화 (v5 스타일) | ✅ |
+| 13-6 | 모바일 캘린더 점 표시 | ✅ |
+
+---
+
+## 예정 작업
+
+### Stage 5: Timetable Studio 재설계
+
+> [상세 개발 계획](426_timetable_studio_redesign_development_plan.md)
+
+| 항목 | 내용 |
 |------|------|
-| 모문제는 XP 소스 페이지 또는 이전 페이지에 있어야 함 | 복잡도 감소 |
-| 모문제가 XP 타겟 페이지에 있는 경우 미지원 | 드문 케이스 |
+| **목적** | Mock UI를 토스 스타일 구조화된 시간표 편집기로 재설계 |
+| **컨셉** | FigmaJam 무한 캔버스 → 구조화된 시간표 그리드 |
+| **핵심 기능** | 드래그&드롭 슬롯 배정, 시나리오 비교 |
+| **플랫폼** | PC + 태블릿 (모바일은 읽기 전용) |
+
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 5-A | 기반 설정 (테이블, 타입, API, 훅) | ✅ |
+| 5-B | 시나리오 관리 UI (목록, 생성, 탭) | ✅ |
+| 5-C | 단일 시간표 그리드 (시간축, 요일, 셀) | ✅ |
+| 5-D | 반/강사 팔레트 (필터, 드래그 아이템) | ✅ |
+| 5-E | 할당 인터랙션 (클릭 배정, 삭제) | ✅ |
+| 5-F | 다중 시간표 (탭/카드 전환) | ✅ |
+| 5-G | 비교 뷰 (Split, 차이점 하이라이트) | ✅ |
+| 5-H | 반응형 최적화 (태블릿/모바일) | ✅ |
+| 5-I | 애니메이션 + 폴리시 | ✅ |
 
 ---
 
-### 권장 진행 순서
+### Stage 8-6/7: RLS 정책 (완료)
 
-```
-1순위: Phase 58-A (Export 로직) + 58-B (UI)
-       → 핵심 기능 완성
+| Phase | 작업 | 상태 |
+|-------|------|------|
+| 8-6 | 강사-수업 연결 (teacher_classes) | ✅ (classes.teacher_id로 구현) |
+| 8-7 | 데이터 필터링 RLS (강사는 본인 학생만) | ✅ (pg_policies 확인됨) |
 
-2순위: Phase 58-C + 58-D (테스트)
-       → 검증 및 안정화
-```
-
----
-
-**명령어**: `Phase 58 진행해줘`
+**구현된 RLS 정책:**
+- `teachers_own_classes_select`: 강사는 본인 반만 조회
+- `teachers_own_students_select`: 강사는 본인 학생만 조회
+- `teachers_own_enrollments_select`: 강사는 본인 등록정보만 조회
 
 ---
 
-## 완료된 작업: Phase 56-S (방어적 코딩 - undefined 에러 수정) ✅
-
-> **참조**: [226_undefined_length_error_report.md](226_undefined_length_error_report.md)
-
-### 문제 분석
-
-**에러 메시지**:
-```
-TypeError: Cannot read properties of undefined (reading 'length')
-at UnifiedWorkPage (http://localhost:5173/src/pages/UnifiedWorkPage.tsx?t=1765065416676:35:25)
-```
-
-**원인**: `currentSession.problems.length` 접근 시 `problems`가 `undefined`일 수 있음
-
-**발생 위치**:
-| 라인 | 코드 | Null 체크 |
-|------|------|-----------|
-| 154 | `currentSession?.problems.length` | ⚠️ 부분적 |
-| 155 | `currentSession?.links.length` | ⚠️ 부분적 |
-| **454** | `currentSession.problems.length` | ❌ **없음** |
-| **519** | `currentSession.problems.length` | ❌ **없음** |
-| 369, 374, 379, 384, 616 | `unlinkedProblems.length` | ❌ 없음 |
-
-### 구현 계획
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| 56-S-1 | 조기 반환 조건 강화 (Line 412) | UnifiedWorkPage.tsx | ✅ 완료 |
-| 56-S-2 | 테스트 및 검증 | - | ✅ 완료 |
-
----
-
-### Step 56-S-1: 조기 반환 조건 강화
-
-**현재 코드** (Line 412):
-```typescript
-if (error || !currentSession) {
-  return (...);
-}
-```
-
-**수정 코드**:
-```typescript
-// Phase 56-S: 방어적 코딩 - problems/links undefined 체크 추가
-if (error || !currentSession || !currentSession.problems || !currentSession.links) {
-  return (
-    <div className="flex h-full items-center justify-center">
-      <div className="text-center max-w-md">
-        <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          세션을 찾을 수 없습니다
-        </h2>
-        <p className="text-gray-600 mb-6">
-          {error || '세션 데이터가 유효하지 않습니다'}
-        </p>
-        <Button variant="solid" onClick={() => navigate('/')}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          홈으로 돌아가기
-        </Button>
-      </div>
-    </div>
-  );
-}
-```
-
-**효과**:
-- Line 454, 519의 `currentSession.problems.length` 접근이 안전해짐
-- API 응답 불일치나 HMR 핫 리로드 시 상태 불일치 방지
-
----
-
-### Step 56-S-2: 테스트 케이스
-
-| 테스트 | 예상 결과 |
-|--------|----------|
-| 정상 세션 로드 | 문제 목록 정상 표시 |
-| 세션 로드 중 HMR | 에러 페이지 대신 로딩 또는 안전한 상태 |
-| 잘못된 세션 ID | "세션을 찾을 수 없습니다" 표시 |
-| API 응답 불완전 | "세션 데이터가 유효하지 않습니다" 표시 |
-
----
-
-**명령어**: `Phase 56-S 진행해줘`
-
----
-
-## 완료된 작업: Phase 56-R (해설 삭제 시 자동 연결 해제) ✅
-
-> **참조**: [225_solution_delete_auto_unlink_feasibility.md](225_solution_delete_auto_unlink_feasibility.md)
-
-### 문제 분석
-
-**현재 상황**:
-```
-해설 탭에서 그룹 삭제 시:
-┌─────────────┐    ┌─────────────┐
-│ Problem A   │───►│ Solution X  │  (링크 존재)
-└─────────────┘    └─────────────┘
-                          ↓
-                   그룹 삭제 (groups.json에서)
-                          ↓
-┌─────────────┐    ┌─────────────┐
-│ Problem A   │───►│ Solution X  │  (고아 링크! 😱)
-└─────────────┘    └─────────────┘
-                   (실제 그룹 없음)
-```
-
-**요청**:
-1. 해설 그룹 삭제 시 연결된 문제 자동으로 미연결 상태로 복귀
-2. 고아 링크(orphan link) 삭제
-
-### 구현 계획
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| 56-R-1 | removeLinkBySolutionGroupId 스토어 액션 추가 | workSessionStore.ts | ✅ 완료 |
-| 56-R-2 | handleGroupDeleted 해설 탭 처리 추가 | UnifiedWorkPage.tsx | ✅ 완료 |
-| 56-R-3 | 테스트 및 검증 | - | ✅ 완료 |
-
----
-
-### Step 56-R-1: removeLinkBySolutionGroupId 스토어 액션
-
-**위치**: `workSessionStore.ts`
-
-**구현**:
-```typescript
-// 해설 그룹 ID로 연결 찾아서 삭제
-removeLinkBySolutionGroupId: async (solutionGroupId: string) => {
-  const { currentSession } = get();
-  if (!currentSession) return null;
-
-  // 해설 그룹 ID로 연결 찾기 (1:N 가능성 고려)
-  const linksToRemove = currentSession.links.filter(
-    l => l.solutionGroupId === solutionGroupId
-  );
-
-  if (linksToRemove.length === 0) {
-    console.log('[Phase 56-R] No links found for solution:', solutionGroupId);
-    return [];
-  }
-
-  // 각 연결 삭제
-  const unlinkedProblems: Array<{ groupId: string; problemNumber: string }> = [];
-  for (const link of linksToRemove) {
-    try {
-      await api.deleteSessionLink(currentSession.sessionId, link.problemGroupId);
-      const problem = currentSession.problems.find(p => p.groupId === link.problemGroupId);
-      if (problem) {
-        unlinkedProblems.push({
-          groupId: link.problemGroupId,
-          problemNumber: problem.problemNumber,
-        });
-      }
-    } catch (error) {
-      console.error('[Phase 56-R] Failed to remove link:', link.problemGroupId, error);
-    }
-  }
-
-  // 세션 갱신
-  const updated = await api.getWorkSession(currentSession.sessionId);
-  set({ currentSession: updated });
-
-  console.log('[Phase 56-R] Unlinked problems:', unlinkedProblems);
-  return unlinkedProblems;
-},
-```
-
-**인터페이스 추가**:
-```typescript
-// 해설 삭제로 인한 연결 해제
-removeLinkBySolutionGroupId: (solutionGroupId: string) => Promise<
-  Array<{ groupId: string; problemNumber: string }> | null
->;
-```
-
----
-
-### Step 56-R-2: handleGroupDeleted 해설 탭 처리
-
-**위치**: `UnifiedWorkPage.tsx` (라인 178-190)
-
-**현재 코드**:
-```typescript
-const handleGroupDeleted = useCallback(async (groupId: string, pageIndex: number) => {
-  console.log('[Phase 39] Group deleted:', groupId, 'page:', pageIndex);
-
-  if (activeTab === 'problem') {
-    try {
-      await removeProblem(groupId);
-      showToast('문제가 삭제되었습니다', 'info');
-    } catch (error) {
-      console.error('[Phase 39] Failed to remove problem:', error);
-    }
-  }
-  // 해설 탭에서 삭제 시: 연결만 끊어지면 되는데, 이미 연결이 문제 기준이므로 추가 처리 불필요
-}, [activeTab, removeProblem, showToast]);
-```
-
-**수정 코드**:
-```typescript
-const handleGroupDeleted = useCallback(async (groupId: string, pageIndex: number) => {
-  console.log('[Phase 39] Group deleted:', groupId, 'page:', pageIndex);
-
-  if (activeTab === 'problem') {
-    try {
-      await removeProblem(groupId);
-      showToast('문제가 삭제되었습니다', 'info');
-    } catch (error) {
-      console.error('[Phase 39] Failed to remove problem:', error);
-    }
-  } else if (activeTab === 'solution') {
-    // Phase 56-R: 해설 삭제 시 연결 자동 해제
-    try {
-      const unlinkedProblems = await removeLinkBySolutionGroupId(groupId);
-      if (unlinkedProblems && unlinkedProblems.length > 0) {
-        const names = unlinkedProblems.map(p => p.problemNumber).join(', ');
-        showToast(`${names}번 연결이 해제되었습니다`, 'info');
-
-        // 첫 번째 해제된 문제 자동 선택 (빠른 재연결 가능)
-        selectProblem(unlinkedProblems[0].groupId);
-      }
-    } catch (error) {
-      console.error('[Phase 56-R] Failed to unlink:', error);
-    }
-  }
-}, [activeTab, removeProblem, removeLinkBySolutionGroupId, selectProblem, showToast]);
-```
-
----
-
-### Step 56-R-3: 테스트 케이스
-
-| 테스트 | 예상 결과 |
-|--------|----------|
-| 연결된 해설 삭제 | 문제 연결 해제 + Toast + 문제 자동 선택 |
-| 연결 없는 해설 삭제 | 아무 일 없음 |
-| 1:N (동일 해설 여러 문제) | 모든 문제 연결 해제 |
-| 삭제 후 미연결 목록 확인 | 해제된 문제가 미연결 목록에 표시 |
-
----
-
-**예상 시간**: 25분
-
----
-
-## 완료된 작업: Phase 56-M (모문제 미연결 목록 제외) ✅
-
-### 문제 분석
-> **참조**: [223_parent_problem_cleanup_options.md](223_parent_problem_cleanup_options.md)
-
-- **증상**: 미연결 문제 목록에 "(모문제)번" 항목들 표시됨
-- **원인**: 모문제는 해설 연결이 불필요한데 미연결 목록에 표시됨
-- **영향**: 114개의 불필요한 항목이 사이드바 표시
-
-### 구현 완료
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| 56-M-1 | ProblemReference에 isParent 필드 추가 | work_session.py | ✅ 완료 |
-| 56-M-2 | sync_manager에서 isParent 동기화 | sync_manager.py | ✅ 완료 |
-| 56-M-3 | getUnlinkedProblems에서 isParent 필터링 | workSessionStore.ts | ✅ 완료 |
-
----
-
-## 완료된 작업: Phase 56-N/O/P (모문제 정리 기능) ✅
-
-### 해결된 문제
-> **참조**: [223_parent_problem_cleanup_options.md](223_parent_problem_cleanup_options.md)
-
-- **문제**: 기존 세션 데이터에는 isParent 필드가 없음
-- **증상**: "(모문제)번" 항목들이 미연결 목록에 표시됨
-- **해결**: 3단계 정리 기능 구현 완료
-
-### Phase 56-N: displayName 패턴 필터링 (즉시, 5분)
-
-**목표**: "(모문제)" 패턴으로 프론트엔드에서 추가 필터링
-
-```typescript
-// workSessionStore.ts 수정
-getUnlinkedProblems: () => {
-  const { currentSession } = get();
-  if (!currentSession) return [];
-  const linkedIds = new Set(currentSession.links.map((l) => l.problemGroupId));
-  return currentSession.problems.filter((p) =>
-    !linkedIds.has(p.groupId) &&
-    !p.isParent &&
-    // Phase 56-N: displayName 패턴으로 추가 필터링
-    !p.displayName?.includes('(모문제)') &&
-    !p.problemNumber?.includes('모문제')
-  );
-},
-```
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| 56-N-1 | displayName "(모문제)" 패턴 필터링 | workSessionStore.ts | ✅ 완료 |
-
-**효과**: 즉시 화면에서 숨김 (데이터는 유지)
-
----
-
-### Phase 56-O: 재동기화 버튼 추가 (단기, 30분)
-
-**목표**: 사이드바에 🔄 버튼 추가하여 isParent 필드 갱신
-
-**UI 위치**:
-```
-┌─────────────────────────┐
-│ 미연결 문제    114  🔄  │  ← 클릭 시 재동기화
-├─────────────────────────┤
-```
-
-**API 추가**:
-```python
-# work_sessions.py
-@router.post("/{session_id}/sync-parent-flags")
-async def sync_parent_flags(session_id: str):
-    """
-    세션의 모든 problems에 대해 groups.json에서 isParent 읽어서 업데이트
-    """
-    # 1. 세션 로드
-    # 2. 각 problem의 documentId, pageIndex로 groups.json 읽기
-    # 3. isParent 필드 업데이트
-    # 4. 세션 저장
-```
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| 56-O-1 | sync-parent-flags API 엔드포인트 추가 | work_sessions.py | ✅ 완료 |
-| 56-O-2 | API 클라이언트 추가 | client.ts, workSessionStore.ts | ✅ 완료 |
-| 56-O-3 | 사이드바에 🔄 버튼 추가 | ProblemListPanel.tsx | ✅ 완료 |
-
-**효과**: 사용자가 수동으로 데이터 정리 가능
-
----
-
-### Phase 56-P: 자동 백그라운드 동기화 (장기, 1시간)
-
-**목표**: 세션 로드 시 자동으로 isParent 동기화
-
-```typescript
-// workSessionStore.ts - loadSession 수정
-loadSession: async (sessionId: string) => {
-  set({ isLoading: true });
-  try {
-    const session = await api.getWorkSession(sessionId);
-
-    // Phase 56-P: 자동으로 isParent 동기화
-    await api.syncParentFlags(sessionId);
-    const refreshedSession = await api.getWorkSession(sessionId);
-
-    set({ currentSession: refreshedSession, error: null });
-  } finally {
-    set({ isLoading: false });
-  }
-},
-```
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| 56-P-1 | loadSession에서 자동 동기화 호출 | workSessionStore.ts | ✅ 완료 |
-| 56-P-2 | 성능 최적화 (변경사항 있을 때만 저장) | work_sessions.py | ✅ 완료 |
-
-**효과**: 사용자 개입 없이 완벽한 UX
-
----
-
-## 완료된 작업: Phase 56-Q (다음 문제 자동 선택 버그 수정) ✅
-
-> **참조**: [224_auto_next_problem_bug_report.md](224_auto_next_problem_bug_report.md)
-
-### 문제
-- **증상**: 문제-해설 연결 후 **다음 문제가 아닌 첫 번째 문제**로 이동
-- **원인**: `selectNextUnlinkedProblem()`에서 연결 완료된 문제를 찾지 못해 index=-1
-
-### 버그 원인 분석
-```
-호출 순서:
-┌──────────────────────────────────────────────────────────────┐
-│ 1. createLink() 호출                                         │
-│    → links에 새 연결 추가됨                                   │
-│    → selectedProblemId는 연결된 문제 ID 유지                   │
-├──────────────────────────────────────────────────────────────┤
-│ 2. selectNextUnlinkedProblem() 호출                           │
-│    → unlinked 배열에서 현재 문제 검색                          │
-│    → findIndex() = -1 (❌ 이미 연결되어 못 찾음!)              │
-│    → nextIndex = 0 (항상 첫 번째로 이동)                       │
-└──────────────────────────────────────────────────────────────┘
-```
-
-### 수정 계획
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| 56-Q-1 | selectNextUnlinkedProblem 로직 수정 | workSessionStore.ts | ✅ 완료 |
-| 56-Q-2 | Phase 56-M/N 필터링 추가 | workSessionStore.ts | ✅ 완료 |
-| 56-Q-3 | 테스트 및 검증 | - | ✅ 완료 |
-
----
-
-### Step 56-Q-1: selectNextUnlinkedProblem 로직 수정
-
-**문제**: 연결 후 `unlinked` 배열에서 현재 문제를 찾지 못함
-
-**해결**: 전체 `problems` 배열에서 현재 위치 기준으로 다음 미연결 문제 찾기
-
-```typescript
-// workSessionStore.ts - selectNextUnlinkedProblem 수정
-selectNextUnlinkedProblem: () => {
-  const { currentSession, selectedProblemId } = get();
-  if (!currentSession) return;
-
-  const linkedIds = new Set(currentSession.links.map((l) => l.problemGroupId));
-
-  // Phase 56-Q: 유효한 문제 판별 함수 (모문제 제외)
-  const isValidProblem = (p: ProblemReference) =>
-    !linkedIds.has(p.groupId) &&
-    !p.isParent &&
-    !p.displayName?.includes('(모문제)') &&
-    !p.problemNumber?.includes('모문제');
-
-  const allProblems = currentSession.problems;
-
-  // 전체 배열에서 현재 위치 찾기 (연결된 문제도 찾을 수 있음)
-  const currentIndex = allProblems.findIndex((p) => p.groupId === selectedProblemId);
-
-  if (currentIndex === -1) {
-    // 현재 문제를 못 찾으면 첫 번째 미연결로
-    const first = allProblems.find(isValidProblem);
-    set({ selectedProblemId: first?.groupId || null });
-    return;
-  }
-
-  // 현재 위치 이후에서 첫 번째 미연결 문제 찾기
-  for (let i = currentIndex + 1; i < allProblems.length; i++) {
-    if (isValidProblem(allProblems[i])) {
-      set({ selectedProblemId: allProblems[i].groupId });
-      console.log('[Phase 56-Q] Next problem:', allProblems[i].problemNumber);
-      return;
-    }
-  }
-
-  // 끝까지 못 찾으면 처음부터 검색 (순환)
-  for (let i = 0; i < currentIndex; i++) {
-    if (isValidProblem(allProblems[i])) {
-      set({ selectedProblemId: allProblems[i].groupId });
-      console.log('[Phase 56-Q] Next problem (wrapped):', allProblems[i].problemNumber);
-      return;
-    }
-  }
-
-  // 모든 문제가 연결됨
-  set({ selectedProblemId: null });
-  console.log('[Phase 56-Q] All problems linked!');
-},
-```
-
----
-
-### Step 56-Q-2: Phase 56-M/N 필터링 통합
-
-**문제**: `selectNextUnlinkedProblem`에서 모문제 필터링 누락
-
-**해결**: `isValidProblem` 헬퍼 함수로 필터링 로직 통합
-
-이미 Step 56-Q-1 코드에 포함됨:
-```typescript
-const isValidProblem = (p: ProblemReference) =>
-  !linkedIds.has(p.groupId) &&
-  !p.isParent &&                              // Phase 56-M
-  !p.displayName?.includes('(모문제)') &&      // Phase 56-N
-  !p.problemNumber?.includes('모문제');        // Phase 56-N
-```
-
----
-
-### Step 56-Q-3: 테스트 케이스
-
-| 테스트 | 예상 결과 |
-|--------|----------|
-| 중간 문제(10번) 연결 | 11번으로 이동 (다음 미연결) |
-| 마지막 문제 연결 | 첫 번째 미연결로 순환 |
-| 모문제 다음 문제 연결 | 모문제 건너뛰고 다음으로 |
-| 모든 문제 연결 | selectedProblemId = null |
-
----
-
-**예상 시간**: 20분
-
----
-
-## 완료된 작업: Phase 56-L (자동 내보내기 안정화) ✅
-
-### 문제 분석
-> **참조**: [221_auto_export_failure_analysis.md](221_auto_export_failure_analysis.md)
-
-- **증상**: 가끔 "자동 등록에 실패했습니다" 토스트 표시
-- **원인**: `saveImmediately()`와 `exportGroup()` API 호출 사이의 Race Condition
-- **영향**: 그룹 데이터는 보존됨, 이미지만 미생성
-
-### 구현 완료
-
-| 단계 | 내용 | 파일 | 상태 |
-|------|------|------|------|
-| 56-L-1 | 저장 후 100ms 지연 추가 | PageViewer.tsx | ✅ 완료 |
-| 56-L-2 | 재시도 로직 추가 (3회, 지수 백오프) | PageViewer.tsx | ✅ 완료 |
-| 56-L-3 | 에러 메시지 개선 (404 구분) | PageViewer.tsx | ✅ 완료 |
-
-### 상세 구현 계획
-
-#### Step 56-L-1: 저장 후 지연 추가
-```typescript
-// PageViewer.tsx handleCreateGroup 수정 (라인 786-788)
-try {
-  await saveImmediately(updatedGroups, currentPage);
-
-  // Phase 56-L: 파일 시스템 반영 대기 (100ms)
-  await new Promise(resolve => setTimeout(resolve, 100));
-
-  await api.exportGroup(documentId, currentPage, newGroupId);
-  // ...
-}
-```
-
-#### Step 56-L-2: 재시도 로직 (선택)
-```typescript
-// client.ts - exportWithRetry 함수 추가
-const exportWithRetry = async (
-  documentId: string,
-  page: number,
-  groupId: string,
-  maxRetries = 3
-) => {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await api.exportGroup(documentId, page, groupId);
-    } catch (error) {
-      if (i < maxRetries - 1) {
-        await new Promise(r => setTimeout(r, 200 * (i + 1)));
-      } else {
-        throw error;
-      }
-    }
-  }
-};
-```
-
-#### Step 56-L-3: 에러 메시지 개선
-```typescript
-// PageViewer.tsx catch 블록 수정 (라인 809-813)
-} catch (error) {
-  console.error('[Phase 33-C] Auto-export failed:', error);
-
-  // Phase 56-L: 구체적인 에러 메시지
-  const errorMessage = error.response?.status === 404
-    ? '그룹 저장 지연으로 실패했습니다. 잠시 후 다시 시도해주세요.'
-    : '자동 등록에 실패했습니다. 수동으로 확정해주세요.';
-
-  showToast(errorMessage, { type: 'warning' });
-}
-```
-
----
-
-## 진행 예정: Phase 59-61 (안정성 개선)
-
-> **리뷰 보고서**: [230_uiux_stability_comprehensive_review.md](230_uiux_stability_comprehensive_review.md)
-> **상세 계획**: [231_stability_improvement_development_plan.md](231_stability_improvement_development_plan.md)
-
-### Phase 59: CRITICAL 이슈 해결 (2.5시간)
-
-| 단계 | 내용 | 파일 | 예상 시간 |
-|------|------|------|----------|
-| **59-A** | Race Condition 수정 (페이지 전환 시) | PageViewer.tsx | 1시간 |
-| **59-B** | 동기화 검증 API | work_sessions.py | 1시간 |
-| **59-C** | API 타임아웃 추가 | api/client.ts | 30분 |
-
-### Phase 60: HIGH 이슈 해결 (4시간)
-
-| 단계 | 내용 | 파일 | 예상 시간 |
-|------|------|------|----------|
-| **60-A** | 이미지 로드 취소 처리 | PageCanvas.tsx | 30분 |
-| **60-B** | 접근성 개선 (aria-label) | 전체 버튼/모달 | 2시간 |
-| **60-C** | Optimistic Update | 그룹 CRUD | 1시간 |
-| **60-D** | 페이지 이탈 방지 | PageViewer.tsx | 30분 |
-
-### Phase 61: MEDIUM 이슈 해결 (6시간)
-
-| 단계 | 내용 | 파일 | 예상 시간 |
-|------|------|------|----------|
-| **61-A** | PageViewer 컴포넌트 분리 | PageViewer.tsx → 5개 파일 | 3시간 |
-| **61-B** | Toast 메시지 표준화 | 전체 | 1시간 |
-| **61-C** | 상수 파일 추출 | 전체 | 1시간 |
-| **61-D** | ErrorBoundary 추가 | App.tsx | 1시간 |
-
----
-
-**명령어**: `Phase 59 진행해줘` 또는 `Phase 59-A 진행해줘`
-
----
-
-## 🚀 진행 예정: Phase 62 (코드 품질 개선)
-
-> **기반**: 2025-12-07 UI/UX 및 안정성 검토 결과
-> **상세 계획**: [232_phase62cd_file_separation_plan.md](232_phase62cd_file_separation_plan.md)
-
-### ✅ Phase 62-A: TypeScript 에러 수정 완료
-
-**결과**: 50개 → 0개 (전체 수정 완료)
-
----
-
-### ✅ Phase 62-B: 색상 통일 완료
-
-**결과**: `gray-` → `grey-` (63개 파일, ~1,090개 수정)
-
----
-
-### ✅ Phase 62-C: PageViewer 추가 분리 완료
-
-**결과**: 3개 훅 생성 완료 (빌드 테스트 통과)
-
-| 파일 | 역할 | 줄 수 |
-|------|------|-------|
-| `usePageViewerKeyboard.ts` | 키보드 단축키 (Ctrl+S, Arrow, G, M, L 등) | ~300줄 |
-| `usePageViewerCrossPage.ts` | 크로스페이지 그룹 생성 로직 | ~270줄 |
-| `usePageViewerGroups.ts` | 그룹 CRUD (생성/삭제/수정/확정) | ~300줄 |
-| `hooks/index.ts` | 훅 export 통합 | ~25줄 |
-
-> **참조**: [232_phase62cd_file_separation_plan.md](232_phase62cd_file_separation_plan.md)
-
----
-
-### ✅ Phase 62-D: GroupPanel 분리 완료
-
-**결과**: 2개 컴포넌트 생성 완료 (빌드 테스트 통과)
-
-| 파일 | 역할 | 줄 수 |
-|------|------|-------|
-| `GroupEditForm.tsx` | 문항 정보 편집 폼 | ~140줄 |
-| `GroupCard.tsx` | 그룹 카드 표시 컴포넌트 | ~290줄 |
-| `group/index.ts` | 컴포넌트 export 통합 | ~12줄 |
-
----
-
-### 권장 진행 순서
-
-```
-1순위: Phase 62-A (TypeScript 에러) - 30분
-       → 빌드 안정성
-
-2순위: Phase 62-B (색상 통일) - 15분
-       → 디자인 일관성
-
-3순위: Phase 62-C/D (분리) - 3시간
-       → 필요 시 진행
-```
-
----
-
-**명령어**: `Phase 62 진행해줘` 또는 `Phase 62-A 진행해줘`
-
----
-
-## ✅ 완료: Phase 63 (문제 그룹 연결 표시 수정)
-
-> **발견일**: 2025-12-07
-> **원인 분석**: 리포트 참조
-
-### 문제 현상
-
-문제 문서 페이지에서 사이드바에 **1번 문제만** 연결 배지가 표시되고, **2~12번 문제는** 연결 배지 미표시
-
-### 원인 분석
-
-```
-[데이터 저장 위치]
-session.links[]           ← 모든 연결 정보 저장됨 (12개 모두 존재) ✅
-문제 groups.json          ← link 필드 없음 ❌
-해설 groups.json          ← link 필드 동기화됨 ✅
-
-[동기화 프로세스]
-sync_links_to_groups()    → 해설 문서만 동기화
-                          → 문제 문서 동기화 없음
-
-[UI 표시]
-GroupCard → group.link    → undefined → 배지 미표시
-```
-
-### 해결 방안
-
-| 옵션 | 방식 | 장점 | 단점 |
-|------|------|------|------|
-| **A** | 백엔드에서 문제 groups.json에도 link 동기화 | 데이터 영구 저장 | 데이터 중복, SSOT 위반 |
-| **B (권장)** | 프론트엔드에서 session.links로 실시간 enrichment | SSOT 유지, 간단 | 세션 없으면 미표시 |
-
-### 구현 계획 (옵션 B)
-
-| 단계 | 내용 | 파일 | 예상 시간 |
-|------|------|------|----------|
-| **63-A** | enrichGroupsWithLinks 유틸 함수 생성 | utils/groupUtils.ts | 20분 |
-| **63-B** | PageViewer에서 그룹 enrichment 적용 | PageViewer.tsx | 15분 |
-| **63-C** | 테스트 및 검증 | - | 10분 |
-
-**총 예상 시간**: 45분
-
----
-
-### Step 63-A: enrichGroupsWithLinks 유틸 함수
-
-```typescript
-// utils/groupUtils.ts
-import type { ProblemGroup, WorkSession } from '../api/client';
-
-export function enrichGroupsWithLinks(
-  groups: ProblemGroup[],
-  session: WorkSession | null
-): ProblemGroup[] {
-  if (!session?.links) return groups;
-
-  // problemGroupId → link 맵핑
-  const linkMap = new Map(
-    session.links.map(l => [l.problemGroupId, {
-      linkType: 'problem' as const,
-      linkedGroupId: l.solutionGroupId,
-      linkedDocumentId: l.solutionDocumentId,
-      linkedPageIndex: l.solutionPageIndex,
-      linkedName: `해설 ${l.solutionGroupId}`,
-      linkedAt: l.linkedAt,
-    }])
-  );
-
-  return groups.map(g => ({
-    ...g,
-    link: linkMap.get(g.id) || g.link,
-  }));
-}
-```
-
----
-
-### Step 63-B: PageViewer 적용
-
-```typescript
-// PageViewer.tsx
-import { enrichGroupsWithLinks } from '../utils/groupUtils';
-
-// localGroups를 enriched 버전으로 전달
-const enrichedGroups = useMemo(() =>
-  enrichGroupsWithLinks(localGroups, currentSession),
-  [localGroups, currentSession]
-);
-
-// GroupPanel에 전달
-<GroupPanel groups={enrichedGroups} ... />
-```
-
----
-
-**명령어**: `Phase 63 진행해줘`
-
----
-
-## 백로그 (우선순위순)
-
-### 완료됨 (2025-12-07)
-| ID | 작업 | 설명 | 결과 |
-|----|------|------|------|
-| ~~B-1~~ | ✅ 모문제 이미지 export 분석 | 모문제 export 동작 검토 | **개선 불필요** - 현재 동작 적절 |
-| ~~B-2~~ | ✅ 세션 동기화 최적화 | 페이지 이동 시 동기화 지연 | 체크 간격 15초, 포커스 시 즉시 체크 |
-| ~~B-3~~ | ✅ Axios 타임아웃 설정 | 무한 대기 방지 | Phase 59-C에서 이미 구현됨 |
-| ~~B-4~~ | ✅ 에러 로깅 개선 | Backend 에러 상세 로깅 | `main.py` logging + error_id |
-| ~~B-5~~ | ✅ 통합 API 설계 | save-and-export 단일 엔드포인트 | `blocks.py` + `client.ts` |
-| ~~B-6~~ | ✅ 오프라인 모드 | 네트워크 끊김 시 로컬 저장 | 훅 + 스토리지 + UI 구현 |
-
-### 낮음
-| ID | 작업 | 설명 | 예상 시간 |
-|----|------|------|----------|
-| B-7 | 배치 내보내기 | 여러 그룹 한번에 export | 1시간 |
-
----
-
-## 미래 개발 로드맵
-
-### Phase 55: AI 즉시 자동화 - Gemini/Claude API
-
-> **참조**: [208_ai_auto_labeling_plan.md](208_ai_auto_labeling_plan.md)
-
-**선행 조건**: 없음 (지금 바로 가능)
-**예상 시간**: 12시간
-**비용**: 책 1권당 ~1,000원
-
-| 단계 | 내용 | 시간 | 상태 |
-|------|------|------|------|
-| 55-A | AI 문제 분석 API 연동 (Gemini/Claude) | 4시간 | 대기 |
-| 55-B | AI 해설 분석 API 연동 | 2시간 | 대기 |
-| 55-C | 자동 매칭 로직 (문제-해설 연결) | 2시간 | 대기 |
-| 55-D | 검토/수정 UI | 4시간 | 대기 |
-
-**효과**: 라벨링 시간 80분 → 12분 (85% 절약)
-
----
-
-### Phase 60: 딥러닝 자체 학습 (미래)
-
-> **참조**: [reference/ai_automation/](reference/ai_automation/)
-
-**선행 조건**: 100+ 페이지 라벨링 완료
-**현재 상태**: 70+ 페이지 라벨링됨
-
-| 단계 | 내용 | 상태 |
-|------|------|------|
-| 60-A | YOLO 내보내기 스크립트 | 대기 |
-| 60-B | Roboflow 연동 | 대기 |
-| 60-C | YOLOv8 모델 학습 | 대기 |
-| 60-D | AI 자동화 웹앱 | 대기 |
-
----
-
-### Phase 61-64: 코드 모듈화 (미래)
-
-> **참조**: [reference/architecture/158_modularization_feasibility_report.md](reference/architecture/158_modularization_feasibility_report.md)
-
-**목표**: 대형 파일 분리 (41개 파일 300줄 초과)
-
-| 단계 | 내용 | 상태 |
-|------|------|------|
-| 61 | Frontend P0 모듈화 (client.ts, PageViewer.tsx) | 대기 |
-| 62 | Backend P0 모듈화 (export.py, hangul.py) | 대기 |
-| 63 | Frontend P1-P2 모듈화 | 대기 |
-| 64 | Backend P1-P2 모듈화 | 대기 |
-
----
-
-## 참고 문서
+## 핵심 문서
 
 | 문서 | 내용 |
 |------|------|
-| [220_phase56k_bookname_bug_report.md](220_phase56k_bookname_bug_report.md) | displayName 버그 분석 |
-| [221_auto_export_failure_analysis.md](221_auto_export_failure_analysis.md) | 자동 내보내기 실패 분석 |
-| [208_ai_auto_labeling_plan.md](208_ai_auto_labeling_plan.md) | AI 자동 라벨링 계획 |
-| [209_phase56_parent_problem_manual_plan.md](209_phase56_parent_problem_manual_plan.md) | 모문제 수동 연결 계획 |
+| [hyeyum-features.md](hyeyum-features.md) | 기능 명세 |
+| [supabase-schema.md](supabase-schema.md) | DB 스키마 |
+| [business-logic.md](business-logic.md) | 비즈니스 로직 |
+
+## 최근 연구 문서
+
+| 번호 | 문서 | 주제 |
+|------|------|------|
+| 430 | [teacher_calendar_notice_display_development_plan.md](430_teacher_calendar_notice_display_development_plan.md) | 강사 캘린더 중요공지 반응형 표시 개발 계획 |
+| 426 | [timetable_studio_redesign_development_plan.md](426_timetable_studio_redesign_development_plan.md) | Timetable Studio 재설계 상세 계획 |
+| 425 | [stage16_notice_db_development_plan.md](425_stage16_notice_db_development_plan.md) | 캘린더 공지사항 DB 연동 계획 |
+| 461 | [supabase_schema_fix_development_plan.md](461_supabase_schema_fix_development_plan.md) | Supabase 스키마 수정 개발 계획 |
+| 460 | [supabase_missing_tables_error_report.md](460_supabase_missing_tables_error_report.md) | Supabase 404/400 에러 분석 |
+| 420 | [exam_management_development_plan.md](420_exam_management_development_plan.md) | 시험 관리 시스템 상세 개발 계획 |
+| 419 | [exam_management_system_ux_research.md](419_exam_management_system_ux_research.md) | 시험 관리 시스템 UX 연구 |
+
+---
+
+## 기술 스택
+
+| 영역 | 기술 |
+|------|------|
+| Frontend | React 18, TypeScript, Vite |
+| 스타일 | Tailwind CSS, 토스 디자인 시스템 |
+| 상태관리 | Zustand, TanStack Query |
+| 캐러셀 | Embla Carousel |
+| Backend | Supabase (`rhejybeufojkfdfntpfg`) |
+
+---
+
+## 핵심 기술 패턴
+
+### Mock Fallback 패턴
+
+```typescript
+const { data: realData, isLoading } = useClasses({ teacherId });
+const classes = realData || MOCK_CLASSES;
+```
+
+### 훅 분리 패턴
+
+```typescript
+useClasses()        // 조회
+useSaveProgress()   // 저장
+useDashboardStats() // 통계
+```
+
+---
+
+## 권한 체계
+
+| 역할 | 코드 | 접근 범위 |
+|------|------|----------|
+| 강사 | `teacher` | 본인 수업 + 본인 학생만 |
+| 관리자 | `admin` | 전체 수업/학생 |
+| 원장 | `owner` | 전체 + 설정/정산/사용자관리 |
+
+---
+
+## 테스트 계정
+
+| 이메일 | 비밀번호 | 역할 |
+|--------|----------|------|
+| owner@hyeyum.com | Test1234! | owner |
+| admin@hyeyum.com | Test1234! | admin |
+| teacher@hyeyum.com | Test1234! | teacher |
+
+---
+
+## 최근 완료 기록 (10개)
+
+| 날짜 | Stage | 내용 |
+|------|-------|------|
+| 01-04 | 31 | 초등부 담임/부담임 시스템 (이미 구현됨 확인) |
+| 01-04 | 8-6/7 | RLS 정책 (이미 구현됨 확인) |
+| 01-04 | 19-H | 시험 관리 Supabase 연동 (exams/exam_answers 테이블) |
+| 01-04 | 37 | 학생 상세 페이지 Supabase 연결 |
+| 01-04 | 38 | ClassesPage Mock 제거 |
+| 01-04 | 5 | Timetable Studio 재설계 완료 |
+| 12-22 | 16 | 캘린더 통합 공지사항 DB 연동 |
+| 12-22 | 20 | 월간 캘린더 (드롭다운 + 변형2 스타일) |
+| 12-20 | 15 | 날짜 선택 기반 수업 조회 |
+| 12-19 | 14 | 순환수업-대시보드 통합 |
+| 12-19 | 13 | PC 대시보드 캘린더 UI |
+| 12-19 | 12 | 순환수업 시스템 (DB + UI + 라우팅) |
+| 12-18 | 11 | 반응형 통합 + 세션 관리 |
+| 12-18 | 10 | 사용자 관리 시스템 (Supabase Auth) |
+| 12-17 | 9 | 강사 관리 CRUD |
+| 12-17 | 8 | 인증 및 권한 시스템 |
+| 12-16 | 7 | 과목별 반 배정 (드래그&드롭) |
+| 12-15 | 6 | 메이크에듀 동기화 (Railway Worker) |
+| 12-15 | 4 | 새 Supabase 통합 |
+| 12-14 | 3 | 관리자 PC 목업 (v5) |
+| 12-14 | 2 | 관리자 모바일 목업 |
 
 ---
 
@@ -1236,121 +581,25 @@ const enrichedGroups = useMemo(() =>
 
 | 명령어 | 용도 |
 |--------|------|
-| `Phase 55 진행해줘` | AI 자동 라벨링 (12시간) |
-| `B-1 진행해줘` | 백로그 항목 작업 시작 |
-| `에러야 + 로그` | 디버깅 요청 |
+| `Phase X-Y 진행해줘` | 특정 Phase 작업 실행 |
 | `opus thinkharder` | 깊은 분석, 리포트 작성 |
+| `연구리포트 만들어줘` | 분석만 수행, 개발 진행 금지 |
+| `단계별 개발 계획 만들어줘` | 상세 설계 후 개발 계획 작성 |
 
 ---
 
-## 실행 로그
+## 리팩토링: Phase 6 - Playwright E2E 테스트
 
-### 2025-12-07 (심야)
-- [x] 문제 연결 표시 버그 조사 및 리포트 작성
-  - 증상: 문제 1번만 연결 배지 표시, 2~12번 미표시
-  - 원인: session.links에는 12개 모두 저장됨 (연결 정상)
-  - 근본 원인: sync_links_to_groups()가 해설 문서만 동기화
-  - 문제 문서 groups.json에 link 필드 미동기화
-- [x] Phase 63 개발 계획 수립 (연결 배지 버그 수정)
-  - 옵션 B 권장: 프론트엔드에서 session.links로 실시간 enrichment
-  - 예상 시간: 45분
-- [x] **Phase 63 구현 완료** (연결 배지 버그 수정)
-  - 63-A: `utils/groupUtils.ts` 생성 (enrichGroupsWithLinks 함수)
-  - 63-B: PageViewer.tsx에서 그룹 enrichment 적용
-  - 63-C: TypeScript 빌드 테스트 통과
-- [x] plan.md 업데이트
-- [x] **백로그 B-1~B-6 전체 처리 완료**
-  - B-1: 모문제 export 분석 → 개선 불필요 확인
-  - B-2: 세션 동기화 최적화 → useAutoSync 체크 간격 15초, 포커스 체크
-  - B-3: Axios 타임아웃 → Phase 59-C에서 이미 구현 확인
-  - B-4: 에러 로깅 개선 → main.py logging 설정 + error_id
-  - B-5: 통합 API → save-and-export 엔드포인트 추가
-  - B-6: 오프라인 모드 구현 완료
-    - `useOnlineStatus.ts` - 온라인/오프라인 감지 훅
-    - `offlineStorage.ts` - LocalStorage/IndexedDB 서비스
-    - `useOfflineQueue.ts` - 오프라인 작업 큐 관리 훅
-    - `OfflineIndicator.tsx` - 상태 표시 UI 컴포넌트
+> **목표**: 코드 정리 후 전체 기능이 정상 동작하는지 Playwright로 검증
 
-### 2025-12-07 (밤)
-- [x] Phase 62-A: TypeScript 에러 수정 완료 (18개 → 0개)
-- [x] Phase 62-B: 색상 통일 완료 (gray → grey, 63개 파일 수정)
-- [x] Phase 57-C: 문제-해설 연결 API 추가 (export.py)
-- [x] Phase 57-D: 모달 해설 이미지 통합 표시
-  - 탭 UI (문제/해설 전환)
-  - 해설 연결 뱃지 표시
-  - 해설 상세정보 표시
-- [x] Phase 62-C: PageViewer 훅 분리 완료
-  - usePageViewerKeyboard.ts (키보드 단축키)
-  - usePageViewerCrossPage.ts (크로스페이지 로직)
-  - usePageViewerGroups.ts (그룹 CRUD)
-  - hooks/index.ts (export 통합)
-  - 빌드 테스트 통과
-- [x] Phase 62-D: GroupPanel 컴포넌트 분리 완료
-  - GroupEditForm.tsx (편집 폼)
-  - GroupCard.tsx (그룹 카드)
-  - group/index.ts (export 통합)
-  - 빌드 테스트 통과
-
-### 2025-12-07 (저녁)
-- [x] TypeScript 에러 수정 (50개 → 18개)
-  - Button.tsx: primary, secondary, warning 변형 추가
-  - Badge.tsx: color → colorScheme 변경
-  - workSessionStore.ts: WorkSession 타입 재export
-  - ProblemBankHub.tsx: import 경로 대소문자 수정
-  - GroupPanel.tsx: pageIndex null 체크
-- [x] UI/UX 철학 및 안정성 전체 검토
-  - 잘 된 부분: 토스 디자인, Optimistic Update, beforeunload 등
-  - 개선 가능: 색상 통일 (gray/grey), 파일 분리
-- [x] Phase 62 개발 계획 수립 (코드 품질 개선)
-- [x] plan.md v2.1 업데이트
-
-### 2025-12-07 (오전)
-- [x] Phase 56-K: displayName "고1" → "베이직쎈" 버그 수정
-- [x] 221_auto_export_failure_analysis.md 작성
-- [x] Phase 56-L: 자동 내보내기 안정화 완료
-  - 100ms 지연 추가 (파일 시스템 반영 대기)
-  - 3회 재시도 로직 (지수 백오프: 150ms, 300ms)
-  - 구체적인 에러 메시지 (404 에러 구분)
-- [x] 222_server_start_failure_analysis.md 작성
-- [x] start_dev.bat, stop_dev.bat 배치 파일 생성
-- [x] Phase 56-M: 모문제 미연결 목록 제외 완료
-  - ProblemReference에 isParent 필드 추가
-  - sync_manager에서 isParent 동기화
-  - getUnlinkedProblems에서 isParent 필터링
-- [x] 223_parent_problem_cleanup_options.md 작성
-- [x] Phase 56-N/O/P 개발 계획 수립
-- [x] Phase 56-N: displayName 패턴 필터링 완료
-  - getUnlinkedProblems에 "(모문제)" 패턴 필터링 추가
-  - useUnlinkedProblems 훅에도 동일 필터링 추가
-- [x] Phase 56-O: 재동기화 버튼 추가 완료
-  - sync-parent-flags API 엔드포인트 (work_sessions.py)
-  - API 클라이언트 (client.ts, workSessionStore.ts)
-  - 사이드바 🔄 버튼 (ProblemListPanel.tsx)
-- [x] Phase 56-P: 자동 백그라운드 동기화 완료
-  - loadSession에서 syncParentFlags 자동 호출
-  - 성능 최적화 (변경사항 있을 때만 저장)
-- [x] 224_auto_next_problem_bug_report.md 작성
-- [x] Phase 56-Q: 다음 문제 자동 선택 버그 수정 완료
-  - selectNextUnlinkedProblem 로직 전면 수정
-  - 전체 problems 배열 기준 다음 문제 찾기
-  - Phase 56-M/N 필터링 통합 (모문제 건너뛰기)
-- [x] 225_solution_delete_auto_unlink_feasibility.md 작성
-- [x] Phase 56-R: 해설 삭제 시 자동 연결 해제 완료
-  - removeLinkBySolutionGroupId 스토어 액션 추가
-  - handleGroupDeleted 해설 탭 처리 추가
-  - 1:N 연결 지원 (동일 해설 여러 문제 연결 시 모두 해제)
-  - 해제된 문제 자동 선택 (빠른 재연결 가능)
-- [x] 226_undefined_length_error_report.md 작성
-- [x] Phase 56-S: 방어적 코딩 (undefined 에러 수정) 완료
-  - 조기 반환 조건에 !currentSession.problems || !currentSession.links 추가
-  - Line 454, 519의 currentSession.problems.length 접근 안전화
-- [x] 227_problem_bank_ui_enhancement_report.md 작성
-- [ ] Phase 57 개발 계획 수립 (문제은행 UI 개선)
-
-### 2025-12-06
-- [x] Phase 56 (A-J): 모문제 워크플로우 v2 구현
-- [x] v2.0 프로젝트 구조 정리
+| Step | 작업 | 상태 |
+|------|------|------|
+| 6-A | 로컬 서버 시작 (Frontend 3000 + Backend 7000) | ⬜ |
+| 6-B | Playwright로 로그인 테스트 | ⬜ |
+| 6-C | 강사 대시보드 기능 테스트 | ⬜ |
+| 6-D | 관리자 대시보드 기능 테스트 | ⬜ |
+| 6-E | Vercel 배포 확인 | ⬜ |
 
 ---
 
-*다음 단계: Phase 56-P (자동 백그라운드 동기화) 또는 다른 작업*
+*Stage 1~39 전체 완료! + 리팩토링 Phase 5 완료*

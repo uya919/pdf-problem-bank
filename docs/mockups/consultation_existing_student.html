@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학생 상담 - 혜윰 백오피스</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            grey: {
+              50: '#f9fafb', 100: '#f3f4f6', 200: '#e5e7eb',
+              300: '#d1d5db', 400: '#9ca3af', 500: '#6b7280',
+              600: '#4b5563', 700: '#374151', 800: '#1f2937', 900: '#111827'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+  </style>
+</head>
+<body class="bg-grey-50 min-h-screen">
+  <!-- 상단 네비게이션 -->
+  <header class="bg-white border-b border-grey-200 sticky top-0 z-50">
+    <div class="flex items-center justify-between px-6 py-3">
+      <div class="flex items-center gap-6">
+        <h1 class="text-xl font-bold text-grey-900">혜윰</h1>
+        <nav class="flex items-center gap-1">
+          <a href="#" class="px-4 py-2 text-grey-600 hover:text-grey-900 rounded-lg hover:bg-grey-100">대시보드</a>
+          <a href="#" class="px-4 py-2 text-grey-600 hover:text-grey-900 rounded-lg hover:bg-grey-100">수업 관리</a>
+          <a href="#" class="px-4 py-2 text-grey-600 hover:text-grey-900 rounded-lg hover:bg-grey-100">학생 관리</a>
+          <a href="#" class="px-4 py-2 text-grey-600 hover:text-grey-900 rounded-lg hover:bg-grey-100">운영 관리</a>
+          <a href="#" class="px-4 py-2 text-blue-600 bg-blue-50 rounded-lg font-medium">상담 관리</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-grey-100 rounded-lg p-1">
+          <button class="px-3 py-1.5 text-sm text-grey-500 rounded-md">강사</button>
+          <button class="px-3 py-1.5 text-sm bg-white text-grey-900 rounded-md shadow-sm font-medium">관리자</button>
+        </div>
+        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+          김
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- 좌측 사이드바 -->
+    <aside class="w-56 bg-white border-r border-grey-200 min-h-[calc(100vh-57px)] p-4">
+      <div class="space-y-1">
+        <a href="consultation_new_student.html" class="flex items-center gap-3 px-3 py-2.5 text-grey-600 hover:bg-grey-100 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+          </svg>
+          신규 상담
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 bg-blue-50 text-blue-700 rounded-lg font-medium">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          학생 상담
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-grey-600 hover:bg-grey-100 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          상담 목록
+        </a>
+      </div>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="flex-1 p-6">
+      <div class="max-w-4xl mx-auto">
+        <!-- 헤더 -->
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-grey-900">학생 상담</h2>
+          <p class="text-grey-500 mt-1">기존 학생의 상담 내용을 기록하고 이력을 관리합니다.</p>
+        </div>
+
+        <!-- 학생 검색 -->
+        <div class="bg-white rounded-2xl border border-grey-200 p-6 mb-6">
+          <h3 class="text-lg font-semibold text-grey-900 mb-4">학생 검색</h3>
+          <div class="flex gap-3">
+            <div class="flex-1 relative">
+              <input type="text" placeholder="학생 이름, 연락처로 검색" value="김민수"
+                class="w-full px-4 py-3 pl-10 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <svg class="w-5 h-5 text-grey-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+            <button class="px-6 py-3 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600">
+              검색
+            </button>
+          </div>
+
+          <!-- 검색 결과 -->
+          <div class="mt-4 border-t border-grey-100 pt-4">
+            <p class="text-sm text-grey-500 mb-3">검색 결과 2명</p>
+            <div class="space-y-2">
+              <!-- 학생 카드 1 -->
+              <div class="p-4 border border-blue-200 bg-blue-50 rounded-xl cursor-pointer">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
+                      김
+                    </div>
+                    <div>
+                      <p class="font-medium text-grey-900">김민수</p>
+                      <p class="text-sm text-grey-500">고1 · 혜윰고등학교</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm text-grey-500">수학 정규1반, 영어 심화반</p>
+                    <p class="text-xs text-grey-400">마지막 상담: 2025-12-20</p>
+                  </div>
+                </div>
+              </div>
+              <!-- 학생 카드 2 -->
+              <div class="p-4 border border-grey-200 rounded-xl cursor-pointer hover:border-grey-300 hover:bg-grey-50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-grey-400 rounded-full flex items-center justify-center text-white font-medium">
+                      김
+                    </div>
+                    <div>
+                      <p class="font-medium text-grey-900">김민수</p>
+                      <p class="text-sm text-grey-500">중2 · 혜윰중학교</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm text-grey-500">수학 기초반</p>
+                    <p class="text-xs text-grey-400">마지막 상담: 2025-11-15</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 선택된 학생 정보 -->
+        <div class="bg-white rounded-2xl border border-grey-200 p-6 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-grey-900">학생 정보</h3>
+            <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">재원생</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center gap-2">
+                <span class="text-grey-500 w-24">이름</span>
+                <span class="font-medium text-grey-900">김민수</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-grey-500 w-24">학년</span>
+                <span class="font-medium text-grey-900">고1</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-grey-500 w-24">학교</span>
+                <span class="font-medium text-grey-900">혜윰고등학교</span>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-2">
+                <span class="text-grey-500 w-24">학생 연락처</span>
+                <span class="font-medium text-grey-900">010-1234-5678</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-grey-500 w-24">보호자 연락처</span>
+                <span class="font-medium text-grey-900">010-9876-5432</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-grey-500 w-24">수강 반</span>
+                <span class="font-medium text-grey-900">수학 정규1반, 영어 심화반</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 상담 기록 섹션 -->
+        <div class="grid grid-cols-2 gap-6">
+          <!-- 새 상담 기록 -->
+          <div class="bg-white rounded-2xl border border-grey-200 p-6">
+            <h3 class="text-lg font-semibold text-grey-900 mb-4">새 상담 기록</h3>
+
+            <form class="space-y-4">
+              <!-- 상담 일자 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">
+                  상담 일자 <span class="text-red-500">*</span>
+                </label>
+                <input type="date" value="2025-12-27"
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500">
+              </div>
+
+              <!-- 상담 유형 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">상담 유형</label>
+                <div class="flex flex-wrap gap-2">
+                  <label class="inline-flex items-center gap-2 px-3 py-2 border border-grey-200 rounded-lg cursor-pointer hover:bg-grey-50 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                    <input type="radio" name="type" class="w-4 h-4 text-blue-600" checked>
+                    <span class="text-sm">진도 상담</span>
+                  </label>
+                  <label class="inline-flex items-center gap-2 px-3 py-2 border border-grey-200 rounded-lg cursor-pointer hover:bg-grey-50 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                    <input type="radio" name="type" class="w-4 h-4 text-blue-600">
+                    <span class="text-sm">학부모 상담</span>
+                  </label>
+                  <label class="inline-flex items-center gap-2 px-3 py-2 border border-grey-200 rounded-lg cursor-pointer hover:bg-grey-50 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                    <input type="radio" name="type" class="w-4 h-4 text-blue-600">
+                    <span class="text-sm">반 변경</span>
+                  </label>
+                  <label class="inline-flex items-center gap-2 px-3 py-2 border border-grey-200 rounded-lg cursor-pointer hover:bg-grey-50 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                    <input type="radio" name="type" class="w-4 h-4 text-blue-600">
+                    <span class="text-sm">기타</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 상담 내용 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">
+                  상담 내용 <span class="text-red-500">*</span>
+                </label>
+                <textarea rows="6" placeholder="상담 내용을 상세히 기록해주세요."
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+              </div>
+
+              <!-- 후속 조치 -->
+              <div>
+                <label class="block text-sm font-medium text-grey-700 mb-1.5">후속 조치</label>
+                <input type="text" placeholder="예: 다음 주 재상담 예정"
+                  class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:ring-2 focus:ring-blue-500">
+              </div>
+
+              <!-- 저장 버튼 -->
+              <button type="submit" class="w-full py-3 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600">
+                상담 기록 저장
+              </button>
+            </form>
+          </div>
+
+          <!-- 상담 이력 -->
+          <div class="bg-white rounded-2xl border border-grey-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-grey-900">상담 이력</h3>
+              <span class="text-sm text-grey-500">총 3건</span>
+            </div>
+
+            <div class="space-y-4">
+              <!-- 상담 이력 1 -->
+              <div class="p-4 bg-grey-50 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">진도 상담</span>
+                    <span class="text-sm text-grey-500">2025-12-20</span>
+                  </div>
+                  <span class="text-xs text-grey-400">김선생</span>
+                </div>
+                <p class="text-sm text-grey-700">
+                  수학 진도 점검. 현재 진도 양호하나 함수 단원에서 약간 어려움 느끼고 있음.
+                  추가 보충 자료 제공 예정.
+                </p>
+                <p class="text-xs text-grey-500 mt-2">
+                  후속 조치: 함수 보충 문제집 제공
+                </p>
+              </div>
+
+              <!-- 상담 이력 2 -->
+              <div class="p-4 bg-grey-50 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded">학부모 상담</span>
+                    <span class="text-sm text-grey-500">2025-12-05</span>
+                  </div>
+                  <span class="text-xs text-grey-400">박원장</span>
+                </div>
+                <p class="text-sm text-grey-700">
+                  학부모 월간 상담. 학습 태도 좋고 성적 향상 추세.
+                  영어 반 레벨업 문의 - 다음 달부터 심화반 이동 결정.
+                </p>
+                <p class="text-xs text-grey-500 mt-2">
+                  후속 조치: 1월부터 영어 심화반 배정
+                </p>
+              </div>
+
+              <!-- 상담 이력 3 -->
+              <div class="p-4 bg-grey-50 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">신규 등록</span>
+                    <span class="text-sm text-grey-500">2025-09-01</span>
+                  </div>
+                  <span class="text-xs text-grey-400">박원장</span>
+                </div>
+                <p class="text-sm text-grey-700">
+                  신규 상담 후 등록. 혜윰고 1학년.
+                  수학 기초가 약해 정규반 배정.
+                  주 3회 (월수금) 수업 희망.
+                </p>
+                <p class="text-xs text-grey-500 mt-2">
+                  후속 조치: 수학 정규반 배정 완료
+                </p>
+              </div>
+            </div>
+
+            <!-- 더보기 -->
+            <button class="w-full mt-4 py-2 text-sm text-grey-600 hover:text-grey-900">
+              이전 상담 기록 더보기
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

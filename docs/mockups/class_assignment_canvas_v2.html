@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>반 배정 (과목별) - 혜윰 백오피스</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            grey: {
+              50: '#F9FAFB',
+              100: '#F2F4F6',
+              200: '#E5E8EB',
+              300: '#D1D6DB',
+              400: '#B0B8C1',
+              500: '#8B95A1',
+              600: '#6B7684',
+              700: '#4E5968',
+              800: '#333D4B',
+              900: '#191F28',
+            },
+            blue: {
+              50: '#EBF4FF',
+              100: '#E8F3FF',
+              500: '#3182F6',
+              600: '#1B64DA',
+            },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+    .draggable { cursor: grab; user-select: none; }
+    .draggable:active { cursor: grabbing; }
+    .dragging { opacity: 0.5; transform: scale(1.02); }
+
+    .drop-zone { transition: all 0.2s ease; }
+    .drop-zone.drag-over {
+      border-color: #3182F6 !important;
+      background: rgba(49, 130, 246, 0.05);
+      transform: scale(1.02);
+    }
+
+    .toggle-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #6B7684;
+    }
+    .toggle-btn:hover { background: #F2F4F6; color: #4E5968; }
+    .toggle-btn.active {
+      background: white;
+      color: #191F28;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* 과목 탭 색상 */
+    .subject-tab { transition: all 0.15s ease; }
+    .subject-tab.active-math { background: #3182F6; color: white; }
+    .subject-tab.active-korean { background: #10B981; color: white; }
+    .subject-tab.active-english { background: #8B5CF6; color: white; }
+
+    kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #F2F4F6;
+      border: 1px solid #E5E8EB;
+      border-radius: 4px;
+      color: #4E5968;
+    }
+
+    .level-advanced { border-left: 4px solid #3182F6; }
+    .level-regular { border-left: 4px solid #6B7684; }
+    .level-regular2 { border-left: 4px solid #8B95A1; }
+    .level-basic { border-left: 4px solid #FF9500; }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #D1D6DB; border-radius: 3px; }
+
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+    }
+
+    /* 과목별 배지 색상 */
+    .badge-math { background: #EBF4FF; color: #3182F6; }
+    .badge-korean { background: #D1FAE5; color: #059669; }
+    .badge-english { background: #EDE9FE; color: #7C3AED; }
+  </style>
+</head>
+<body class="bg-grey-50 min-h-screen">
+  <!-- 상단 네비게이션 -->
+  <nav class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-grey-200 z-50 flex items-center px-6">
+    <div class="flex items-center gap-8">
+      <span class="text-xl font-bold text-grey-900">혜윰학원</span>
+      <div class="flex gap-1">
+        <a href="#" class="px-4 py-2 text-grey-500 hover:text-grey-700 rounded-lg">대시보드</a>
+        <a href="#" class="px-4 py-2 text-grey-500 hover:text-grey-700 rounded-lg">학년별 현황</a>
+        <a href="#" class="px-4 py-2 bg-blue-50 text-blue-600 font-medium rounded-lg">학생 관리</a>
+        <a href="#" class="px-4 py-2 text-grey-500 hover:text-grey-700 rounded-lg">출결</a>
+      </div>
+    </div>
+    <div class="ml-auto flex items-center gap-4">
+      <button onclick="toggleShortcutModal()" class="px-3 py-1.5 bg-grey-100 text-grey-600 text-sm font-medium rounded-lg hover:bg-grey-200 flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+        </svg>
+        단축키
+      </button>
+      <span class="text-sm text-grey-600">김수학 원장님</span>
+    </div>
+  </nav>
+
+  <!-- 단축키 모달 -->
+  <div id="shortcut-modal" class="fixed inset-0 z-[100] hidden">
+    <div class="modal-backdrop absolute inset-0" onclick="toggleShortcutModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-xl w-[480px] max-h-[80vh] overflow-hidden">
+      <div class="flex items-center justify-between p-5 border-b border-grey-100">
+        <h2 class="text-lg font-bold text-grey-900">키보드 단축키</h2>
+        <button onclick="toggleShortcutModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-grey-100">
+          <svg class="w-5 h-5 text-grey-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-5 space-y-6">
+        <!-- 과목/학부/학년 전환 -->
+        <div>
+          <h3 class="text-sm font-medium text-grey-700 mb-3">필터 전환</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <kbd>Tab</kbd>
+              <span class="text-sm text-grey-600">과목 전환 (수학 → 국어 → 영어)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex gap-1"><kbd>Ctrl</kbd><span class="text-grey-400">+</span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></div>
+              <span class="text-sm text-grey-600">학부 전환 (초/중/고)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex gap-1"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></div>
+              <span class="text-sm text-grey-600">학년 전환</span>
+            </div>
+          </div>
+        </div>
+        <!-- 선택 -->
+        <div>
+          <h3 class="text-sm font-medium text-grey-700 mb-3">학생 선택</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <kbd>Ctrl</kbd><span class="text-grey-400">+</span><kbd>A</kbd>
+              <span class="text-sm text-grey-600">미배정 전체 선택</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <kbd>Shift</kbd><span class="text-grey-400">+</span><span class="text-sm text-grey-500">클릭</span>
+              <span class="text-sm text-grey-600">범위 선택</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <kbd>Esc</kbd>
+              <span class="text-sm text-grey-600">선택 취소</span>
+            </div>
+          </div>
+        </div>
+        <!-- 반 배정 -->
+        <div>
+          <h3 class="text-sm font-medium text-grey-700 mb-3">반 배정</h3>
+          <div class="space-y-2" id="modal-assign-shortcuts"></div>
+          <div class="flex items-center gap-3 mt-3 pt-3 border-t border-grey-100">
+            <kbd>Backspace</kbd>
+            <span class="text-sm text-grey-600">배정 해제</span>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-grey-50 border-t border-grey-100 text-center">
+        <span class="text-xs text-grey-400">팁: 배정 후 자동으로 다음 학생이 선택됩니다</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메인 레이아웃 -->
+  <div class="flex mt-16 min-h-[calc(100vh-64px)]">
+    <!-- 좌측 패널: 학생 목록 -->
+    <aside class="w-[320px] bg-white border-r border-grey-200 flex flex-col">
+      <div class="p-4 border-b border-grey-100">
+        <h2 class="font-bold text-grey-900 mb-3">학생 목록</h2>
+
+        <!-- 과목 탭 (핵심 변경!) -->
+        <div class="flex gap-1 p-1 bg-grey-100 rounded-lg mb-3">
+          <button class="subject-tab toggle-btn flex-1 active-math" onclick="setSubject('math')" id="subject-math">수학</button>
+          <button class="subject-tab toggle-btn flex-1" onclick="setSubject('korean')" id="subject-korean">국어</button>
+          <button class="subject-tab toggle-btn flex-1" onclick="setSubject('english')" id="subject-english">영어</button>
+        </div>
+
+        <!-- 학부 토글 -->
+        <div class="flex gap-1 p-1 bg-grey-100 rounded-lg mb-3">
+          <button class="toggle-btn flex-1" onclick="setDivision('elementary')">초등</button>
+          <button class="toggle-btn flex-1 active" onclick="setDivision('middle')" id="div-middle">중등</button>
+          <button class="toggle-btn flex-1" onclick="setDivision('high')">고등</button>
+        </div>
+
+        <!-- 검색 -->
+        <input type="text" placeholder="학생 검색..." class="w-full px-3 py-2 border border-grey-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- 학생 목록 -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar">
+        <!-- 미배정 섹션 -->
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-grey-700">
+              <span id="current-subject-label">수학</span> 미배정
+            </span>
+            <span class="text-xs text-orange-500 font-medium" id="unassigned-count">8명</span>
+          </div>
+          <div class="space-y-1" id="unassigned-list"></div>
+        </div>
+
+        <div class="h-px bg-grey-100 mx-3"></div>
+
+        <!-- 배정됨 섹션 -->
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-grey-700">배정됨</span>
+            <span class="text-xs text-blue-500 font-medium" id="assigned-count">12명</span>
+          </div>
+          <div class="space-y-1" id="assigned-list"></div>
+        </div>
+      </div>
+
+      <!-- 선택 액션바 -->
+      <div class="p-3 border-t border-grey-100 bg-grey-50" id="action-bar" style="display: none;">
+        <div class="text-sm text-grey-700 mb-2"><span id="selected-count">0</span>명 선택됨</div>
+        <div class="flex gap-2 flex-wrap" id="shortcut-buttons"></div>
+      </div>
+    </aside>
+
+    <!-- 중앙 캔버스 -->
+    <main class="flex-1 p-6">
+      <!-- 캔버스 헤더 -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-xl font-bold text-grey-900">
+            <span id="header-subject" class="text-blue-500">수학</span> 반 배정
+          </h1>
+          <p class="text-sm text-grey-500 mt-1">학생을 드래그하거나 단축키로 반에 배정하세요</p>
+        </div>
+        <button onclick="location.href='/admin/students'" class="px-4 py-2 text-grey-600 hover:bg-grey-100 rounded-lg">
+          ← 학생 관리로 돌아가기
+        </button>
+      </div>
+
+      <!-- 학년 탭 -->
+      <div class="flex items-center gap-4 mb-6">
+        <span class="text-sm text-grey-500">학년</span>
+        <div class="flex gap-1 p-1 bg-grey-100 rounded-lg" id="grade-tabs">
+          <button class="toggle-btn" onclick="setGrade(1)">1학년</button>
+          <button class="toggle-btn active" onclick="setGrade(2)" id="grade-2">2학년</button>
+          <button class="toggle-btn" onclick="setGrade(3)">3학년</button>
+        </div>
+      </div>
+
+      <!-- 반 카드 그리드 -->
+      <div class="grid grid-cols-3 gap-4 mb-6" id="class-cards"></div>
+
+      <!-- 미배정 드롭 영역 -->
+      <div class="drop-zone border-2 border-dashed border-grey-300 rounded-xl p-6 text-center" id="unassign-zone"
+        ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleUnassignDrop(event)">
+        <div class="text-grey-400">
+          <span class="text-2xl">&#128237;</span>
+          <p class="mt-2">배정된 학생을 여기에 드롭하면 배정이 해제됩니다</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 토스트 -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 opacity-0 transition-opacity duration-300">
+    <span>&#10003;</span>
+    <span id="toast-message">배정 완료</span>
+  </div>
+
+  <script>
+    // ============================================
+    // 상태 관리
+    // ============================================
+    let state = {
+      subject: 'math',      // 과목: math, korean, english
+      division: 'middle',   // 학부: elementary, middle, high
+      grade: 2,
+      selectedIds: new Set(),
+      lastSelectedId: null,
+      draggedId: null,
+      shortcutModalOpen: false,
+    };
+
+    // 과목 설정
+    const SUBJECTS = {
+      math: { name: '수학', color: 'blue', bgClass: 'badge-math' },
+      korean: { name: '국어', color: 'green', bgClass: 'badge-korean' },
+      english: { name: '영어', color: 'purple', bgClass: 'badge-english' },
+    };
+
+    // 반 구성 (과목별 + 학년별)
+    // 구조: CLASS_CONFIG[subject][division][grade]
+    const CLASS_CONFIG = {
+      math: {
+        middle: {
+          1: { classes: [
+            { id: 'm1-c1', name: '중1_수학_심화', level: 'advanced', students: [] },
+            { id: 'm1-c2', name: '중1_수학_정규', level: 'regular', students: ['s1', 's2'] },
+          ], shortcuts: ['Q', 'W'] },
+          2: { classes: [
+            { id: 'm2-c1', name: '중2_수학_심화', level: 'advanced', students: ['s3'] },
+            { id: 'm2-c2', name: '중2_수학_정규', level: 'regular', students: ['s4', 's5'] },
+            { id: 'm2-c3', name: '중2_수학_기초', level: 'basic', students: ['s6'] },
+          ], shortcuts: ['Q', 'W', 'E'] },
+          3: { classes: [
+            { id: 'm3-c1', name: '중3_수학_심화', level: 'advanced', students: ['s7'] },
+            { id: 'm3-c2', name: '중3_수학_정규1', level: 'regular', students: ['s8', 's9'] },
+            { id: 'm3-c3', name: '중3_수학_정규2', level: 'regular2', students: ['s10'] },
+            { id: 'm3-c4', name: '중3_수학_기초', level: 'basic', students: [] },
+          ], shortcuts: ['Q', 'W', 'E', 'R'] },
+        },
+        elementary: {
+          5: { classes: [
+            { id: 'e5-c1', name: '초5_수학_심화', level: 'advanced', students: [] },
+            { id: 'e5-c2', name: '초5_수학_정규', level: 'regular', students: [] },
+          ], shortcuts: ['Q', 'W'] },
+          6: { classes: [
+            { id: 'e6-c1', name: '초6_수학_심화', level: 'advanced', students: [] },
+            { id: 'e6-c2', name: '초6_수학_정규', level: 'regular', students: [] },
+          ], shortcuts: ['Q', 'W'] },
+        },
+        high: {
+          1: { classes: [
+            { id: 'h1-c1', name: '고1_수학_심화', level: 'advanced', students: [] },
+            { id: 'h1-c2', name: '고1_수학_정규', level: 'regular', students: [] },
+          ], shortcuts: ['Q', 'W'] },
+        },
+      },
+      korean: {
+        middle: {
+          1: { classes: [
+            { id: 'k1-c1', name: '중1_국어_심화', level: 'advanced', students: [] },
+            { id: 'k1-c2', name: '중1_국어_정규', level: 'regular', students: ['s1'] },
+          ], shortcuts: ['Q', 'W'] },
+          2: { classes: [
+            { id: 'k2-c1', name: '중2_국어_심화', level: 'advanced', students: ['s4'] },
+            { id: 'k2-c2', name: '중2_국어_정규', level: 'regular', students: ['s5', 's6'] },
+          ], shortcuts: ['Q', 'W'] },
+          3: { classes: [
+            { id: 'k3-c1', name: '중3_국어_심화', level: 'advanced', students: [] },
+            { id: 'k3-c2', name: '중3_국어_정규', level: 'regular', students: ['s7', 's8'] },
+          ], shortcuts: ['Q', 'W'] },
+        },
+        elementary: {},
+        high: {},
+      },
+      english: {
+        middle: {
+          1: { classes: [
+            { id: 'en1-c1', name: '중1_영어_심화', level: 'advanced', students: ['s2'] },
+            { id: 'en1-c2', name: '중1_영어_정규', level: 'regular', students: [] },
+          ], shortcuts: ['Q', 'W'] },
+          2: { classes: [
+            { id: 'en2-c1', name: '중2_영어_심화', level: 'advanced', students: [] },
+            { id: 'en2-c2', name: '중2_영어_정규', level: 'regular', students: ['s3', 's4'] },
+            { id: 'en2-c3', name: '중2_영어_기초', level: 'basic', students: ['s5'] },
+          ], shortcuts: ['Q', 'W', 'E'] },
+          3: { classes: [
+            { id: 'en3-c1', name: '중3_영어_정규', level: 'regular', students: ['s9', 's10'] },
+          ], shortcuts: ['Q'] },
+        },
+        elementary: {},
+        high: {},
+      },
+    };
+
+    // 학생 데이터 (과목별 수강 여부 포함)
+    // enrolled: 해당 과목 수강 여부, assignments: 과목별 배정된 반
+    const STUDENTS = {
+      's1': { id: 's1', name: '김민준', grade: '중1', school: '혜윰중', enrolled: { math: true, korean: true, english: false } },
+      's2': { id: 's2', name: '이서연', grade: '중1', school: '혜윰중', enrolled: { math: true, korean: false, english: true } },
+      's3': { id: 's3', name: '박지호', grade: '중2', school: '혜윰중', enrolled: { math: true, korean: false, english: true } },
+      's4': { id: 's4', name: '최수아', grade: '중2', school: '다른중', enrolled: { math: true, korean: true, english: true } },
+      's5': { id: 's5', name: '정예준', grade: '중2', school: '혜윰중', enrolled: { math: true, korean: true, english: true } },
+      's6': { id: 's6', name: '강하은', grade: '중2', school: '혜윰중', enrolled: { math: true, korean: true, english: false } },
+      's7': { id: 's7', name: '윤도윤', grade: '중3', school: '혜윰중', enrolled: { math: true, korean: true, english: false } },
+      's8': { id: 's8', name: '한서윤', grade: '중3', school: '다른중', enrolled: { math: true, korean: true, english: false } },
+      's9': { id: 's9', name: '임지우', grade: '중3', school: '혜윰중', enrolled: { math: true, korean: false, english: true } },
+      's10': { id: 's10', name: '송시우', grade: '중3', school: '혜윰중', enrolled: { math: true, korean: false, english: true } },
+      // 미배정 학생들
+      'u1': { id: 'u1', name: '오하린', grade: '중2', school: '혜윰중', enrolled: { math: true, korean: true, english: true } },
+      'u2': { id: 'u2', name: '배준서', grade: '중2', school: '혜윰중', enrolled: { math: true, korean: false, english: true } },
+      'u3': { id: 'u3', name: '류지민', grade: '중2', school: '다른중', enrolled: { math: true, korean: true, english: false } },
+      'u4': { id: 'u4', name: '조은우', grade: '중2', school: '혜윰중', enrolled: { math: false, korean: true, english: true } },
+      'u5': { id: 'u5', name: '남유나', grade: '중2', school: '혜윰중', enrolled: { math: true, korean: true, english: true } },
+    };
+
+    // ============================================
+    // 유틸리티 함수
+    // ============================================
+
+    // 학생이 현재 과목에서 어떤 반에 배정되어 있는지 확인
+    function getStudentAssignment(studentId, subject, division, grade) {
+      const config = CLASS_CONFIG[subject]?.[division]?.[grade];
+      if (!config) return null;
+
+      for (const cls of config.classes) {
+        if (cls.students.includes(studentId)) {
+          return cls;
+        }
+      }
+      return null;
+    }
+
+    // 학생이 현재 과목을 수강하는지 확인
+    function isStudentEnrolled(studentId, subject) {
+      const student = STUDENTS[studentId];
+      return student?.enrolled?.[subject] || false;
+    }
+
+    // ============================================
+    // 모달
+    // ============================================
+    function toggleShortcutModal() {
+      state.shortcutModalOpen = !state.shortcutModalOpen;
+      const modal = document.getElementById('shortcut-modal');
+      if (state.shortcutModalOpen) {
+        modal.classList.remove('hidden');
+        renderModalShortcuts();
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function renderModalShortcuts() {
+      const config = CLASS_CONFIG[state.subject]?.[state.division]?.[state.grade];
+      if (!config) {
+        document.getElementById('modal-assign-shortcuts').innerHTML = '<div class="text-sm text-grey-400">해당 과목/학년에 반이 없습니다</div>';
+        return;
+      }
+      document.getElementById('modal-assign-shortcuts').innerHTML = config.classes.map((cls, idx) => `
+        <div class="flex items-center gap-3">
+          <kbd>${config.shortcuts[idx]}</kbd>
+          <span class="text-sm text-grey-600">${cls.name}에 배정</span>
+        </div>
+      `).join('');
+    }
+
+    // ============================================
+    // 렌더링
+    // ============================================
+
+    function render() {
+      updateSubjectUI();
+      renderStudentList();
+      renderClassCards();
+      updateActionBar();
+      if (state.shortcutModalOpen) renderModalShortcuts();
+    }
+
+    function updateSubjectUI() {
+      const subject = SUBJECTS[state.subject];
+
+      // 과목 탭 스타일
+      document.querySelectorAll('.subject-tab').forEach(btn => {
+        btn.classList.remove('active-math', 'active-korean', 'active-english');
+      });
+      document.getElementById(`subject-${state.subject}`).classList.add(`active-${state.subject}`);
+
+      // 헤더 과목명
+      const headerSubject = document.getElementById('header-subject');
+      headerSubject.textContent = subject.name;
+      headerSubject.className = state.subject === 'math' ? 'text-blue-500' :
+                                state.subject === 'korean' ? 'text-green-500' : 'text-purple-500';
+
+      // 좌측 패널 과목 라벨
+      document.getElementById('current-subject-label').textContent = subject.name;
+    }
+
+    function renderStudentList() {
+      const gradePrefix = state.division === 'elementary' ? '초' : state.division === 'middle' ? '중' : '고';
+      const targetGrade = `${gradePrefix}${state.grade}`;
+
+      // 현재 과목을 수강하는 학생 중 현재 학년만 필터링
+      const enrolledStudents = Object.values(STUDENTS).filter(s =>
+        s.grade === targetGrade && isStudentEnrolled(s.id, state.subject)
+      );
+
+      // 미배정/배정됨 분류
+      const unassigned = enrolledStudents.filter(s => !getStudentAssignment(s.id, state.subject, state.division, state.grade));
+      const assigned = enrolledStudents.filter(s => getStudentAssignment(s.id, state.subject, state.division, state.grade));
+
+      // 미배정 목록
+      document.getElementById('unassigned-count').textContent = `${unassigned.length}명`;
+      document.getElementById('unassigned-list').innerHTML = unassigned.length > 0 ? unassigned.map(s => `
+        <div class="draggable flex items-center gap-2 p-2 rounded-lg hover:bg-grey-50 ${state.selectedIds.has(s.id) ? 'bg-blue-50 ring-2 ring-blue-500' : ''}"
+          draggable="true" data-id="${s.id}"
+          onclick="handleStudentClick(event, '${s.id}')"
+          ondragstart="handleDragStart(event, '${s.id}')"
+          ondragend="handleDragEnd(event)">
+          <div class="w-5 h-5 rounded-full border-2 ${state.selectedIds.has(s.id) ? 'bg-blue-500 border-blue-500' : 'border-grey-300'} flex items-center justify-center">
+            ${state.selectedIds.has(s.id) ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' : ''}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-grey-900 text-sm truncate">${s.name}</div>
+            <div class="text-xs text-grey-400">${s.school} · ${renderOtherSubjectBadges(s.id)}</div>
+          </div>
+        </div>
+      `).join('') : '<div class="text-center text-grey-400 py-4 text-sm">미배정 학생이 없습니다</div>';
+
+      // 배정됨 목록
+      document.getElementById('assigned-count').textContent = `${assigned.length}명`;
+      document.getElementById('assigned-list').innerHTML = assigned.length > 0 ? assigned.map(s => {
+        const cls = getStudentAssignment(s.id, state.subject, state.division, state.grade);
+        return `
+          <div class="draggable flex items-center gap-2 p-2 rounded-lg hover:bg-grey-50 ${state.selectedIds.has(s.id) ? 'bg-blue-50 ring-2 ring-blue-500' : ''}"
+            draggable="true" data-id="${s.id}"
+            onclick="handleStudentClick(event, '${s.id}')"
+            ondragstart="handleDragStart(event, '${s.id}')"
+            ondragend="handleDragEnd(event)">
+            <div class="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+              <div class="w-2 h-2 bg-white rounded-full"></div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-grey-900 text-sm truncate">${s.name}</div>
+              <div class="text-xs text-blue-500">${cls?.name || ''}</div>
+            </div>
+          </div>
+        `;
+      }).join('') : '<div class="text-center text-grey-400 py-4 text-sm">배정된 학생이 없습니다</div>';
+    }
+
+    // 다른 과목 수강 배지 표시
+    function renderOtherSubjectBadges(studentId) {
+      const student = STUDENTS[studentId];
+      const badges = [];
+
+      if (state.subject !== 'math' && student.enrolled.math) badges.push('<span class="badge-math text-[10px] px-1 rounded">수학</span>');
+      if (state.subject !== 'korean' && student.enrolled.korean) badges.push('<span class="badge-korean text-[10px] px-1 rounded">국어</span>');
+      if (state.subject !== 'english' && student.enrolled.english) badges.push('<span class="badge-english text-[10px] px-1 rounded">영어</span>');
+
+      return badges.join(' ');
+    }
+
+    function renderClassCards() {
+      const config = CLASS_CONFIG[state.subject]?.[state.division]?.[state.grade];
+      if (!config) {
+        document.getElementById('class-cards').innerHTML = `
+          <div class="col-span-3 text-center py-10 text-grey-400">
+            해당 과목/학년에 등록된 반이 없습니다
+          </div>
+        `;
+        return;
+      }
+
+      const levelLabels = { advanced: '심화', regular: '정규', regular2: '정규2', basic: '기초' };
+      const levelColors = {
+        advanced: 'text-blue-600 bg-blue-50',
+        regular: 'text-grey-600 bg-grey-100',
+        regular2: 'text-grey-500 bg-grey-100',
+        basic: 'text-orange-600 bg-orange-50',
+      };
+
+      document.getElementById('class-cards').innerHTML = config.classes.map((cls, idx) => {
+        const students = cls.students.map(id => STUDENTS[id]).filter(Boolean);
+        return `
+          <div class="drop-zone bg-white border border-grey-200 rounded-xl level-${cls.level} overflow-hidden"
+            data-class-id="${cls.id}"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleClassDrop(event, '${cls.id}')">
+            <div class="p-4 border-b border-grey-100">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-bold text-grey-900">${cls.name}</h3>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-xs px-2 py-0.5 rounded ${levelColors[cls.level]}">${levelLabels[cls.level]}</span>
+                    <span class="text-xs text-grey-400">${students.length}명</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="p-3 min-h-[120px] max-h-[200px] overflow-y-auto custom-scrollbar">
+              ${students.length > 0 ? students.map(s => `
+                <div class="draggable student-card flex items-center gap-2 p-2 rounded-lg hover:bg-grey-50 mb-1"
+                  draggable="true" data-id="${s.id}"
+                  ondragstart="handleDragStart(event, '${s.id}')"
+                  ondragend="handleDragEnd(event)">
+                  <div class="w-6 h-6 rounded-full bg-grey-200 flex items-center justify-center text-xs font-medium text-grey-600">
+                    ${s.name.charAt(0)}
+                  </div>
+                  <span class="text-sm text-grey-700">${s.name}</span>
+                </div>
+              `).join('') : '<div class="text-center text-grey-300 py-4 text-sm">학생을 여기에 드롭하세요</div>'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateActionBar() {
+      const actionBar = document.getElementById('action-bar');
+      const count = state.selectedIds.size;
+
+      if (count === 0) {
+        actionBar.style.display = 'none';
+        return;
+      }
+
+      actionBar.style.display = 'block';
+      document.getElementById('selected-count').textContent = count;
+
+      const config = CLASS_CONFIG[state.subject]?.[state.division]?.[state.grade];
+      if (!config) return;
+
+      document.getElementById('shortcut-buttons').innerHTML = config.classes.map((cls, idx) => `
+        <button onclick="assignToClass('${cls.id}')"
+          class="px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600">
+          ${cls.name.split('_').pop()}
+        </button>
+      `).join('') + `
+        <button onclick="unassignSelected()"
+          class="px-3 py-1.5 bg-grey-200 text-grey-700 text-sm font-medium rounded-lg hover:bg-grey-300">
+          배정 해제
+        </button>
+      `;
+    }
+
+    // ============================================
+    // 자동 다음 학생 선택
+    // ============================================
+    function selectNextUnassignedStudent(currentId) {
+      const gradePrefix = state.division === 'elementary' ? '초' : state.division === 'middle' ? '중' : '고';
+      const targetGrade = `${gradePrefix}${state.grade}`;
+
+      const unassigned = Object.values(STUDENTS).filter(s =>
+        s.grade === targetGrade &&
+        isStudentEnrolled(s.id, state.subject) &&
+        !getStudentAssignment(s.id, state.subject, state.division, state.grade)
+      );
+
+      if (unassigned.length === 0) return;
+
+      const currentIndex = unassigned.findIndex(s => s.id === currentId);
+      let nextIndex = currentIndex === -1 ? 0 : currentIndex;
+
+      setTimeout(() => {
+        const newUnassigned = Object.values(STUDENTS).filter(s =>
+          s.grade === targetGrade &&
+          isStudentEnrolled(s.id, state.subject) &&
+          !getStudentAssignment(s.id, state.subject, state.division, state.grade)
+        );
+
+        if (newUnassigned.length > 0) {
+          const safeIndex = Math.min(nextIndex, newUnassigned.length - 1);
+          state.selectedIds.clear();
+          state.selectedIds.add(newUnassigned[safeIndex].id);
+          state.lastSelectedId = newUnassigned[safeIndex].id;
+          render();
+        }
+      }, 50);
+    }
+
+    // ============================================
+    // 이벤트 핸들러
+    // ============================================
+
+    function setSubject(subject) {
+      state.subject = subject;
+      state.selectedIds.clear();
+      render();
+    }
+
+    function setDivision(div) {
+      state.division = div;
+      state.grade = div === 'elementary' ? 5 : 1;
+      state.selectedIds.clear();
+
+      document.querySelectorAll('#div-middle, [onclick^="setDivision"]').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`[onclick="setDivision('${div}')"]`)?.classList.add('active');
+
+      updateGradeTabs();
+      render();
+    }
+
+    function setGrade(grade) {
+      state.grade = grade;
+      state.selectedIds.clear();
+
+      document.querySelectorAll('#grade-tabs .toggle-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`#grade-tabs [onclick="setGrade(${grade})"]`)?.classList.add('active');
+
+      render();
+    }
+
+    function updateGradeTabs() {
+      const grades = state.division === 'elementary' ? [5, 6] : [1, 2, 3];
+      document.getElementById('grade-tabs').innerHTML = grades.map(g => `
+        <button class="toggle-btn ${state.grade === g ? 'active' : ''}" onclick="setGrade(${g})" id="grade-${g}">${g}학년</button>
+      `).join('');
+    }
+
+    function handleStudentClick(event, id) {
+      if (event.shiftKey && state.lastSelectedId) {
+        const allIds = [...document.querySelectorAll('[data-id]')].map(el => el.dataset.id);
+        const start = allIds.indexOf(state.lastSelectedId);
+        const end = allIds.indexOf(id);
+        const [from, to] = start < end ? [start, end] : [end, start];
+        for (let i = from; i <= to; i++) state.selectedIds.add(allIds[i]);
+      } else if (event.ctrlKey || event.metaKey) {
+        state.selectedIds.has(id) ? state.selectedIds.delete(id) : state.selectedIds.add(id);
+      } else {
+        if (state.selectedIds.has(id) && state.selectedIds.size === 1) {
+          state.selectedIds.clear();
+        } else {
+          state.selectedIds.clear();
+          state.selectedIds.add(id);
+        }
+      }
+      state.lastSelectedId = id;
+      render();
+    }
+
+    function handleDragStart(event, id) {
+      state.draggedId = id;
+      event.target.classList.add('dragging');
+      event.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(event) {
+      state.draggedId = null;
+      event.target.classList.remove('dragging');
+      document.querySelectorAll('.drop-zone').forEach(el => el.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(event) {
+      event.preventDefault();
+      event.currentTarget.classList.add('drag-over');
+    }
+
+    function handleDragLeave(event) {
+      event.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleClassDrop(event, classId) {
+      event.preventDefault();
+      event.currentTarget.classList.remove('drag-over');
+      if (state.draggedId) assignStudentToClass(state.draggedId, classId);
+    }
+
+    function handleUnassignDrop(event) {
+      event.preventDefault();
+      event.currentTarget.classList.remove('drag-over');
+      if (state.draggedId) unassignStudent(state.draggedId);
+    }
+
+    function assignStudentToClass(studentId, classId, autoSelectNext = true) {
+      const student = STUDENTS[studentId];
+      if (!student) return;
+
+      const config = CLASS_CONFIG[state.subject]?.[state.division]?.[state.grade];
+      if (!config) return;
+
+      const wasUnassigned = !getStudentAssignment(studentId, state.subject, state.division, state.grade);
+
+      // 이전 반에서 제거
+      config.classes.forEach(c => {
+        c.students = c.students.filter(id => id !== studentId);
+      });
+
+      // 새 반에 추가
+      const targetClass = config.classes.find(c => c.id === classId);
+      if (targetClass) {
+        targetClass.students.push(studentId);
+        showToast(`${student.name}님이 ${targetClass.name}에 배정되었습니다`);
+      }
+
+      if (wasUnassigned && autoSelectNext && state.selectedIds.size === 1) {
+        selectNextUnassignedStudent(studentId);
+      } else {
+        render();
+      }
+    }
+
+    function unassignStudent(studentId) {
+      const student = STUDENTS[studentId];
+      if (!student) return;
+
+      const config = CLASS_CONFIG[state.subject]?.[state.division]?.[state.grade];
+      if (!config) return;
+
+      config.classes.forEach(c => {
+        c.students = c.students.filter(id => id !== studentId);
+      });
+
+      showToast(`${student.name}님의 ${SUBJECTS[state.subject].name} 배정이 해제되었습니다`);
+      render();
+    }
+
+    function assignToClass(classId) {
+      const selectedArray = [...state.selectedIds];
+      const shouldAutoSelect = selectedArray.length === 1;
+
+      selectedArray.forEach((id, idx) => {
+        assignStudentToClass(id, classId, shouldAutoSelect && idx === selectedArray.length - 1);
+      });
+
+      if (!shouldAutoSelect) {
+        state.selectedIds.clear();
+        render();
+      }
+    }
+
+    function unassignSelected() {
+      state.selectedIds.forEach(id => unassignStudent(id));
+      state.selectedIds.clear();
+      render();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = message;
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+    }
+
+    // ============================================
+    // 키보드 단축키
+    // ============================================
+    document.addEventListener('keydown', function(e) {
+      if (state.shortcutModalOpen) {
+        if (e.key === 'Escape') toggleShortcutModal();
+        return;
+      }
+
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+      const config = CLASS_CONFIG[state.subject]?.[state.division]?.[state.grade];
+
+      // Tab: 과목 전환
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const subjects = ['math', 'korean', 'english'];
+        const currentIdx = subjects.indexOf(state.subject);
+        const nextIdx = (currentIdx + 1) % subjects.length;
+        setSubject(subjects[nextIdx]);
+        return;
+      }
+
+      // Ctrl+숫자: 학부 변경
+      if (e.ctrlKey && ['1', '2', '3'].includes(e.key)) {
+        e.preventDefault();
+        const divisions = ['elementary', 'middle', 'high'];
+        setDivision(divisions[parseInt(e.key) - 1]);
+        return;
+      }
+
+      // 숫자: 학년 변경
+      if (!e.ctrlKey && ['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+        const grade = parseInt(e.key);
+        const validGrades = state.division === 'elementary' ? [5, 6] : [1, 2, 3];
+        if (validGrades.includes(grade)) setGrade(grade);
+        return;
+      }
+
+      // Ctrl+A: 전체 선택
+      if (e.ctrlKey && e.key === 'a') {
+        e.preventDefault();
+        const gradePrefix = state.division === 'elementary' ? '초' : state.division === 'middle' ? '중' : '고';
+        const targetGrade = `${gradePrefix}${state.grade}`;
+        const unassigned = Object.values(STUDENTS).filter(s =>
+          s.grade === targetGrade &&
+          isStudentEnrolled(s.id, state.subject) &&
+          !getStudentAssignment(s.id, state.subject, state.division, state.grade)
+        );
+
+        if (state.selectedIds.size === unassigned.length) {
+          state.selectedIds.clear();
+        } else {
+          unassigned.forEach(s => state.selectedIds.add(s.id));
+        }
+        render();
+        return;
+      }
+
+      // Escape: 선택 취소
+      if (e.key === 'Escape') {
+        state.selectedIds.clear();
+        render();
+        return;
+      }
+
+      // Q/W/E/R: 반 배정
+      if (config && state.selectedIds.size > 0) {
+        const keyMap = { 'q': 0, 'w': 1, 'e': 2, 'r': 3 };
+        const idx = keyMap[e.key.toLowerCase()];
+        if (idx !== undefined && idx < config.classes.length) {
+          assignToClass(config.classes[idx].id);
+          return;
+        }
+      }
+
+      // Backspace: 배정 해제
+      if (e.key === 'Backspace' && state.selectedIds.size > 0) {
+        e.preventDefault();
+        unassignSelected();
+        return;
+      }
+
+      // ?: 단축키 모달
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        toggleShortcutModal();
+        return;
+      }
+    });
+
+    // 초기 렌더링
+    render();
+  </script>
+</body>
+</html>

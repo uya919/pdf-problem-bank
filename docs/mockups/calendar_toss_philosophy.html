@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>토스 철학으로 재해석한 캘린더</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            grey: {
+              50: '#F9FAFB',
+              100: '#F3F4F6',
+              200: '#E5E7EB',
+              300: '#D1D5DB',
+              400: '#9CA3AF',
+              500: '#6B7280',
+              600: '#4B5563',
+              700: '#374151',
+              800: '#1F2937',
+              900: '#111827',
+            },
+            toss: {
+              blue: '#3182F6',
+              blueDark: '#1B64DA',
+              blueLight: '#E8F3FF',
+              red: '#F04452',
+              redLight: '#FFEBEE',
+              orange: '#FF8800',
+              orangeLight: '#FFF4E6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* 토스 스타일 트랜지션 */
+    .toss-transition {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 토스 스타일 호버 */
+    .toss-hover:hover {
+      transform: scale(0.98);
+    }
+    .toss-hover:active {
+      transform: scale(0.95);
+    }
+
+    /* 토스 스타일 탭 효과 */
+    .toss-tap {
+      transition: transform 0.1s ease;
+    }
+    .toss-tap:active {
+      transform: scale(0.97);
+    }
+
+    /* 부드러운 그림자 */
+    .toss-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    /* 선택된 상태 펄스 */
+    @keyframes soft-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .today-indicator {
+      animation: soft-pulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-grey-50 min-h-screen p-8">
+
+  <!-- 페이지 헤더 -->
+  <div class="max-w-4xl mx-auto mb-8">
+    <h1 class="text-2xl font-bold text-grey-900 mb-2">토스가 만들었다면?</h1>
+    <p class="text-grey-500">토스 UX 철학을 적용한 주간 캘린더 디자인</p>
+  </div>
+
+  <!-- 토스 철학 요약 -->
+  <div class="max-w-4xl mx-auto mb-8 bg-white rounded-2xl p-5 toss-shadow">
+    <h3 class="font-bold text-grey-900 mb-3">적용된 토스 UX 원칙</h3>
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div class="flex items-start gap-2">
+        <span class="text-toss-blue font-bold">1</span>
+        <div>
+          <span class="font-medium text-grey-800">Simplicity (단순함)</span>
+          <p class="text-grey-500 text-xs mt-0.5">특별히 배울 것 없이 직관적으로 이해</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-2">
+        <span class="text-toss-blue font-bold">2</span>
+        <div>
+          <span class="font-medium text-grey-800">1 Page / 1 Thing</span>
+          <p class="text-grey-500 text-xs mt-0.5">한 화면에 하나의 목적만</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-2">
+        <span class="text-toss-blue font-bold">3</span>
+        <div>
+          <span class="font-medium text-grey-800">심미적 사용성</span>
+          <p class="text-grey-500 text-xs mt-0.5">캐주얼하고 둥글둥글한 디자인</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-2">
+        <span class="text-toss-blue font-bold">4</span>
+        <div>
+          <span class="font-medium text-grey-800">정보 덩어리화</span>
+          <p class="text-grey-500 text-xs mt-0.5">그룹핑으로 인지 부하 최소화</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 최종 토스 스타일 캘린더 ========== -->
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl toss-shadow overflow-hidden">
+
+      <!-- 헤더: 미니멀하지만 터치 영역 충분 -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-1">
+          <!-- 이전 버튼: 44px 터치 영역 -->
+          <button class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-grey-100 toss-tap text-grey-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+          <!-- 주간 표시: 친근한 톤 -->
+          <span class="text-lg font-bold text-grey-900 px-2">12월 3주차</span>
+
+          <!-- 다음 버튼 -->
+          <button class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-grey-100 toss-tap text-grey-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 오늘 버튼: 토스 블루, 둥글둥글 -->
+        <button class="px-4 py-2 bg-toss-blue text-white text-sm font-semibold rounded-full toss-tap hover:bg-toss-blueDark">
+          오늘
+        </button>
+      </div>
+
+      <!-- 주간 그리드: 넉넉한 터치 영역 + 명확한 구분 -->
+      <div class="px-3 pb-4">
+        <div class="grid grid-cols-7 gap-2">
+
+          <!-- 월요일 16일 -->
+          <div class="toss-tap cursor-pointer">
+            <div class="rounded-2xl p-3 hover:bg-grey-50 toss-transition min-h-[100px]">
+              <div class="text-center mb-2">
+                <div class="text-xs text-grey-400 mb-1">월</div>
+                <div class="text-lg font-semibold text-grey-700">16</div>
+              </div>
+              <!-- 일정 없음: 깔끔하게 비워둠 -->
+            </div>
+          </div>
+
+          <!-- 화요일 17일: 공지 1개 -->
+          <div class="toss-tap cursor-pointer">
+            <div class="rounded-2xl p-3 hover:bg-grey-50 toss-transition min-h-[100px]">
+              <div class="text-center mb-2">
+                <div class="text-xs text-grey-400 mb-1">화</div>
+                <div class="text-lg font-semibold text-grey-700">17</div>
+              </div>
+              <!-- 공지: 토스 스타일 뱃지 -->
+              <div class="flex justify-center">
+                <div class="px-2 py-1 bg-grey-100 rounded-lg">
+                  <span class="text-[11px] text-grey-600 font-medium">교재변경</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 수요일 18일 -->
+          <div class="toss-tap cursor-pointer">
+            <div class="rounded-2xl p-3 hover:bg-grey-50 toss-transition min-h-[100px]">
+              <div class="text-center mb-2">
+                <div class="text-xs text-grey-400 mb-1">수</div>
+                <div class="text-lg font-semibold text-grey-700">18</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 목요일 19일: 오늘 ★ -->
+          <div class="toss-tap cursor-pointer">
+            <div class="rounded-2xl p-3 bg-toss-blueLight toss-transition min-h-[100px] relative">
+              <div class="text-center mb-2">
+                <div class="text-xs text-toss-blue font-medium mb-1">목</div>
+                <!-- 오늘 날짜: 원형 배경 -->
+                <div class="inline-flex items-center justify-center w-9 h-9 bg-toss-blue rounded-full today-indicator">
+                  <span class="text-lg font-bold text-white">19</span>
+                </div>
+              </div>
+              <!-- 공지들: 중요도 순 정렬 -->
+              <div class="space-y-1.5">
+                <div class="flex justify-center">
+                  <div class="px-2 py-1 bg-toss-orangeLight rounded-lg">
+                    <span class="text-[11px] text-toss-orange font-semibold">결석 2명</span>
+                  </div>
+                </div>
+                <div class="flex justify-center">
+                  <div class="px-2 py-1 bg-white/70 rounded-lg">
+                    <span class="text-[11px] text-grey-600 font-medium">상담</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 금요일 20일: 휴원 -->
+          <div class="toss-tap cursor-pointer">
+            <div class="rounded-2xl p-3 hover:bg-grey-50 toss-transition min-h-[100px]">
+              <div class="text-center mb-2">
+                <div class="text-xs text-grey-400 mb-1">금</div>
+                <div class="text-lg font-semibold text-grey-700">20</div>
+              </div>
+              <div class="flex justify-center">
+                <div class="px-2 py-1 bg-toss-redLight rounded-lg">
+                  <span class="text-[11px] text-toss-red font-semibold">휴원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 토요일 21일 -->
+          <div class="toss-tap cursor-pointer">
+            <div class="rounded-2xl p-3 hover:bg-grey-50 toss-transition min-h-[100px]">
+              <div class="text-center mb-2">
+                <div class="text-xs text-grey-300 mb-1">토</div>
+                <div class="text-lg font-semibold text-grey-400">21</div>
+              </div>
+              <div class="flex justify-center">
+                <div class="px-2 py-1 bg-grey-50 rounded-lg">
+                  <span class="text-[11px] text-grey-400 font-medium">특강</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 일요일 22일 -->
+          <div class="toss-tap cursor-pointer">
+            <div class="rounded-2xl p-3 hover:bg-grey-50 toss-transition min-h-[100px]">
+              <div class="text-center mb-2">
+                <div class="text-xs text-grey-300 mb-1">일</div>
+                <div class="text-lg font-semibold text-grey-400">22</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 디자인 해설 -->
+  <div class="max-w-4xl mx-auto mt-8 space-y-4">
+
+    <h2 class="text-lg font-bold text-grey-900">토스 철학 적용 포인트</h2>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- 포인트 1 -->
+      <div class="bg-white rounded-2xl p-5 toss-shadow">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-toss-blueLight rounded-full flex items-center justify-center">
+            <span class="text-toss-blue font-bold text-sm">1</span>
+          </div>
+          <h3 class="font-bold text-grey-900">둥글둥글한 디자인</h3>
+        </div>
+        <p class="text-sm text-grey-600 leading-relaxed">
+          직선적인 border 대신 <code class="bg-grey-100 px-1 rounded">rounded-2xl</code>, <code class="bg-grey-100 px-1 rounded">rounded-3xl</code> 사용.
+          딱딱한 금융앱 느낌이 아닌 친근함.
+        </p>
+      </div>
+
+      <!-- 포인트 2 -->
+      <div class="bg-white rounded-2xl p-5 toss-shadow">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-toss-blueLight rounded-full flex items-center justify-center">
+            <span class="text-toss-blue font-bold text-sm">2</span>
+          </div>
+          <h3 class="font-bold text-grey-900">피츠의 법칙</h3>
+        </div>
+        <p class="text-sm text-grey-600 leading-relaxed">
+          터치 영역 최소 44px 확보 (버튼 <code class="bg-grey-100 px-1 rounded">w-11 h-11</code>).
+          손가락 지문 면적(10-14mm) 고려.
+        </p>
+      </div>
+
+      <!-- 포인트 3 -->
+      <div class="bg-white rounded-2xl p-5 toss-shadow">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-toss-blueLight rounded-full flex items-center justify-center">
+            <span class="text-toss-blue font-bold text-sm">3</span>
+          </div>
+          <h3 class="font-bold text-grey-900">색상 절제 + 의미 부여</h3>
+        </div>
+        <p class="text-sm text-grey-600 leading-relaxed">
+          <span class="inline-block w-3 h-3 bg-toss-blue rounded-full"></span> 블루 = 오늘/선택<br>
+          <span class="inline-block w-3 h-3 bg-toss-orange rounded-full"></span> 오렌지 = 주의(결석)<br>
+          <span class="inline-block w-3 h-3 bg-toss-red rounded-full"></span> 레드 = 휴원/중요
+        </p>
+      </div>
+
+      <!-- 포인트 4 -->
+      <div class="bg-white rounded-2xl p-5 toss-shadow">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-toss-blueLight rounded-full flex items-center justify-center">
+            <span class="text-toss-blue font-bold text-sm">4</span>
+          </div>
+          <h3 class="font-bold text-grey-900">정보 덩어리화 (밀러의 법칙)</h3>
+        </div>
+        <p class="text-sm text-grey-600 leading-relaxed">
+          각 날짜 셀 = 하나의 덩어리.
+          공지는 뱃지로 그룹화.
+          한 셀에 최대 2-3개 정보만.
+        </p>
+      </div>
+
+      <!-- 포인트 5 -->
+      <div class="bg-white rounded-2xl p-5 toss-shadow">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-toss-blueLight rounded-full flex items-center justify-center">
+            <span class="text-toss-blue font-bold text-sm">5</span>
+          </div>
+          <h3 class="font-bold text-grey-900">마이크로 인터랙션</h3>
+        </div>
+        <p class="text-sm text-grey-600 leading-relaxed">
+          탭 시 <code class="bg-grey-100 px-1 rounded">scale(0.97)</code> 피드백.
+          0.2s cubic-bezier 트랜지션.
+          오늘 표시에 부드러운 펄스 애니메이션.
+        </p>
+      </div>
+
+      <!-- 포인트 6 -->
+      <div class="bg-white rounded-2xl p-5 toss-shadow">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-toss-blueLight rounded-full flex items-center justify-center">
+            <span class="text-toss-blue font-bold text-sm">6</span>
+          </div>
+          <h3 class="font-bold text-grey-900">Gap 기반 구분 (선 제거)</h3>
+        </div>
+        <p class="text-sm text-grey-600 leading-relaxed">
+          회색 선(border) 대신 <code class="bg-grey-100 px-1 rounded">gap-2</code>로 여백 구분.
+          더 가볍고 현대적인 느낌.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 비교: 이전 vs 토스 스타일 -->
+  <div class="max-w-4xl mx-auto mt-12 mb-8">
+    <h2 class="text-lg font-bold text-grey-900 mb-4">Before vs After 비교</h2>
+
+    <div class="grid grid-cols-2 gap-6">
+
+      <!-- Before: 기존 -->
+      <div>
+        <div class="text-sm font-medium text-grey-500 mb-2">BEFORE (회색 선 기반)</div>
+        <div class="bg-white rounded-xl border border-grey-200 overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-2 border-b border-grey-100">
+            <span class="text-sm font-semibold text-grey-900">12월 3주</span>
+            <span class="text-xs text-blue-500">오늘</span>
+          </div>
+          <div class="grid grid-cols-7">
+            <div class="p-2 border-r border-grey-100 min-h-[70px]">
+              <div class="text-[10px] text-grey-400">월</div>
+              <div class="text-sm text-grey-600">16</div>
+            </div>
+            <div class="p-2 border-r border-grey-100 min-h-[70px]">
+              <div class="text-[10px] text-grey-400">화</div>
+              <div class="text-sm text-grey-600">17</div>
+              <div class="text-[9px] text-grey-500 mt-1">교재</div>
+            </div>
+            <div class="p-2 border-r border-grey-100 min-h-[70px]">
+              <div class="text-[10px] text-grey-400">수</div>
+              <div class="text-sm text-grey-600">18</div>
+            </div>
+            <div class="p-2 border-r border-grey-100 bg-blue-50 min-h-[70px]">
+              <div class="text-[10px] text-blue-400">목</div>
+              <div class="text-sm text-blue-600 font-medium">19</div>
+              <div class="text-[9px] text-orange-500 mt-1">결석</div>
+            </div>
+            <div class="p-2 border-r border-grey-100 min-h-[70px]">
+              <div class="text-[10px] text-grey-400">금</div>
+              <div class="text-sm text-grey-600">20</div>
+              <div class="text-[9px] text-red-500 mt-1">휴원</div>
+            </div>
+            <div class="p-2 border-r border-grey-100 min-h-[70px]">
+              <div class="text-[10px] text-grey-300">토</div>
+              <div class="text-sm text-grey-400">21</div>
+            </div>
+            <div class="p-2 min-h-[70px]">
+              <div class="text-[10px] text-grey-300">일</div>
+              <div class="text-sm text-grey-400">22</div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-xs text-grey-400">
+          - 딱딱한 직선 테두리<br>
+          - 작은 터치 영역<br>
+          - 정보가 흩어져 보임
+        </div>
+      </div>
+
+      <!-- After: 토스 -->
+      <div>
+        <div class="text-sm font-medium text-toss-blue mb-2">AFTER (토스 스타일)</div>
+        <div class="bg-white rounded-2xl toss-shadow overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3">
+            <span class="text-base font-bold text-grey-900">12월 3주차</span>
+            <span class="px-3 py-1 bg-toss-blue text-white text-xs font-semibold rounded-full">오늘</span>
+          </div>
+          <div class="px-2 pb-3">
+            <div class="grid grid-cols-7 gap-1">
+              <div class="rounded-xl p-2 min-h-[70px] text-center">
+                <div class="text-[10px] text-grey-400">월</div>
+                <div class="text-sm font-medium text-grey-700">16</div>
+              </div>
+              <div class="rounded-xl p-2 min-h-[70px] text-center">
+                <div class="text-[10px] text-grey-400">화</div>
+                <div class="text-sm font-medium text-grey-700">17</div>
+                <div class="mt-1 px-1.5 py-0.5 bg-grey-100 rounded text-[9px] text-grey-600">교재</div>
+              </div>
+              <div class="rounded-xl p-2 min-h-[70px] text-center">
+                <div class="text-[10px] text-grey-400">수</div>
+                <div class="text-sm font-medium text-grey-700">18</div>
+              </div>
+              <div class="rounded-xl p-2 bg-toss-blueLight min-h-[70px] text-center">
+                <div class="text-[10px] text-toss-blue font-medium">목</div>
+                <div class="inline-flex items-center justify-center w-6 h-6 bg-toss-blue rounded-full">
+                  <span class="text-sm font-bold text-white">19</span>
+                </div>
+                <div class="mt-1 px-1.5 py-0.5 bg-toss-orangeLight rounded text-[9px] text-toss-orange font-medium">결석</div>
+              </div>
+              <div class="rounded-xl p-2 min-h-[70px] text-center">
+                <div class="text-[10px] text-grey-400">금</div>
+                <div class="text-sm font-medium text-grey-700">20</div>
+                <div class="mt-1 px-1.5 py-0.5 bg-toss-redLight rounded text-[9px] text-toss-red font-medium">휴원</div>
+              </div>
+              <div class="rounded-xl p-2 min-h-[70px] text-center">
+                <div class="text-[10px] text-grey-300">토</div>
+                <div class="text-sm font-medium text-grey-400">21</div>
+              </div>
+              <div class="rounded-xl p-2 min-h-[70px] text-center">
+                <div class="text-[10px] text-grey-300">일</div>
+                <div class="text-sm font-medium text-grey-400">22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-xs text-toss-blue">
+          - 둥글둥글한 모서리<br>
+          - 넉넉한 터치 영역<br>
+          - 색상 뱃지로 정보 그룹화
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 안내 팝업 -->
+  <div class="fixed bottom-4 right-4 max-w-xs bg-grey-900 text-white rounded-2xl p-4 shadow-lg">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-6 h-6 bg-toss-blue rounded-full flex items-center justify-center text-xs font-bold">토</div>
+      <span class="font-bold">토스 철학 적용</span>
+    </div>
+    <p class="text-sm text-grey-300">각 날짜 셀을 클릭해보세요. 탭 피드백이 적용되어 있습니다.</p>
+    <button onclick="this.parentElement.remove()" class="absolute top-2 right-3 text-grey-500 hover:text-white">×</button>
+  </div>
+
+</body>
+</html>

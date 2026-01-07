@@ -33,7 +33,7 @@ const navItems: NavItem[] = [
   {
     icon: Library,
     label: '문제은행',
-    path: '/bank',
+    path: '/problems',  // Phase 65: 토스 스타일 문제은행
     description: '문제 검색, 관리'
   },
   {
@@ -99,7 +99,8 @@ export function MinimalSidebar() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path ||
-            (item.path === '/' && location.pathname.startsWith('/labeling'));
+            (item.path === '/' && location.pathname.startsWith('/labeling')) ||
+            (item.path === '/problems' && location.pathname.startsWith('/problems'));
 
           return (
             <NavLink

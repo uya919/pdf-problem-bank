@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC 관리자 대시보드 - 캘린더 + 공지 (v4)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            grey: {
+              50: '#F9FAFB',
+              100: '#F3F4F6',
+              200: '#E5E7EB',
+              300: '#D1D5DB',
+              400: '#9CA3AF',
+              500: '#6B7280',
+              600: '#4B5563',
+              700: '#374151',
+              800: '#1F2937',
+              900: '#111827',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-grey-50 min-h-screen">
+
+  <!-- ========== 상단 네비게이션 ========== -->
+  <nav class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-grey-200 flex items-center justify-between px-6 z-[100]">
+    <div class="flex items-center gap-8">
+      <a href="#" class="flex items-center gap-2 no-underline">
+        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">혜</div>
+        <span class="text-lg font-bold text-grey-900">혜윰</span>
+      </a>
+      <div class="flex gap-1">
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-900 bg-grey-100">대시보드</a>
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-500 hover:text-grey-700 hover:bg-grey-50">학년별현황</a>
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-500 hover:text-grey-700 hover:bg-grey-50">학생</a>
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-500 hover:text-grey-700 hover:bg-grey-50">출결</a>
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-500 hover:text-grey-700 hover:bg-grey-50">운영</a>
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg text-grey-500 hover:text-grey-700 hover:bg-grey-50">순환수업</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1 p-1 bg-grey-100 rounded-lg">
+        <button class="px-3 py-1.5 text-sm font-medium text-white bg-blue-500 rounded-md">전체</button>
+        <button class="px-3 py-1.5 text-sm font-medium text-grey-600 hover:bg-white rounded-md">수학</button>
+        <button class="px-3 py-1.5 text-sm font-medium text-grey-600 hover:bg-white rounded-md">영어</button>
+        <button class="px-3 py-1.5 text-sm font-medium text-grey-600 hover:bg-white rounded-md">국어</button>
+      </div>
+      <div class="w-px h-6 bg-grey-200"></div>
+      <button class="w-10 h-10 flex items-center justify-center text-grey-500 hover:bg-grey-50 rounded-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </button>
+      <button class="w-10 h-10 flex items-center justify-center text-grey-500 hover:bg-grey-50 rounded-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </button>
+      <div class="flex items-center gap-2 py-1.5 pl-1.5 pr-3 bg-grey-50 rounded-full cursor-pointer hover:bg-grey-100">
+        <div class="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">김</div>
+        <span class="text-sm font-medium text-grey-900">김수학</span>
+        <span class="text-xs text-grey-500">수학 관리자</span>
+        <svg class="w-4 h-4 text-grey-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== 메인 콘텐츠 ========== -->
+  <main class="pt-16 lg:mr-14 transition-all">
+    <div class="p-6 space-y-6">
+
+      <!-- ===== 주간 캘린더 + 공지사항 (PC 버전) ===== -->
+      <div class="bg-white border border-grey-200 rounded-2xl overflow-hidden">
+        <!-- 헤더 -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-grey-100">
+          <div class="flex items-center gap-3">
+            <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-grey-100 text-grey-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h2 class="text-lg font-bold text-grey-900">2024년 12월 3주차</h2>
+            <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-grey-100 text-grey-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">오늘</button>
+            <button class="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-grey-600 bg-grey-100 rounded-lg hover:bg-grey-200">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              월간
+            </button>
+          </div>
+        </div>
+
+        <!-- 주간 날짜 그리드 (공지사항 포함) -->
+        <div class="grid grid-cols-7 divide-x divide-grey-100">
+
+          <!-- 월요일 16일 -->
+          <button class="flex flex-col p-3 hover:bg-grey-50 transition-colors text-left min-h-[100px]">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-grey-400">월</span>
+              <span class="text-lg font-semibold text-grey-700">16</span>
+            </div>
+            <!-- 공지사항 없음 -->
+          </button>
+
+          <!-- 화요일 17일 -->
+          <button class="flex flex-col p-3 hover:bg-grey-50 transition-colors text-left min-h-[100px]">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-grey-400">화</span>
+              <span class="text-lg font-semibold text-grey-700">17</span>
+            </div>
+            <!-- 공지 1개 -->
+            <div class="text-[11px] text-grey-500 bg-grey-100 rounded px-1.5 py-0.5 truncate">
+              수학 교재 변경
+            </div>
+          </button>
+
+          <!-- 수요일 18일 -->
+          <button class="flex flex-col p-3 hover:bg-grey-50 transition-colors text-left min-h-[100px]">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-grey-400">수</span>
+              <span class="text-lg font-semibold text-grey-700">18</span>
+            </div>
+            <!-- 공지사항 없음 -->
+          </button>
+
+          <!-- 목요일 19일 (오늘 - 선택됨) -->
+          <button class="flex flex-col p-3 bg-blue-50 text-left min-h-[100px] relative">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-blue-400">목</span>
+              <div class="flex items-center gap-1">
+                <span class="text-[10px] font-medium text-blue-500 bg-blue-100 px-1.5 py-0.5 rounded">오늘</span>
+                <span class="text-lg font-bold text-blue-600">19</span>
+              </div>
+            </div>
+            <!-- 공지 2개 -->
+            <div class="space-y-1">
+              <div class="text-[11px] text-orange-600 bg-orange-100 rounded px-1.5 py-0.5 truncate">
+                ⚠ 김민수 무단결석
+              </div>
+              <div class="text-[11px] text-blue-600 bg-blue-100 rounded px-1.5 py-0.5 truncate">
+                학부모 상담 14:00
+              </div>
+            </div>
+          </button>
+
+          <!-- 금요일 20일 -->
+          <button class="flex flex-col p-3 hover:bg-grey-50 transition-colors text-left min-h-[100px]">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-grey-400">금</span>
+              <span class="text-lg font-semibold text-grey-700">20</span>
+            </div>
+            <!-- 공지 1개 -->
+            <div class="text-[11px] text-red-600 bg-red-50 rounded px-1.5 py-0.5 truncate">
+              🎄 휴원 안내
+            </div>
+          </button>
+
+          <!-- 토요일 21일 -->
+          <button class="flex flex-col p-3 hover:bg-red-50 transition-colors text-left min-h-[100px]">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-red-300">토</span>
+              <span class="text-lg font-semibold text-red-400">21</span>
+            </div>
+            <!-- 공지 1개 -->
+            <div class="text-[11px] text-grey-500 bg-grey-100 rounded px-1.5 py-0.5 truncate">
+              특강 09:00
+            </div>
+          </button>
+
+          <!-- 일요일 22일 -->
+          <button class="flex flex-col p-3 hover:bg-red-50 transition-colors text-left min-h-[100px]">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-red-300">일</span>
+              <span class="text-lg font-semibold text-red-400">22</span>
+            </div>
+            <span class="text-[10px] text-grey-400">휴원</span>
+          </button>
+
+        </div>
+      </div>
+      <!-- ===== 주간 캘린더 끝 ===== -->
+
+      <!-- 지표 바 -->
+      <div class="flex gap-4">
+        <div class="flex-1 bg-white border border-grey-200 rounded-xl p-4">
+          <div class="text-xs text-grey-500 mb-1">오늘 수업</div>
+          <div class="text-2xl font-bold text-grey-900">12<span class="text-sm font-medium text-grey-500 ml-1">개</span></div>
+        </div>
+        <div class="flex-1 bg-white border border-grey-200 rounded-xl p-4">
+          <div class="text-xs text-grey-500 mb-1">미완료 출결</div>
+          <div class="text-2xl font-bold text-grey-900">
+            3<span class="text-sm font-medium text-grey-500 ml-1">건</span>
+            <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-orange-50 text-orange-500 rounded">확인 필요</span>
+          </div>
+        </div>
+        <div class="flex-1 bg-white border border-grey-200 rounded-xl p-4">
+          <div class="text-xs text-grey-500 mb-1">미기록 진도</div>
+          <div class="text-2xl font-bold text-grey-900">2<span class="text-sm font-medium text-grey-500 ml-1">건</span></div>
+        </div>
+        <div class="flex-1 bg-white border border-grey-200 rounded-xl p-4">
+          <div class="text-xs text-grey-500 mb-1">금주 출석률</div>
+          <div class="text-2xl font-bold text-grey-900">96.2<span class="text-sm font-medium text-grey-500 ml-1">%</span></div>
+        </div>
+      </div>
+
+      <!-- 현재 과목 필터 표시 -->
+      <div class="flex items-center gap-4 px-4 py-2 bg-grey-100 rounded-xl">
+        <span class="text-sm text-grey-600">전체 과목 기준 대시보드</span>
+        <div class="flex gap-4 text-sm">
+          <span class="text-grey-500">수학 <span class="font-semibold text-blue-600">7개</span></span>
+          <span class="text-grey-500">영어 <span class="font-semibold text-green-600">3개</span></span>
+          <span class="text-grey-500">국어 <span class="font-semibold text-orange-600">2개</span></span>
+        </div>
+      </div>
+
+      <!-- 현재 진행 중 수업 -->
+      <section class="bg-white border border-grey-200 rounded-2xl overflow-hidden">
+        <div class="px-5 py-4 border-b border-grey-100 flex items-center justify-between">
+          <h3 class="font-semibold text-grey-900 flex items-center gap-2">
+            <span class="text-base">📚</span>
+            현재 진행 중 (14:00 ~ 15:30)
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+              <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+              진행중
+            </span>
+          </h3>
+          <span class="text-sm text-grey-500">2개 수업</span>
+        </div>
+        <div class="p-5">
+          <div class="grid grid-cols-4 gap-4">
+            <div class="bg-grey-50 rounded-xl p-4 cursor-pointer transition-all hover:bg-grey-100 border-2 border-orange-400">
+              <div class="flex items-center justify-between mb-3">
+                <span class="font-semibold text-grey-900">중3A</span>
+                <span class="px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-500 rounded">상</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-grey-500 mb-3">
+                <span>👥 8명</span>
+                <span>·</span>
+                <span>김수학</span>
+              </div>
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-1.5 text-xs">
+                  <span class="text-orange-500">⚠</span>
+                  <span class="text-orange-500 font-medium">출결 1명 미확인</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs">
+                  <span class="text-grey-400">⏳</span>
+                  <span class="text-grey-600">진도 확인 중</span>
+                </div>
+              </div>
+            </div>
+            <div class="bg-grey-50 rounded-xl p-4 cursor-pointer transition-all hover:bg-grey-100 border-2 border-transparent">
+              <div class="flex items-center justify-between mb-3">
+                <span class="font-semibold text-grey-900">고1B</span>
+                <span class="px-2 py-0.5 text-xs font-semibold bg-blue-50 text-blue-500 rounded">중</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-grey-500 mb-3">
+                <span>👥 6명</span>
+                <span>·</span>
+                <span>이수학</span>
+              </div>
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-1.5 text-xs">
+                  <span class="text-green-500">✓</span>
+                  <span class="text-grey-600">출결 완료</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs">
+                  <span class="text-green-500">✓</span>
+                  <span class="text-grey-600">진도 p.83-86</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 오늘 할 일 바 -->
+      <div class="flex gap-4 p-4 bg-grey-100 rounded-xl">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm cursor-pointer transition-all hover:shadow-md bg-orange-50 text-orange-600">
+          <span>⚠</span>
+          <span>출결 미입력</span>
+          <span class="font-semibold">3건</span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm cursor-pointer transition-all hover:shadow-md bg-orange-50 text-orange-600">
+          <span>📝</span>
+          <span>진도 미기록</span>
+          <span class="font-semibold">2건</span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm cursor-pointer transition-all hover:shadow-md bg-white text-grey-600">
+          <span>📚</span>
+          <span>숙제 미확인</span>
+          <span class="font-semibold">8건</span>
+        </div>
+      </div>
+
+      <!-- 오늘 일정 -->
+      <section class="bg-white border border-grey-200 rounded-2xl overflow-hidden">
+        <div class="px-5 py-4 border-b border-grey-100 flex items-center justify-between">
+          <h3 class="font-semibold text-grey-900 flex items-center gap-2">
+            <span class="text-base">📅</span>
+            12월 19일 (목) 수업 일정
+          </h3>
+          <span class="text-sm text-grey-500">총 12개 수업</span>
+        </div>
+        <div class="p-5">
+          <div class="flex items-stretch py-4 border-b border-grey-100 opacity-60">
+            <div class="w-24 flex-shrink-0">
+              <div class="text-sm font-semibold text-grey-500">09:00</div>
+              <div class="text-xs text-grey-400">~10:30</div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-grey-100 text-grey-500">중1A · 박수학 ✓</div>
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-grey-100 text-grey-500">중1B · 김영어 ✓</div>
+            </div>
+          </div>
+          <div class="flex items-stretch py-4 border-b border-grey-100 opacity-60">
+            <div class="w-24 flex-shrink-0">
+              <div class="text-sm font-semibold text-grey-500">10:30</div>
+              <div class="text-xs text-grey-400">~12:00</div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-grey-100 text-grey-500">중2A · 박수학 ✓</div>
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-grey-100 text-grey-500">중2B · 이영어 ✓</div>
+            </div>
+          </div>
+          <div class="flex items-stretch py-4 border-b border-grey-100 bg-blue-50 -mx-5 px-5 rounded-lg">
+            <div class="w-24 flex-shrink-0">
+              <div class="text-sm font-semibold text-blue-600">14:00</div>
+              <div class="text-xs text-blue-400">~15:30</div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 text-blue-600 font-medium">
+                중3A · 김수학
+                <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>
+              </div>
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-100 text-blue-600 font-medium">고1B · 이수학 ✓</div>
+            </div>
+          </div>
+          <div class="flex items-stretch py-4 border-b border-grey-100">
+            <div class="w-24 flex-shrink-0">
+              <div class="text-sm font-semibold text-grey-900">16:00</div>
+              <div class="text-xs text-grey-500">~17:30</div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-grey-50 text-grey-600">고2A · 박수학</div>
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-grey-50 text-grey-600">고2B · 김영어</div>
+            </div>
+          </div>
+          <div class="flex items-stretch py-4">
+            <div class="w-24 flex-shrink-0">
+              <div class="text-sm font-semibold text-grey-900">18:00</div>
+              <div class="text-xs text-grey-500">~19:30</div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-grey-50 text-grey-600">고3A · 김수학</div>
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-grey-50 text-grey-600">고3B · 이수학</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- 우측 사이드바 -->
+  <aside class="fixed top-16 right-0 h-[calc(100vh-64px)] w-14 bg-white border-l border-grey-200 z-50">
+    <button class="absolute top-4 left-0 -translate-x-1/2 w-6 h-6 bg-white border border-grey-200 rounded-full flex items-center justify-center text-grey-500 hover:text-grey-700 hover:border-blue-500 hover:bg-grey-50 z-10">
+      <svg class="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+    <div class="flex flex-col items-center pt-14 gap-1">
+      <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-grey-50 text-lg">👤</button>
+      <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-grey-50 text-lg relative">
+        📋
+        <span class="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] font-semibold text-white bg-blue-500 rounded-full flex items-center justify-center">13</span>
+      </button>
+      <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-grey-50 text-lg relative">
+        ✓
+        <span class="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] font-semibold text-white bg-red-500 rounded-full flex items-center justify-center">3</span>
+      </button>
+      <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-grey-50 text-lg relative">
+        🔔
+        <span class="absolute top-1 right-1 min-w-4 h-4 px-1 text-[10px] font-semibold text-white bg-red-500 rounded-full flex items-center justify-center">3</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========== 모바일 버전 비교 (우측 고정) ========== -->
+  <div class="fixed right-20 bottom-4 z-50">
+    <button onclick="toggleMobilePreview()" class="px-4 py-2 bg-grey-800 text-white rounded-lg text-sm font-medium shadow-lg hover:bg-grey-700">
+      📱 모바일 버전 비교
+    </button>
+  </div>
+
+  <!-- 모바일 프리뷰 -->
+  <div id="mobilePreview" class="hidden fixed right-20 top-20 bottom-20 w-[375px] bg-white rounded-2xl shadow-2xl border border-grey-200 overflow-hidden z-40">
+    <div class="h-full overflow-y-auto">
+      <!-- 모바일 헤더 -->
+      <header class="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-10">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-lg font-bold text-blue-500">혜윰 관리자</h1>
+            <p class="text-xs text-gray-500">원장님 대시보드</p>
+          </div>
+          <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
+            <span class="text-sm font-bold text-blue-600">원</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-4 space-y-4 bg-grey-50">
+        <!-- 모바일 DateSelector (점으로 공지 표시) -->
+        <button class="w-full flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-100">
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span class="font-semibold text-gray-900">12월 19일</span>
+          <span class="text-gray-500">(목)</span>
+          <span class="px-2 py-0.5 bg-blue-50 text-blue-500 text-xs font-medium rounded-full">오늘</span>
+          <svg class="w-4 h-4 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <!-- 모바일 주간 드롭다운 (펼쳐진 상태로 표시) -->
+        <div class="bg-white rounded-2xl border border-grey-100 overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-grey-100">
+            <div class="flex items-center gap-2">
+              <button class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-grey-100 text-grey-600 text-sm">◀</button>
+              <span class="font-medium text-grey-700 text-sm">12월 3주차</span>
+              <button class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-grey-100 text-grey-600 text-sm">▶</button>
+            </div>
+            <button class="px-2 py-1 bg-grey-100 rounded text-xs text-grey-600">월간</button>
+          </div>
+
+          <div class="px-3 py-2">
+            <div class="flex justify-between mb-1">
+              <span class="text-[10px] w-9 text-center text-grey-400">월</span>
+              <span class="text-[10px] w-9 text-center text-grey-400">화</span>
+              <span class="text-[10px] w-9 text-center text-grey-400">수</span>
+              <span class="text-[10px] w-9 text-center text-grey-400">목</span>
+              <span class="text-[10px] w-9 text-center text-grey-400">금</span>
+              <span class="text-[10px] w-9 text-center text-red-300">토</span>
+              <span class="text-[10px] w-9 text-center text-red-300">일</span>
+            </div>
+            <div class="flex justify-between">
+              <!-- 모바일: 점으로 공지 표시 -->
+              <button class="flex flex-col items-center py-1.5 rounded-lg min-w-[36px]">
+                <span class="text-sm font-medium text-grey-700">16</span>
+              </button>
+              <button class="flex flex-col items-center py-1.5 rounded-lg min-w-[36px]">
+                <span class="text-sm font-medium text-grey-700">17</span>
+                <div class="w-1 h-1 rounded-full mt-0.5 bg-blue-500"></div>
+              </button>
+              <button class="flex flex-col items-center py-1.5 rounded-lg min-w-[36px]">
+                <span class="text-sm font-medium text-grey-700">18</span>
+              </button>
+              <button class="flex flex-col items-center py-1.5 rounded-lg min-w-[36px] bg-blue-500">
+                <span class="text-sm font-medium text-white">19</span>
+                <div class="flex gap-0.5 mt-0.5">
+                  <div class="w-1 h-1 rounded-full bg-orange-300"></div>
+                  <div class="w-1 h-1 rounded-full bg-white"></div>
+                </div>
+              </button>
+              <button class="flex flex-col items-center py-1.5 rounded-lg min-w-[36px]">
+                <span class="text-sm font-medium text-grey-700">20</span>
+                <div class="w-1 h-1 rounded-full mt-0.5 bg-red-400"></div>
+              </button>
+              <button class="flex flex-col items-center py-1.5 rounded-lg min-w-[36px]">
+                <span class="text-sm font-medium text-red-400">21</span>
+                <div class="w-1 h-1 rounded-full mt-0.5 bg-grey-400"></div>
+              </button>
+              <button class="flex flex-col items-center py-1.5 rounded-lg min-w-[36px]">
+                <span class="text-sm font-medium text-red-400">22</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 인사 -->
+        <div>
+          <p class="text-sm text-gray-500">안녕하세요, 원장님</p>
+          <h2 class="text-lg font-bold">오늘 <span class="text-blue-500">12</span>개 수업이 있습니다</h2>
+        </div>
+
+        <!-- KPI -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="grid grid-cols-5 gap-2 text-center">
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 text-sm">🕐</div>
+              <span class="text-lg font-bold mt-1 text-green-600">2</span>
+              <span class="text-[10px] text-gray-500">진행중</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-sm">📅</div>
+              <span class="text-lg font-bold mt-1 text-blue-500">5</span>
+              <span class="text-[10px] text-gray-500">예정</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 text-sm">✓</div>
+              <span class="text-lg font-bold mt-1 text-gray-600">5</span>
+              <span class="text-[10px] text-gray-500">완료</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-600 text-sm">👤</div>
+              <span class="text-lg font-bold mt-1 text-red-600">2</span>
+              <span class="text-[10px] text-gray-500">결석</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 text-sm">📝</div>
+              <span class="text-lg font-bold mt-1 text-orange-600">3</span>
+              <span class="text-[10px] text-gray-500">미입력</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <button onclick="toggleMobilePreview()" class="absolute top-2 right-2 w-8 h-8 bg-grey-100 rounded-full flex items-center justify-center hover:bg-grey-200">✕</button>
+  </div>
+
+  <!-- 변경사항 안내 -->
+  <div class="fixed bottom-4 left-4 max-w-md bg-blue-600 text-white rounded-xl p-4 shadow-lg z-50">
+    <h4 class="font-bold mb-2">📅 v4: PC vs 모바일 캘린더</h4>
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div>
+        <p class="font-semibold text-blue-200 mb-1">PC 버전</p>
+        <ul class="text-blue-100 space-y-0.5">
+          <li>• 공지사항 텍스트 표시</li>
+          <li>• 색상별 분류 (경고/일반)</li>
+          <li>• 넓은 날짜 셀</li>
+        </ul>
+      </div>
+      <div>
+        <p class="font-semibold text-blue-200 mb-1">모바일 버전</p>
+        <ul class="text-blue-100 space-y-0.5">
+          <li>• 공지사항 점(•)으로 표시</li>
+          <li>• 색상으로 종류 구분</li>
+          <li>• 컴팩트한 레이아웃</li>
+        </ul>
+      </div>
+    </div>
+    <button onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-white/60 hover:text-white">✕</button>
+  </div>
+
+  <script>
+    function toggleMobilePreview() {
+      document.getElementById('mobilePreview').classList.toggle('hidden');
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>월간 캘린더 풀뷰 목업</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'toss-blue': '#3182F6',
+            'toss-blueDark': '#1B64DA',
+            'toss-blueLight': '#E8F3FF',
+            'grey': {
+              50: '#F9FAFB',
+              100: '#F2F4F6',
+              200: '#E5E8EB',
+              300: '#D1D6DB',
+              400: '#B0B8C1',
+              500: '#8B95A1',
+              600: '#6B7684',
+              700: '#4E5968',
+              800: '#333D4B',
+              900: '#191F28',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .view-transition {
+      transition: all 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-grey-100 min-h-screen p-4 md:p-8">
+
+  <!-- 뷰 토글 버튼 -->
+  <div class="max-w-4xl mx-auto mb-4 flex gap-2">
+    <button
+      onclick="setView('weekly')"
+      id="btn-weekly"
+      class="px-4 py-2 rounded-full text-sm font-medium bg-toss-blue text-white"
+    >
+      주간 뷰
+    </button>
+    <button
+      onclick="setView('monthly')"
+      id="btn-monthly"
+      class="px-4 py-2 rounded-full text-sm font-medium bg-grey-200 text-grey-600"
+    >
+      월간 뷰
+    </button>
+  </div>
+
+  <!-- 캘린더 컨테이너 -->
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-sm view-transition" id="calendar-container">
+
+      <!-- 헤더 -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-1">
+          <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span class="text-lg font-bold text-grey-900 px-2" id="header-label">12월 4주</span>
+          <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- 공지 등록 버튼 -->
+          <button class="w-10 h-10 flex items-center justify-center rounded-full bg-grey-100 text-grey-600 hover:bg-grey-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+
+          <!-- 월간/주간 토글 버튼 -->
+          <button
+            onclick="toggleView()"
+            id="toggle-btn"
+            class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-full bg-toss-blue text-white hover:bg-toss-blueDark active:scale-95 transition-all"
+          >
+            <svg id="toggle-icon-calendar" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <svg id="toggle-icon-chevron" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+            </svg>
+            <span id="toggle-text">월간</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== 주간 뷰 ========== -->
+      <div id="weekly-view" class="px-3 pb-4">
+        <div class="grid grid-cols-7 gap-2">
+          <!-- 일요일 -->
+          <div class="rounded-2xl p-3 cursor-pointer hover:bg-grey-50 min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-300 mb-1">일</div>
+              <span class="text-xl font-semibold text-grey-400">22</span>
+            </div>
+          </div>
+          <!-- 월요일 -->
+          <div class="rounded-2xl p-3 cursor-pointer hover:bg-grey-50 min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-400 mb-1">월</div>
+              <span class="text-xl font-semibold text-grey-700">23</span>
+            </div>
+            <div class="flex justify-center">
+              <div class="px-2.5 py-1 rounded-lg bg-blue-100">
+                <span class="text-xs font-medium text-blue-700">시험</span>
+              </div>
+            </div>
+          </div>
+          <!-- 화요일 (오늘) -->
+          <div class="rounded-2xl p-3 cursor-pointer bg-toss-blueLight min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-toss-blue font-medium mb-1">화</div>
+              <div class="inline-flex items-center justify-center w-10 h-10 bg-toss-blue rounded-full">
+                <span class="text-xl font-bold text-white">24</span>
+              </div>
+            </div>
+          </div>
+          <!-- 수요일 -->
+          <div class="rounded-2xl p-3 cursor-pointer hover:bg-grey-50 min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-400 mb-1">수</div>
+              <span class="text-xl font-semibold text-grey-700">25</span>
+            </div>
+            <div class="flex justify-center">
+              <div class="px-2.5 py-1 rounded-lg bg-red-500">
+                <span class="text-xs font-medium text-white">휴원</span>
+              </div>
+            </div>
+          </div>
+          <!-- 목요일 -->
+          <div class="rounded-2xl p-3 cursor-pointer hover:bg-grey-50 min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-400 mb-1">목</div>
+              <span class="text-xl font-semibold text-grey-700">26</span>
+            </div>
+          </div>
+          <!-- 금요일 -->
+          <div class="rounded-2xl p-3 cursor-pointer hover:bg-grey-50 min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-400 mb-1">금</div>
+              <span class="text-xl font-semibold text-grey-700">27</span>
+            </div>
+            <div class="flex justify-center">
+              <div class="px-2.5 py-1 rounded-lg bg-purple-100">
+                <span class="text-xs font-medium text-purple-700">학부모상담</span>
+              </div>
+            </div>
+          </div>
+          <!-- 토요일 -->
+          <div class="rounded-2xl p-3 cursor-pointer hover:bg-grey-50 min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-300 mb-1">토</div>
+              <span class="text-xl font-semibold text-grey-400">28</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 월간 뷰 (주간 대체) ========== -->
+      <div id="monthly-view" class="hidden px-4 pb-5">
+        <!-- 요일 헤더 -->
+        <div class="grid grid-cols-7 mb-3">
+          <div class="text-center text-sm font-medium py-2 text-red-400">일</div>
+          <div class="text-center text-sm font-medium py-2 text-grey-500">월</div>
+          <div class="text-center text-sm font-medium py-2 text-grey-500">화</div>
+          <div class="text-center text-sm font-medium py-2 text-grey-500">수</div>
+          <div class="text-center text-sm font-medium py-2 text-grey-500">목</div>
+          <div class="text-center text-sm font-medium py-2 text-grey-500">금</div>
+          <div class="text-center text-sm font-medium py-2 text-blue-400">토</div>
+        </div>
+
+        <!-- 날짜 그리드 (6주) -->
+        <div class="grid grid-cols-7 gap-1">
+          <!-- 1주차 (11월 마지막) -->
+          <button class="month-day other-month">
+            <span class="day-number">24</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">25</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">26</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">27</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">28</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">29</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">30</span>
+          </button>
+
+          <!-- 2주차 -->
+          <button class="month-day weekend">
+            <span class="day-number">1</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">2</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">3</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">4</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">5</span>
+          </button>
+          <button class="month-day has-notice">
+            <span class="day-number">6</span>
+            <span class="notice-preview text-purple-600">학부모상..</span>
+          </button>
+          <button class="month-day weekend-sat">
+            <span class="day-number">7</span>
+          </button>
+
+          <!-- 3주차 -->
+          <button class="month-day weekend">
+            <span class="day-number">8</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">9</span>
+          </button>
+          <button class="month-day has-notice">
+            <span class="day-number">10</span>
+            <span class="notice-preview text-blue-600">시험</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">11</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">12</span>
+          </button>
+          <button class="month-day has-notice">
+            <span class="day-number">13</span>
+            <span class="notice-preview text-green-600">특강</span>
+          </button>
+          <button class="month-day weekend-sat">
+            <span class="day-number">14</span>
+          </button>
+
+          <!-- 4주차 -->
+          <button class="month-day weekend">
+            <span class="day-number">15</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">16</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">17</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">18</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">19</span>
+          </button>
+          <button class="month-day has-notice">
+            <span class="day-number">20</span>
+            <span class="notice-preview text-purple-600">학부모상..</span>
+          </button>
+          <button class="month-day weekend-sat">
+            <span class="day-number">21</span>
+          </button>
+
+          <!-- 5주차 (현재 주) -->
+          <button class="month-day weekend">
+            <span class="day-number">22</span>
+          </button>
+          <button class="month-day has-notice">
+            <span class="day-number">23</span>
+            <span class="notice-preview text-blue-600">시험</span>
+          </button>
+          <button class="month-day today" onclick="selectDate(this)">
+            <span class="day-number">24</span>
+          </button>
+          <button class="month-day has-notice important">
+            <span class="day-number">25</span>
+            <span class="notice-preview text-red-600">휴원</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">26</span>
+          </button>
+          <button class="month-day has-notice">
+            <span class="day-number">27</span>
+            <span class="notice-preview text-purple-600">학부모상..</span>
+          </button>
+          <button class="month-day weekend-sat">
+            <span class="day-number">28</span>
+          </button>
+
+          <!-- 6주차 -->
+          <button class="month-day weekend">
+            <span class="day-number">29</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">30</span>
+          </button>
+          <button class="month-day">
+            <span class="day-number">31</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">1</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">2</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">3</span>
+          </button>
+          <button class="month-day other-month">
+            <span class="day-number">4</span>
+          </button>
+        </div>
+
+        <!-- 오늘 버튼 -->
+        <div class="flex justify-center mt-4">
+          <button class="px-4 py-2 text-sm font-medium text-toss-blue bg-toss-blueLight rounded-full hover:bg-blue-100 transition-colors">
+            오늘로 이동
+          </button>
+        </div>
+      </div>
+
+      <!-- 공지 섹션 (주간 뷰에서만 표시) -->
+      <div id="notices-section" class="px-4 pb-4 space-y-3">
+        <!-- 중요 알림 -->
+        <div class="bg-red-50 rounded-2xl p-4 border border-red-100">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+              <span class="text-xs">🔔</span>
+            </div>
+            <span class="text-sm font-semibold text-red-600">중요 알림</span>
+          </div>
+          <p class="text-sm text-grey-700">12월 25일 (수) 성탄절 휴원입니다.</p>
+        </div>
+
+        <!-- 일반 공지 -->
+        <div class="bg-grey-50 rounded-2xl p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-sm font-semibold text-grey-600">오늘의 공지</span>
+          </div>
+          <p class="text-sm text-grey-500">등록된 공지가 없습니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스타일 -->
+  <style>
+    .month-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 72px;
+      padding: 8px 4px;
+      border-radius: 12px;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .month-day:hover {
+      background-color: #F2F4F6;
+    }
+
+    .month-day .day-number {
+      font-size: 15px;
+      font-weight: 500;
+      color: #333D4B;
+    }
+
+    .month-day.weekend .day-number {
+      color: #EF4444;
+    }
+
+    .month-day.weekend-sat .day-number {
+      color: #3B82F6;
+    }
+
+    .month-day.other-month .day-number {
+      color: #D1D6DB;
+    }
+
+    .month-day.other-month:hover {
+      background-color: transparent;
+    }
+
+    .month-day.today {
+      background-color: #3182F6;
+    }
+
+    .month-day.today .day-number {
+      color: white;
+      font-weight: 700;
+    }
+
+    .month-day.today:hover {
+      background-color: #1B64DA;
+    }
+
+    .month-day.selected {
+      background-color: #E8F3FF;
+      outline: 2px solid #3182F6;
+      outline-offset: -2px;
+    }
+
+    .notice-preview {
+      font-size: 11px;
+      font-weight: 500;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .month-day.important {
+      background-color: #FEF2F2;
+    }
+
+    .month-day.important:hover {
+      background-color: #FEE2E2;
+    }
+
+    /* 반응형 */
+    @media (max-width: 640px) {
+      .month-day {
+        min-height: 56px;
+        padding: 6px 2px;
+      }
+
+      .month-day .day-number {
+        font-size: 13px;
+      }
+
+      .notice-preview {
+        display: none;
+      }
+
+      /* 모바일에서는 점으로 표시 */
+      .month-day.has-notice::after {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #6B7684;
+        margin-top: 4px;
+      }
+
+      .month-day.has-notice.important::after {
+        background-color: #EF4444;
+      }
+    }
+  </style>
+
+  <script>
+    let currentView = 'weekly';
+
+    function setView(view) {
+      currentView = view;
+      updateView();
+    }
+
+    function toggleView() {
+      currentView = currentView === 'weekly' ? 'monthly' : 'weekly';
+      updateView();
+    }
+
+    function updateView() {
+      const weeklyView = document.getElementById('weekly-view');
+      const monthlyView = document.getElementById('monthly-view');
+      const noticesSection = document.getElementById('notices-section');
+      const headerLabel = document.getElementById('header-label');
+      const toggleText = document.getElementById('toggle-text');
+      const toggleIconCalendar = document.getElementById('toggle-icon-calendar');
+      const toggleIconChevron = document.getElementById('toggle-icon-chevron');
+      const btnWeekly = document.getElementById('btn-weekly');
+      const btnMonthly = document.getElementById('btn-monthly');
+
+      if (currentView === 'weekly') {
+        weeklyView.classList.remove('hidden');
+        monthlyView.classList.add('hidden');
+        noticesSection.classList.remove('hidden');
+        headerLabel.textContent = '12월 4주';
+        toggleText.textContent = '월간';
+        toggleIconCalendar.classList.remove('hidden');
+        toggleIconChevron.classList.add('hidden');
+        btnWeekly.classList.remove('bg-grey-200', 'text-grey-600');
+        btnWeekly.classList.add('bg-toss-blue', 'text-white');
+        btnMonthly.classList.remove('bg-toss-blue', 'text-white');
+        btnMonthly.classList.add('bg-grey-200', 'text-grey-600');
+      } else {
+        weeklyView.classList.add('hidden');
+        monthlyView.classList.remove('hidden');
+        noticesSection.classList.add('hidden');
+        headerLabel.textContent = '2024년 12월';
+        toggleText.textContent = '주간';
+        toggleIconCalendar.classList.add('hidden');
+        toggleIconChevron.classList.remove('hidden');
+        btnWeekly.classList.remove('bg-toss-blue', 'text-white');
+        btnWeekly.classList.add('bg-grey-200', 'text-grey-600');
+        btnMonthly.classList.remove('bg-grey-200', 'text-grey-600');
+        btnMonthly.classList.add('bg-toss-blue', 'text-white');
+      }
+    }
+
+    function selectDate(el) {
+      // 날짜 선택 시 주간 뷰로 전환
+      alert('24일 선택 → 해당 주간 뷰로 전환');
+      setView('weekly');
+    }
+
+    // 모든 날짜에 클릭 이벤트 추가
+    document.querySelectorAll('.month-day:not(.other-month)').forEach(day => {
+      day.addEventListener('click', function() {
+        // 선택 표시
+        document.querySelectorAll('.month-day').forEach(d => d.classList.remove('selected'));
+        if (!this.classList.contains('today')) {
+          this.classList.add('selected');
+        }
+
+        // 0.3초 후 주간 뷰로 전환
+        setTimeout(() => {
+          setView('weekly');
+        }, 300);
+      });
+    });
+  </script>
+
+  <!-- 설명 -->
+  <div class="max-w-4xl mx-auto mt-6 p-4 bg-white rounded-2xl">
+    <h3 class="font-bold text-grey-800 mb-3">변경 사항</h3>
+    <ul class="space-y-2 text-sm text-grey-600">
+      <li class="flex items-start gap-2">
+        <span class="text-toss-blue">✓</span>
+        <span><strong>주간 → 월간 전환:</strong> 주간 그리드가 완전히 사라지고 월간 그리드로 대체</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-toss-blue">✓</span>
+        <span><strong>더 큰 날짜 셀:</strong> 드롭다운 대신 전체 영역 사용으로 셀 크기 확대 (72px)</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-toss-blue">✓</span>
+        <span><strong>공지 미리보기:</strong> PC는 텍스트 ("학부모상.."), 모바일은 점(●) 표시</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-toss-blue">✓</span>
+        <span><strong>날짜 선택:</strong> 클릭 시 해당 주로 이동하고 자동으로 주간 뷰 전환</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-toss-blue">✓</span>
+        <span><strong>공지 섹션:</strong> 월간 뷰에서는 숨김 (공간 효율)</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-toss-blue">✓</span>
+        <span><strong>오늘로 이동:</strong> 월간 뷰 하단에 "오늘로 이동" 버튼</span>
+      </li>
+    </ul>
+  </div>
+
+</body>
+</html>

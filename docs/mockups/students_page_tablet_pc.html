@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학생 목록 - 태블릿/PC (연락처 중심)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    * {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: #F7F8FA;
+    }
+
+    /* Toss 색상 */
+    :root {
+      --toss-blue: #3182F6;
+      --toss-blue-light: #E8F3FF;
+      --toss-gray-900: #191F28;
+      --toss-gray-600: #6B7684;
+      --toss-gray-400: #B0B8C1;
+      --toss-gray-100: #F2F4F6;
+      --toss-error: #F04452;
+      --toss-warning: #FF9500;
+      --toss-success: #4CAF50;
+    }
+
+    /* 테이블 행 호버 */
+    .table-row {
+      transition: all 0.15s ease;
+    }
+
+    .table-row:hover {
+      background-color: #F7F8FA;
+    }
+
+    /* 전화번호 호버 효과 */
+    .phone-cell {
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .phone-cell:hover {
+      color: #3182F6;
+    }
+
+    .phone-cell:hover .copy-icon {
+      opacity: 1;
+    }
+
+    .copy-icon {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    /* 토스트 애니메이션 */
+    .toast {
+      animation: toastIn 0.3s ease;
+    }
+
+    .toast.hide {
+      animation: toastOut 0.3s ease forwards;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes toastOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+
+    /* 모달 애니메이션 */
+    .modal-overlay {
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-content {
+      animation: scaleIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* 사이드바 */
+    .sidebar {
+      width: 240px;
+      min-width: 240px;
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 72px;
+        min-width: 72px;
+      }
+      .sidebar-text {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex">
+  <!-- 사이드바 -->
+  <aside class="sidebar bg-white border-r border-gray-100 flex flex-col py-6 sticky top-0 h-screen">
+    <!-- 로고 -->
+    <div class="px-6 mb-8">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-[#3182F6] rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-sm">혜</span>
+        </div>
+        <span class="sidebar-text text-lg font-bold text-[#191F28]">혜윰</span>
+      </div>
+    </div>
+
+    <!-- 네비게이션 -->
+    <nav class="flex-1 px-3">
+      <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl text-[#6B7684] hover:bg-gray-50 mb-1">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        </svg>
+        <span class="sidebar-text">대시보드</span>
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl text-[#6B7684] hover:bg-gray-50 mb-1">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span class="sidebar-text">수업</span>
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl bg-[#E8F3FF] text-[#3182F6] mb-1">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span class="sidebar-text font-semibold">학생</span>
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl text-[#6B7684] hover:bg-gray-50 mb-1">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <span class="sidebar-text">기록</span>
+      </a>
+    </nav>
+
+    <!-- 하단 프로필 -->
+    <div class="px-3 mt-auto">
+      <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 cursor-pointer">
+        <div class="w-8 h-8 bg-[#E8F3FF] rounded-full flex items-center justify-center">
+          <span class="text-sm font-bold text-[#3182F6]">이</span>
+        </div>
+        <span class="sidebar-text text-sm text-[#6B7684]">이민혁 선생님</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 메인 콘텐츠 -->
+  <main class="flex-1 overflow-auto">
+    <!-- 헤더 -->
+    <header class="sticky top-0 bg-white border-b border-gray-100 z-30">
+      <div class="px-8 py-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-[#191F28]">학생 목록</h1>
+            <p class="text-sm text-[#6B7684] mt-1">총 24명 · 중등 12명 · 고등 12명</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <!-- 검색 -->
+            <div class="relative">
+              <input
+                type="text"
+                placeholder="학생 검색..."
+                class="w-64 pl-10 pr-4 py-2.5 bg-[#F2F4F6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20"
+              />
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 필터 -->
+        <div class="flex items-center gap-3 mt-4">
+          <button class="px-4 py-2 bg-[#191F28] text-white text-sm font-medium rounded-lg">
+            전체
+          </button>
+          <button class="px-4 py-2 bg-[#F2F4F6] text-[#6B7684] text-sm font-medium rounded-lg hover:bg-gray-200">
+            중등
+          </button>
+          <button class="px-4 py-2 bg-[#F2F4F6] text-[#6B7684] text-sm font-medium rounded-lg hover:bg-gray-200">
+            고등
+          </button>
+          <div class="h-6 w-px bg-gray-200 mx-2"></div>
+          <select class="px-4 py-2 bg-[#F2F4F6] text-[#6B7684] text-sm font-medium rounded-lg">
+            <option>학년순</option>
+            <option>이름순</option>
+            <option>최근 연락순</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <!-- 테이블 -->
+    <div class="p-8">
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-100">
+              <th class="text-left py-4 px-6 text-sm font-semibold text-[#6B7684]">이름</th>
+              <th class="text-left py-4 px-6 text-sm font-semibold text-[#6B7684]">학년/반</th>
+              <th class="text-left py-4 px-6 text-sm font-semibold text-[#6B7684]">
+                <div class="flex items-center gap-1">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                    <line x1="12" y1="18" x2="12" y2="18"/>
+                  </svg>
+                  학생 연락처
+                </div>
+              </th>
+              <th class="text-left py-4 px-6 text-sm font-semibold text-[#6B7684]">
+                <div class="flex items-center gap-1">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                  학부모 연락처
+                </div>
+              </th>
+              <th class="text-center py-4 px-6 text-sm font-semibold text-[#6B7684]">상태</th>
+              <th class="text-center py-4 px-6 text-sm font-semibold text-[#6B7684]">상세</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 학생 1: 알림 있음 -->
+            <tr class="table-row border-b border-gray-50 cursor-pointer" onclick="openModal()">
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-[#FEE2E2] rounded-full flex items-center justify-center">
+                    <span class="font-bold text-[#F04452]">김</span>
+                  </div>
+                  <div>
+                    <span class="font-semibold text-[#191F28]">김철수</span>
+                    <span class="ml-2 text-xs px-2 py-0.5 bg-[#FEE2E2] text-[#F04452] rounded-full font-medium">
+                      결석 3회
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-[#6B7684]">고1 · B반</td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-2345-6789', '김철수 학생')">
+                  <span class="text-[#191F28]">010-2345-6789</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-8765-4321', '김철수 학부모')">
+                  <span class="text-[#191F28]">010-8765-4321</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <span class="inline-flex w-3 h-3 bg-[#F04452] rounded-full" title="주의 필요"></span>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <button class="text-[#6B7684] hover:text-[#3182F6]" onclick="event.stopPropagation(); openModal()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- 학생 2: 정상 -->
+            <tr class="table-row border-b border-gray-50 cursor-pointer" onclick="openModal()">
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-[#E8F3FF] rounded-full flex items-center justify-center">
+                    <span class="font-bold text-[#3182F6]">홍</span>
+                  </div>
+                  <span class="font-semibold text-[#191F28]">홍길동</span>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-[#6B7684]">중2 · A반</td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-1234-5678', '홍길동 학생')">
+                  <span class="text-[#191F28]">010-1234-5678</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-9876-5432', '홍길동 학부모')">
+                  <span class="text-[#191F28]">010-9876-5432</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <span class="inline-flex w-3 h-3 bg-[#4CAF50] rounded-full" title="정상"></span>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <button class="text-[#6B7684] hover:text-[#3182F6]" onclick="event.stopPropagation(); openModal()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- 학생 3: 숙제 미제출 -->
+            <tr class="table-row border-b border-gray-50 cursor-pointer" onclick="openModal()">
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-[#FEF3C7] rounded-full flex items-center justify-center">
+                    <span class="font-bold text-[#B45309]">이</span>
+                  </div>
+                  <div>
+                    <span class="font-semibold text-[#191F28]">이영희</span>
+                    <span class="ml-2 text-xs px-2 py-0.5 bg-[#FEF3C7] text-[#B45309] rounded-full font-medium">
+                      숙제 미제출
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-[#6B7684]">중3 · A반</td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-3456-7890', '이영희 학생')">
+                  <span class="text-[#191F28]">010-3456-7890</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-7654-3210', '이영희 학부모')">
+                  <span class="text-[#191F28]">010-7654-3210</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <span class="inline-flex w-3 h-3 bg-[#FF9500] rounded-full" title="확인 필요"></span>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <button class="text-[#6B7684] hover:text-[#3182F6]" onclick="event.stopPropagation(); openModal()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- 학생 4 -->
+            <tr class="table-row border-b border-gray-50 cursor-pointer" onclick="openModal()">
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-[#E8F3FF] rounded-full flex items-center justify-center">
+                    <span class="font-bold text-[#3182F6]">박</span>
+                  </div>
+                  <span class="font-semibold text-[#191F28]">박지민</span>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-[#6B7684]">고2 · C반</td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-4567-8901', '박지민 학생')">
+                  <span class="text-[#191F28]">010-4567-8901</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-6543-2109', '박지민 학부모')">
+                  <span class="text-[#191F28]">010-6543-2109</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <span class="inline-flex w-3 h-3 bg-[#4CAF50] rounded-full" title="정상"></span>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <button class="text-[#6B7684] hover:text-[#3182F6]" onclick="event.stopPropagation(); openModal()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- 학생 5 -->
+            <tr class="table-row border-b border-gray-50 cursor-pointer" onclick="openModal()">
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-[#E8F3FF] rounded-full flex items-center justify-center">
+                    <span class="font-bold text-[#3182F6]">최</span>
+                  </div>
+                  <span class="font-semibold text-[#191F28]">최수진</span>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-[#6B7684]">중1 · B반</td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-5678-9012', '최수진 학생')">
+                  <span class="text-[#191F28]">010-5678-9012</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-5432-1098', '최수진 학부모')">
+                  <span class="text-[#191F28]">010-5432-1098</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <span class="inline-flex w-3 h-3 bg-[#4CAF50] rounded-full" title="정상"></span>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <button class="text-[#6B7684] hover:text-[#3182F6]" onclick="event.stopPropagation(); openModal()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- 학생 6 -->
+            <tr class="table-row border-b border-gray-50 cursor-pointer" onclick="openModal()">
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-[#E8F3FF] rounded-full flex items-center justify-center">
+                    <span class="font-bold text-[#3182F6]">정</span>
+                  </div>
+                  <span class="font-semibold text-[#191F28]">정민준</span>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-[#6B7684]">고1 · A반</td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-6789-0123', '정민준 학생')">
+                  <span class="text-[#191F28]">010-6789-0123</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6">
+                <div class="phone-cell inline-flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[#E8F3FF]" onclick="event.stopPropagation(); copyPhone('010-4321-0987', '정민준 학부모')">
+                  <span class="text-[#191F28]">010-4321-0987</span>
+                  <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <span class="inline-flex w-3 h-3 bg-[#4CAF50] rounded-full" title="정상"></span>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <button class="text-[#6B7684] hover:text-[#3182F6]" onclick="event.stopPropagation(); openModal()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <div class="flex justify-center mt-6 gap-2">
+        <button class="w-10 h-10 flex items-center justify-center rounded-lg text-[#6B7684] hover:bg-white">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <button class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#3182F6] text-white font-semibold">1</button>
+        <button class="w-10 h-10 flex items-center justify-center rounded-lg text-[#6B7684] hover:bg-white">2</button>
+        <button class="w-10 h-10 flex items-center justify-center rounded-lg text-[#6B7684] hover:bg-white">3</button>
+        <button class="w-10 h-10 flex items-center justify-center rounded-lg text-[#6B7684] hover:bg-white">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 학생 상세 모달 -->
+  <div id="studentModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4" onclick="closeModal()">
+    <div class="modal-content bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+      <!-- 모달 헤더 -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-100">
+        <h2 class="text-lg font-bold text-[#191F28]">학생 상세</h2>
+        <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7684" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 학생 정보 -->
+      <div class="p-6 text-center border-b border-gray-100">
+        <div class="w-20 h-20 bg-[#E8F3FF] rounded-full flex items-center justify-center mx-auto mb-3">
+          <span class="text-3xl font-bold text-[#3182F6]">홍</span>
+        </div>
+        <h3 class="text-xl font-bold text-[#191F28]">홍길동</h3>
+        <p class="text-[#6B7684]">중2 · A반 · 수학</p>
+      </div>
+
+      <!-- 연락처 -->
+      <div class="p-6 border-b border-gray-100">
+        <div class="flex gap-3">
+          <div class="flex-1 p-4 bg-[#E8F3FF] rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                <line x1="12" y1="18" x2="12" y2="18"/>
+              </svg>
+              <span class="text-sm text-[#6B7684]">학생</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-[#191F28]">010-1234-5678</span>
+              <button onclick="copyPhone('010-1234-5678', '홍길동 학생')" class="text-[#3182F6] hover:underline text-sm">복사</button>
+            </div>
+          </div>
+          <div class="flex-1 p-4 bg-[#3182F6] rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span class="text-sm text-white/70">학부모</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-white">010-9876-5432</span>
+              <button onclick="copyPhone('010-9876-5432', '홍길동 학부모')" class="text-white/80 hover:text-white text-sm">복사</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 성적 -->
+      <div class="p-6 border-b border-gray-100">
+        <h4 class="text-sm font-semibold text-[#191F28] mb-3">최근 성적</h4>
+        <div class="flex gap-3">
+          <div class="flex-1 bg-[#F7F8FA] rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-[#3182F6]">85</div>
+            <div class="text-xs text-[#6B7684]">12/20</div>
+          </div>
+          <div class="flex-1 bg-[#F7F8FA] rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-[#191F28]">82</div>
+            <div class="text-xs text-[#6B7684]">12/13</div>
+          </div>
+          <div class="flex-1 bg-[#F7F8FA] rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-[#191F28]">78</div>
+            <div class="text-xs text-[#6B7684]">12/06</div>
+          </div>
+        </div>
+        <div class="mt-2 text-center">
+          <span class="text-sm text-[#4CAF50] font-medium">+7점 상승 추세</span>
+        </div>
+      </div>
+
+      <!-- 출결 -->
+      <div class="p-6 border-b border-gray-100">
+        <h4 class="text-sm font-semibold text-[#191F28] mb-3">이번 달 출결</h4>
+        <div class="flex gap-4">
+          <div class="flex-1 text-center">
+            <div class="text-xl font-bold text-[#4CAF50]">8</div>
+            <div class="text-xs text-[#6B7684]">출석</div>
+          </div>
+          <div class="flex-1 text-center">
+            <div class="text-xl font-bold text-[#FF9500]">1</div>
+            <div class="text-xs text-[#6B7684]">지각</div>
+          </div>
+          <div class="flex-1 text-center">
+            <div class="text-xl font-bold text-[#F04452]">0</div>
+            <div class="text-xs text-[#6B7684]">결석</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 숙제 -->
+      <div class="p-6 border-b border-gray-100">
+        <h4 class="text-sm font-semibold text-[#191F28] mb-3">숙제 완료율</h4>
+        <div class="flex items-center gap-3">
+          <div class="flex-1 bg-gray-200 rounded-full h-3">
+            <div class="bg-[#3182F6] h-3 rounded-full" style="width: 85%"></div>
+          </div>
+          <span class="text-sm font-semibold text-[#191F28]">85%</span>
+        </div>
+        <p class="text-xs text-[#6B7684] mt-1">17/20 완료</p>
+      </div>
+
+      <!-- 메모 -->
+      <div class="p-6">
+        <h4 class="text-sm font-semibold text-[#191F28] mb-3">메모</h4>
+        <div class="bg-[#F7F8FA] rounded-xl p-4">
+          <p class="text-sm text-[#6B7684]">수학 기초가 조금 부족함. 방정식 부분 보충 필요.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 메시지 -->
+  <div id="toast" class="toast fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#191F28] text-white px-5 py-4 rounded-xl shadow-lg hidden z-50">
+    <div class="flex items-center gap-3">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <div>
+        <div class="text-sm font-medium" id="toastMessage">전화번호가 복사되었습니다</div>
+        <div class="text-xs text-white/60" id="toastDetail">홍길동 학생 (010-1234-5678)</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('studentModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('studentModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function copyPhone(phone, name) {
+      navigator.clipboard.writeText(phone).then(() => {
+        showToast('전화번호가 복사되었습니다', `${name} (${phone})`);
+      });
+    }
+
+    function showToast(message, detail) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      const toastDetail = document.getElementById('toastDetail');
+
+      toastMessage.textContent = message;
+      toastDetail.textContent = detail;
+
+      toast.classList.remove('hidden', 'hide');
+
+      setTimeout(() => {
+        toast.classList.add('hide');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 300);
+      }, 2000);
+    }
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>

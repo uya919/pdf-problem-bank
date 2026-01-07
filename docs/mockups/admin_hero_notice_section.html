@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin PC - 캘린더 통합 공지사항 목업 (v2)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'toss-blue': '#3182F6',
+            'toss-blueDark': '#1B64DA',
+            'grey': {
+              50: '#F9FAFB',
+              100: '#F2F4F6',
+              200: '#E5E8EB',
+              300: '#D1D6DB',
+              400: '#B0B8C1',
+              500: '#8B95A1',
+              600: '#6B7684',
+              700: '#4E5968',
+              800: '#333D4B',
+              900: '#191F28',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-soft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .animate-slideDown { animation: slideDown 0.3s ease-out; }
+    .animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+    .notice-item:hover { background-color: #F2F4F6; }
+  </style>
+</head>
+<body class="bg-grey-100 min-h-screen p-6">
+
+  <div class="max-w-6xl mx-auto space-y-5">
+
+    <!-- ============================================ -->
+    <!-- 통합 캘린더 + 공지 섹션 -->
+    <!-- ============================================ -->
+    <section class="bg-white rounded-3xl shadow-sm">
+
+      <!-- 캘린더 헤더 -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-1">
+          <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span class="text-lg font-bold text-grey-900 px-2">12월 3주차</span>
+          <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        <button class="px-4 py-2 bg-toss-blue text-white text-sm font-semibold rounded-full hover:bg-toss-blueDark">
+          오늘
+        </button>
+      </div>
+
+      <!-- 주간 그리드 -->
+      <div class="px-3 pb-4">
+        <div class="grid grid-cols-7 gap-2">
+          <div class="flex flex-col items-center p-3 rounded-2xl hover:bg-grey-50 cursor-pointer">
+            <span class="text-xs text-grey-500 mb-1">월</span>
+            <span class="text-lg font-semibold text-grey-900">16</span>
+          </div>
+          <div class="flex flex-col items-center p-3 rounded-2xl hover:bg-grey-50 cursor-pointer relative">
+            <span class="text-xs text-grey-500 mb-1">화</span>
+            <span class="text-lg font-semibold text-grey-900">17</span>
+            <div class="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full"></div>
+          </div>
+          <div class="flex flex-col items-center p-3 rounded-2xl hover:bg-grey-50 cursor-pointer">
+            <span class="text-xs text-grey-500 mb-1">수</span>
+            <span class="text-lg font-semibold text-grey-900">18</span>
+          </div>
+          <div class="flex flex-col items-center p-3 rounded-2xl hover:bg-grey-50 cursor-pointer">
+            <span class="text-xs text-grey-500 mb-1">목</span>
+            <span class="text-lg font-semibold text-grey-900">19</span>
+          </div>
+          <div class="flex flex-col items-center p-3 rounded-2xl hover:bg-grey-50 cursor-pointer relative">
+            <span class="text-xs text-grey-500 mb-1">금</span>
+            <span class="text-lg font-semibold text-grey-900">20</span>
+            <div class="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full"></div>
+          </div>
+          <div class="flex flex-col items-center p-3 rounded-2xl bg-toss-blue cursor-pointer relative">
+            <span class="text-xs text-blue-200 mb-1">토</span>
+            <span class="text-lg font-semibold text-white">21</span>
+            <div class="absolute top-1 right-1 w-2 h-2 bg-white rounded-full"></div>
+          </div>
+          <div class="flex flex-col items-center p-3 rounded-2xl hover:bg-grey-50 cursor-pointer">
+            <span class="text-xs text-red-400 mb-1">일</span>
+            <span class="text-lg font-semibold text-red-500">22</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- 중요 알림 섹션 (긴급/휴원만) -->
+      <!-- ============================================ -->
+      <div class="border-t border-grey-100 px-5 py-4 animate-slideDown">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse-soft"></span>
+          <h3 class="font-semibold text-grey-900 text-sm">중요 알림</h3>
+          <span class="text-xs text-grey-400">2건</span>
+        </div>
+
+        <!-- 중요 알림 카드 (가로 스크롤 또는 2열) -->
+        <div class="grid grid-cols-2 gap-3">
+
+          <!-- 긴급 공지 -->
+          <div class="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-xl cursor-pointer hover:bg-red-100 transition-colors">
+            <div class="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="font-medium text-grey-900 text-sm truncate">김영희 선생님 휴강</span>
+                <span class="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-medium rounded flex-shrink-0">긴급</span>
+              </div>
+              <p class="text-xs text-grey-500 truncate">14:00~16:00 고1 수학 심화반</p>
+            </div>
+          </div>
+
+          <!-- 휴원일 -->
+          <div class="flex items-center gap-3 p-3 bg-orange-50 border border-orange-100 rounded-xl cursor-pointer hover:bg-orange-100 transition-colors">
+            <div class="w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="font-medium text-grey-900 text-sm truncate">크리스마스 휴원</span>
+                <span class="px-1.5 py-0.5 bg-orange-500 text-white text-[10px] font-medium rounded flex-shrink-0">휴원</span>
+              </div>
+              <p class="text-xs text-grey-500 truncate">12/25 (수) 전 수업 휴강</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- 일반 공지 섹션 (시험, 행사, 운영 등) -->
+      <!-- ============================================ -->
+      <div class="border-t border-grey-100 px-5 py-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-grey-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <h3 class="font-semibold text-grey-900 text-sm">12월 21일 (토) 공지</h3>
+            <span class="text-xs text-grey-400">3건</span>
+          </div>
+          <button class="text-xs text-grey-500 hover:text-grey-700">전체보기</button>
+        </div>
+
+        <!-- 공지 리스트 -->
+        <div class="space-y-1">
+
+          <!-- 시험 일정 -->
+          <div class="notice-item flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors">
+            <div class="w-7 h-7 bg-blue-100 rounded-md flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="text-sm text-grey-900">12월 레벨테스트 D-7</span>
+              <span class="ml-2 text-xs text-grey-500">12/28(토) 10:00</span>
+            </div>
+            <span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-medium rounded">시험</span>
+          </div>
+
+          <!-- 행사 -->
+          <div class="notice-item flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors">
+            <div class="w-7 h-7 bg-purple-100 rounded-md flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="text-sm text-grey-900">학부모 상담 신청 마감</span>
+              <span class="ml-2 text-xs text-grey-500">오늘 18:00까지</span>
+            </div>
+            <span class="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-medium rounded">행사</span>
+          </div>
+
+          <!-- 운영 알림 -->
+          <div class="notice-item flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors">
+            <div class="w-7 h-7 bg-yellow-100 rounded-md flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-yellow-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="text-sm text-grey-900">1월 수강료 안내문 발송</span>
+              <span class="ml-2 text-xs text-grey-500">완료</span>
+            </div>
+            <span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-medium rounded">운영</span>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================ -->
+    <!-- 수업 일정 (기존) -->
+    <!-- ============================================ -->
+    <section class="bg-grey-50 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-grey-900 flex items-center gap-2">
+          <svg class="w-5 h-5 text-grey-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          오늘 수업 일정
+        </h3>
+        <span class="text-sm text-grey-500">2024년 12월 21일 (토) · 총 6개 수업</span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-sm font-medium text-grey-700">14:00 ~ 16:00</span>
+            <span class="text-xs text-grey-400">3개 수업</span>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-white rounded-xl p-4 border border-grey-200">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-grey-900">고1 수학 심화</span>
+                <span class="text-xs text-grey-500">박선생</span>
+              </div>
+              <div class="text-xs text-grey-500">학생 5명</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 border border-grey-200">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-grey-900">고1 수학 정규</span>
+                <span class="text-xs text-grey-500">김선생</span>
+              </div>
+              <div class="text-xs text-grey-500">학생 8명</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 border border-grey-200">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-grey-900">고1 수학 기초</span>
+                <span class="text-xs text-grey-500">이선생</span>
+              </div>
+              <div class="text-xs text-grey-500">학생 6명</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- 대안: 공지 없는 날짜 -->
+    <!-- ============================================ -->
+    <section class="bg-white rounded-3xl shadow-sm p-5 mt-8">
+      <h2 class="text-lg font-bold text-grey-900 mb-4">대안: 공지 없는 날짜</h2>
+
+      <div class="border-t border-grey-100 pt-4">
+        <div class="flex items-center gap-2 mb-3">
+          <svg class="w-4 h-4 text-grey-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <h3 class="font-semibold text-grey-900 text-sm">12월 18일 (수) 공지</h3>
+        </div>
+        <div class="flex items-center justify-center py-6 text-center">
+          <p class="text-grey-400 text-sm">등록된 공지가 없습니다</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- 대안: 중요 알림만 있는 경우 -->
+    <!-- ============================================ -->
+    <section class="bg-white rounded-3xl shadow-sm p-5 mt-8">
+      <h2 class="text-lg font-bold text-grey-900 mb-4">대안: 중요 알림만 있는 경우</h2>
+
+      <!-- 중요 알림 -->
+      <div class="border-t border-grey-100 pt-4">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse-soft"></span>
+          <h3 class="font-semibold text-grey-900 text-sm">중요 알림</h3>
+          <span class="text-xs text-grey-400">1건</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-xl cursor-pointer">
+            <div class="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="font-medium text-grey-900 text-sm">긴급 휴강 안내</span>
+                <span class="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-medium rounded">긴급</span>
+              </div>
+              <p class="text-xs text-grey-500">중2 영어 정규반 18:00</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 일반 공지 (없음) -->
+      <div class="border-t border-grey-100 mt-4 pt-4">
+        <div class="flex items-center gap-2 mb-3">
+          <svg class="w-4 h-4 text-grey-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <h3 class="font-semibold text-grey-900 text-sm">기타 공지</h3>
+        </div>
+        <div class="flex items-center justify-center py-4">
+          <p class="text-grey-400 text-sm">등록된 공지가 없습니다</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- 대안: 일반 공지만 있는 경우 (중요 알림 숨김) -->
+    <!-- ============================================ -->
+    <section class="bg-white rounded-3xl shadow-sm p-5 mt-8">
+      <h2 class="text-lg font-bold text-grey-900 mb-4">대안: 일반 공지만 있는 경우</h2>
+
+      <!-- 중요 알림 섹션 자체가 없음 -->
+
+      <!-- 일반 공지만 표시 -->
+      <div class="border-t border-grey-100 pt-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-grey-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <h3 class="font-semibold text-grey-900 text-sm">12월 23일 (월) 공지</h3>
+            <span class="text-xs text-grey-400">2건</span>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <div class="notice-item flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors">
+            <div class="w-7 h-7 bg-green-100 rounded-md flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="text-sm text-grey-900">고3 수학 특강 개설</span>
+              <span class="ml-2 text-xs text-grey-500">16:00~18:00</span>
+            </div>
+            <span class="px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded">특강</span>
+          </div>
+
+          <div class="notice-item flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors">
+            <div class="w-7 h-7 bg-yellow-100 rounded-md flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-yellow-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="text-sm text-grey-900">겨울방학 시간표 변경 안내</span>
+            </div>
+            <span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-medium rounded">운영</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- 공지 유형별 색상 가이드 (참조용) -->
+    <!-- ============================================ -->
+    <section class="bg-grey-50 rounded-2xl p-5 mt-8">
+      <h2 class="text-sm font-bold text-grey-700 mb-3">공지 유형별 색상 (참조)</h2>
+
+      <div class="grid grid-cols-6 gap-2 text-center">
+        <div class="p-2">
+          <div class="w-8 h-8 bg-red-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+            <span class="text-red-600 text-xs font-bold">!</span>
+          </div>
+          <span class="text-[10px] text-grey-600">긴급</span>
+        </div>
+        <div class="p-2">
+          <div class="w-8 h-8 bg-orange-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+            <span class="text-orange-600 text-xs font-bold">休</span>
+          </div>
+          <span class="text-[10px] text-grey-600">휴원</span>
+        </div>
+        <div class="p-2">
+          <div class="w-8 h-8 bg-blue-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+            <span class="text-blue-600 text-xs font-bold">✓</span>
+          </div>
+          <span class="text-[10px] text-grey-600">시험</span>
+        </div>
+        <div class="p-2">
+          <div class="w-8 h-8 bg-green-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+            <span class="text-green-600 text-xs font-bold">+</span>
+          </div>
+          <span class="text-[10px] text-grey-600">특강</span>
+        </div>
+        <div class="p-2">
+          <div class="w-8 h-8 bg-purple-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+            <span class="text-purple-600 text-xs font-bold">♦</span>
+          </div>
+          <span class="text-[10px] text-grey-600">행사</span>
+        </div>
+        <div class="p-2">
+          <div class="w-8 h-8 bg-yellow-100 rounded-lg mx-auto mb-1 flex items-center justify-center">
+            <span class="text-yellow-600 text-xs font-bold">i</span>
+          </div>
+          <span class="text-[10px] text-grey-600">운영</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>

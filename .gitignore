@@ -5,6 +5,9 @@
 .env.local
 .env.*.local
 
+# MCP Config (contains access tokens)
+.mcp.json
+
 # Python
 __pycache__/
 *.py[cod]
@@ -50,3 +53,5 @@ htmlcov/
 # Large PDF files (>100MB)
 archive/v1.0_2025-12-06/test_files/라이트쎈초등수학4-1.pdf
 archive/v1.0_2025-12-06/test_files/쎈B 2-2.pdf
+.vercel
+.env*.local

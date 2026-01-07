@@ -1,7 +1,11 @@
 """
-FastAPI 메인 애플리케이션 (Phase 1)
+Hyeyum Backoffice FastAPI 메인 애플리케이션
 
-B-4: 에러 로깅 개선 (2025-12-07)
+백오피스 전용 API:
+- 사용자 관리 (admin_users)
+- 학년 일괄 승급 (grade_promotion)
+- NAS 교재 스트리밍 (nas)
+- 메이크에듀 동기화 (sync)
 """
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,22 +22,22 @@ logging.basicConfig(
     format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-logger = logging.getLogger("pdf-labeling-api")
+logger = logging.getLogger("hyeyum-backoffice-api")
 
 # 프로젝트 루트를 sys.path에 추가 (src 모듈 import용)
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root / "src"))
 
 from app.config import config
-from app.routers import pdf, blocks, export, stats, documents, hangul, debug, classification, problems, exam_papers, matching, document_pairs, work_sessions
+from app.routers import sync, admin_users, grade_promotion, nas
 from app.routers import config as config_router
 
 
 # FastAPI 앱 생성
 app = FastAPI(
-    title="PDF Labeling API",
-    description="수학 문제집 PDF 분석 및 라벨링 API (Phase 1: Lazy Loading)",
-    version="1.0.0",
+    title="Hyeyum Backoffice API",
+    description="혜윰학원 백오피스 API (사용자 관리, 학년 승급, NAS 교재, 동기화)",
+    version="2.0.0",
 )
 
 # CORS 설정
@@ -46,30 +50,20 @@ app.add_middleware(
 )
 
 
-# 라우터 등록
-app.include_router(pdf.router, prefix="/api/pdf", tags=["PDF"])
-app.include_router(blocks.router, prefix="/api/blocks", tags=["Blocks"])
-app.include_router(export.router, prefix="/api/export", tags=["Export"])
-app.include_router(stats.router)  # stats 라우터는 이미 prefix="/api/stats"를 포함
-app.include_router(documents.router, prefix="/api", tags=["Documents"])
-app.include_router(hangul.router, prefix="/api/hangul", tags=["Hangul"])  # Phase 16: 한글 파일 지원
-app.include_router(debug.router)  # Phase 20-B: 디버그 API (prefix 포함)
-app.include_router(classification.router)  # Phase 21+: 분류 체계 API
-app.include_router(problems.router)  # Phase 21+ A-2: 문제 API
-app.include_router(exam_papers.router)  # Phase 21+ D-1: 시험지 API
-app.include_router(matching.router)  # Phase 22: 문제-해설 매칭 API
-app.include_router(document_pairs.router)  # Phase 22-L: 문서 페어링 API
-app.include_router(work_sessions.router, prefix="/api/work-sessions", tags=["WorkSessions"])  # Phase 32: 작업 세션 API
-app.include_router(config_router.router, prefix="/api/config", tags=["Config"])  # Phase 34-C: 설정 관리 API
+# 라우터 등록 (백오피스 전용)
+app.include_router(config_router.router, prefix="/api/config", tags=["Config"])
+app.include_router(sync.router)  # 메이크에듀 동기화 API
+app.include_router(admin_users.router)  # 사용자 관리 API
+app.include_router(grade_promotion.router)  # 학년 일괄 승급 API
+app.include_router(nas.router)  # NAS 교재 API
 
 
 @app.get("/")
 async def root():
     """API 루트"""
     return {
-        "message": "PDF Labeling API",
-        "version": "1.0.0",
-        "phase": "Phase 1: Lazy Loading",
+        "message": "Hyeyum Backoffice API",
+        "version": "2.0.0",
         "docs": "/docs"
     }
 
@@ -79,8 +73,7 @@ async def health_check():
     """헬스 체크"""
     return {
         "status": "healthy",
-        "dataset_root": str(config.DATASET_ROOT),
-        "api_version": "1.0.0"
+        "api_version": "2.0.0"
     }
 
 
@@ -116,10 +109,9 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 @app.on_event("startup")
 async def startup_event():
-    """서버 시작 시 로깅 (B-4)"""
+    """서버 시작 시 로깅"""
     logger.info("=" * 50)
-    logger.info("PDF Labeling API 서버 시작")
-    logger.info(f"Dataset Root: {config.DATASET_ROOT}")
+    logger.info("Hyeyum Backoffice API 서버 시작")
     logger.info(f"CORS Origins: {config.CORS_ORIGINS}")
     logger.info("=" * 50)
 

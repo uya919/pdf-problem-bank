@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>월간 캘린더 드롭다운 - PC/모바일 목업</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'toss-blue': '#3182F6',
+            'toss-blueDark': '#1B64DA',
+            'toss-blueLight': '#E8F3FF',
+            grey: {
+              50: '#F9FAFB',
+              100: '#F2F4F6',
+              200: '#E5E8EB',
+              300: '#D1D6DB',
+              400: '#B0B8C1',
+              500: '#8B95A1',
+              600: '#6B7684',
+              700: '#4E5968',
+              800: '#333D4B',
+              900: '#191F28',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @keyframes slideDown {
+      from { max-height: 0; opacity: 0; }
+      to { max-height: 500px; opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { max-height: 500px; opacity: 1; }
+      to { max-height: 0; opacity: 0; }
+    }
+    .slide-down { animation: slideDown 0.3s ease-out forwards; }
+    .slide-up { animation: slideUp 0.3s ease-out forwards; }
+    @keyframes pulse-soft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    .animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-grey-100 min-h-screen p-4 md:p-8">
+
+  <!-- 뷰 전환 버튼 -->
+  <div class="max-w-4xl mx-auto mb-6 flex gap-2">
+    <button onclick="setView('pc')" id="btn-pc" class="px-4 py-2 bg-toss-blue text-white rounded-lg text-sm font-medium">
+      PC 버전
+    </button>
+    <button onclick="setView('mobile')" id="btn-mobile" class="px-4 py-2 bg-grey-200 text-grey-700 rounded-lg text-sm font-medium">
+      모바일 버전
+    </button>
+  </div>
+
+  <!-- PC 버전 -->
+  <div id="view-pc" class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+
+      <!-- 헤더 -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-1">
+          <!-- 이전 주 -->
+          <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <!-- 주 표시 -->
+          <span class="text-lg font-bold text-grey-900 px-2">12월 4주</span>
+
+          <!-- 다음 주 -->
+          <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- 공지 등록 버튼 -->
+          <button class="w-10 h-10 flex items-center justify-center rounded-full bg-grey-100 text-grey-600 hover:bg-grey-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+
+          <!-- 월간 버튼 (토글) -->
+          <button onclick="toggleMonthly('pc')" id="monthly-btn-pc" class="px-4 py-2 bg-grey-100 text-grey-700 text-sm font-semibold rounded-full hover:bg-grey-200 transition-all">
+            월간
+          </button>
+        </div>
+      </div>
+
+      <!-- 주간 캘린더 (7일) -->
+      <div class="px-3 pb-4">
+        <div class="grid grid-cols-7 gap-2">
+          <!-- 일요일 -->
+          <div class="rounded-2xl p-3 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-300 mb-1">일</div>
+              <span class="text-xl font-semibold text-grey-400">22</span>
+            </div>
+          </div>
+
+          <!-- 월요일 (오늘) -->
+          <div class="rounded-2xl p-3 bg-toss-blueLight cursor-pointer min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-toss-blue font-medium mb-1">월</div>
+              <div class="inline-flex items-center justify-center w-10 h-10 bg-toss-blue rounded-full animate-pulse-soft">
+                <span class="text-xl font-bold text-white">23</span>
+              </div>
+            </div>
+            <div class="mt-2 px-1">
+              <div class="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 rounded px-1.5 py-0.5">
+                <span>📌</span>
+                <span class="truncate">학부모상담주간</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 화요일 -->
+          <div class="rounded-2xl p-3 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-400 mb-1">화</div>
+              <span class="text-xl font-semibold text-grey-700">24</span>
+            </div>
+            <!-- 순환수업 마커 -->
+            <div class="flex justify-center mt-2">
+              <div class="flex items-center gap-1 px-2 py-0.5 bg-purple-50 rounded text-xs text-purple-600">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>순환</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 수요일 -->
+          <div class="rounded-2xl p-3 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-400 mb-1">수</div>
+              <span class="text-xl font-semibold text-grey-700">25</span>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-center">
+                <div class="px-2.5 py-1 rounded-lg bg-red-50">
+                  <span class="text-xs font-medium text-red-600">휴원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 목요일 -->
+          <div class="rounded-2xl p-3 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-400 mb-1">목</div>
+              <span class="text-xl font-semibold text-grey-700">26</span>
+            </div>
+          </div>
+
+          <!-- 금요일 -->
+          <div class="rounded-2xl p-3 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-400 mb-1">금</div>
+              <span class="text-xl font-semibold text-grey-700">27</span>
+            </div>
+          </div>
+
+          <!-- 토요일 -->
+          <div class="rounded-2xl p-3 hover:bg-grey-50 cursor-pointer min-h-[100px]">
+            <div class="text-center mb-2">
+              <div class="text-xs text-grey-300 mb-1">토</div>
+              <span class="text-xl font-semibold text-grey-400">28</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 월간 캘린더 (드롭다운) - PC -->
+      <div id="monthly-calendar-pc" class="hidden overflow-hidden">
+        <div class="px-5 pb-5 pt-2 border-t border-grey-100">
+          <!-- 월 네비게이션 -->
+          <div class="flex items-center justify-center gap-4 mb-4">
+            <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span class="text-base font-bold text-grey-900">2024년 12월</span>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- 요일 헤더 -->
+          <div class="grid grid-cols-7 gap-1 mb-2">
+            <div class="text-center text-xs font-medium text-red-400 py-2">일</div>
+            <div class="text-center text-xs font-medium text-grey-500 py-2">월</div>
+            <div class="text-center text-xs font-medium text-grey-500 py-2">화</div>
+            <div class="text-center text-xs font-medium text-grey-500 py-2">수</div>
+            <div class="text-center text-xs font-medium text-grey-500 py-2">목</div>
+            <div class="text-center text-xs font-medium text-grey-500 py-2">금</div>
+            <div class="text-center text-xs font-medium text-blue-400 py-2">토</div>
+          </div>
+
+          <!-- 날짜 그리드 (PC: 텍스트 공지) -->
+          <div class="grid grid-cols-7 gap-1">
+            <!-- 11월 마지막 주 -->
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">24</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">25</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">26</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">27</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">28</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">29</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">30</div>
+            </div>
+
+            <!-- 12월 1주 -->
+            <div class="text-center py-2 text-red-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">1</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">2</div>
+              <div class="text-[9px] text-amber-600 truncate px-1">시험일정..</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">3</div>
+              <div class="flex justify-center mt-0.5">
+                <div class="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+              </div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">4</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">5</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">6</div>
+            </div>
+            <div class="text-center py-2 text-blue-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">7</div>
+            </div>
+
+            <!-- 12월 2주 -->
+            <div class="text-center py-2 text-red-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">8</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">9</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">10</div>
+              <div class="flex justify-center mt-0.5">
+                <div class="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+              </div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">11</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">12</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">13</div>
+              <div class="text-[9px] text-amber-600 truncate px-1">학부모상..</div>
+            </div>
+            <div class="text-center py-2 text-blue-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">14</div>
+            </div>
+
+            <!-- 12월 3주 -->
+            <div class="text-center py-2 text-red-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">15</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">16</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">17</div>
+              <div class="flex justify-center mt-0.5">
+                <div class="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+              </div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">18</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">19</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">20</div>
+            </div>
+            <div class="text-center py-2 text-blue-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">21</div>
+            </div>
+
+            <!-- 12월 4주 (현재 주) -->
+            <div class="text-center py-2 text-red-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">22</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer rounded-lg bg-toss-blue">
+              <div class="text-sm font-bold text-white">23</div>
+              <div class="text-[9px] text-blue-100 truncate px-1">오늘</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">24</div>
+              <div class="flex justify-center mt-0.5">
+                <div class="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+              </div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">25</div>
+              <div class="text-[9px] text-red-500 truncate px-1">휴원</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">26</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">27</div>
+            </div>
+            <div class="text-center py-2 text-blue-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">28</div>
+            </div>
+
+            <!-- 12월 5주 -->
+            <div class="text-center py-2 text-red-400 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium">29</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">30</div>
+            </div>
+            <div class="text-center py-2 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm font-medium text-grey-700">31</div>
+              <div class="flex justify-center mt-0.5">
+                <div class="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+              </div>
+            </div>
+            <!-- 1월 -->
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">1</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">2</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">3</div>
+            </div>
+            <div class="text-center py-2 text-grey-300 cursor-pointer hover:bg-grey-50 rounded-lg">
+              <div class="text-sm">4</div>
+            </div>
+          </div>
+
+          <!-- 범례 -->
+          <div class="flex items-center justify-center gap-4 mt-4 text-xs text-grey-500">
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-purple-400 rounded-full"></div>
+              <span>순환수업</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-amber-400 rounded-full"></div>
+              <span>공지</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-toss-blue rounded-full"></div>
+              <span>오늘</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 공지 영역 -->
+      <div class="px-5 pb-4">
+        <div class="bg-amber-50 rounded-xl p-3">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-500">📢</span>
+            <span class="text-sm text-amber-800 font-medium">학부모 상담 주간 (12/23 ~ 12/27)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모바일 버전 -->
+  <div id="view-mobile" class="hidden max-w-sm mx-auto">
+    <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+
+      <!-- 헤더 (모바일) -->
+      <div class="flex items-center justify-between px-4 py-3">
+        <div class="flex items-center gap-1">
+          <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span class="text-base font-bold text-grey-900 px-1">12월 4주</span>
+          <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button class="w-8 h-8 flex items-center justify-center rounded-full bg-grey-100 text-grey-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <button onclick="toggleMonthly('mobile')" id="monthly-btn-mobile" class="px-3 py-1.5 bg-grey-100 text-grey-700 text-xs font-semibold rounded-full">
+            월간
+          </button>
+        </div>
+      </div>
+
+      <!-- 주간 캘린더 (모바일 - 간소화) -->
+      <div class="px-2 pb-3">
+        <div class="grid grid-cols-7 gap-1">
+          <div class="rounded-xl p-2 text-center cursor-pointer">
+            <div class="text-[10px] text-grey-300 mb-1">일</div>
+            <span class="text-sm font-semibold text-grey-400">22</span>
+          </div>
+          <div class="rounded-xl p-2 text-center bg-toss-blueLight cursor-pointer">
+            <div class="text-[10px] text-toss-blue font-medium mb-1">월</div>
+            <div class="inline-flex items-center justify-center w-7 h-7 bg-toss-blue rounded-full">
+              <span class="text-sm font-bold text-white">23</span>
+            </div>
+            <div class="flex justify-center gap-0.5 mt-1">
+              <span class="w-1 h-1 bg-amber-500 rounded-full"></span>
+            </div>
+          </div>
+          <div class="rounded-xl p-2 text-center cursor-pointer">
+            <div class="text-[10px] text-grey-400 mb-1">화</div>
+            <span class="text-sm font-semibold text-grey-700">24</span>
+            <div class="flex justify-center mt-1">
+              <span class="w-1 h-1 bg-purple-500 rounded-full"></span>
+            </div>
+          </div>
+          <div class="rounded-xl p-2 text-center cursor-pointer">
+            <div class="text-[10px] text-grey-400 mb-1">수</div>
+            <span class="text-sm font-semibold text-grey-700">25</span>
+            <div class="flex justify-center gap-0.5 mt-1">
+              <span class="w-1 h-1 bg-red-500 rounded-full"></span>
+            </div>
+          </div>
+          <div class="rounded-xl p-2 text-center cursor-pointer">
+            <div class="text-[10px] text-grey-400 mb-1">목</div>
+            <span class="text-sm font-semibold text-grey-700">26</span>
+          </div>
+          <div class="rounded-xl p-2 text-center cursor-pointer">
+            <div class="text-[10px] text-grey-400 mb-1">금</div>
+            <span class="text-sm font-semibold text-grey-700">27</span>
+          </div>
+          <div class="rounded-xl p-2 text-center cursor-pointer">
+            <div class="text-[10px] text-grey-300 mb-1">토</div>
+            <span class="text-sm font-semibold text-grey-400">28</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 월간 캘린더 (드롭다운) - 모바일 -->
+      <div id="monthly-calendar-mobile" class="hidden overflow-hidden">
+        <div class="px-3 pb-4 pt-2 border-t border-grey-100">
+          <!-- 월 네비게이션 -->
+          <div class="flex items-center justify-center gap-3 mb-3">
+            <button class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span class="text-sm font-bold text-grey-900">2024년 12월</span>
+            <button class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-grey-100 text-grey-400">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- 요일 헤더 -->
+          <div class="grid grid-cols-7 gap-0.5 mb-1">
+            <div class="text-center text-[10px] font-medium text-red-400 py-1">일</div>
+            <div class="text-center text-[10px] font-medium text-grey-500 py-1">월</div>
+            <div class="text-center text-[10px] font-medium text-grey-500 py-1">화</div>
+            <div class="text-center text-[10px] font-medium text-grey-500 py-1">수</div>
+            <div class="text-center text-[10px] font-medium text-grey-500 py-1">목</div>
+            <div class="text-center text-[10px] font-medium text-grey-500 py-1">금</div>
+            <div class="text-center text-[10px] font-medium text-blue-400 py-1">토</div>
+          </div>
+
+          <!-- 날짜 그리드 (모바일: 점 공지) -->
+          <div class="grid grid-cols-7 gap-0.5">
+            <!-- 11월 마지막 주 -->
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">24</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">25</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">26</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">27</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">28</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">29</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">30</div>
+            </div>
+
+            <!-- 12월 1주 -->
+            <div class="text-center py-1.5 text-red-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">1</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">2</div>
+              <div class="flex justify-center gap-0.5 mt-0.5">
+                <span class="w-1 h-1 bg-amber-500 rounded-full"></span>
+              </div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">3</div>
+              <div class="flex justify-center gap-0.5 mt-0.5">
+                <span class="w-1 h-1 bg-purple-500 rounded-full"></span>
+              </div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">4</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">5</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">6</div>
+            </div>
+            <div class="text-center py-1.5 text-blue-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">7</div>
+            </div>
+
+            <!-- 12월 2주 -->
+            <div class="text-center py-1.5 text-red-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">8</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">9</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">10</div>
+              <div class="flex justify-center gap-0.5 mt-0.5">
+                <span class="w-1 h-1 bg-purple-500 rounded-full"></span>
+              </div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">11</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">12</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">13</div>
+              <div class="flex justify-center gap-0.5 mt-0.5">
+                <span class="w-1 h-1 bg-amber-500 rounded-full"></span>
+                <span class="w-1 h-1 bg-amber-500 rounded-full"></span>
+              </div>
+            </div>
+            <div class="text-center py-1.5 text-blue-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">14</div>
+            </div>
+
+            <!-- 12월 3주 -->
+            <div class="text-center py-1.5 text-red-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">15</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">16</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">17</div>
+              <div class="flex justify-center gap-0.5 mt-0.5">
+                <span class="w-1 h-1 bg-purple-500 rounded-full"></span>
+              </div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">18</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">19</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">20</div>
+            </div>
+            <div class="text-center py-1.5 text-blue-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">21</div>
+            </div>
+
+            <!-- 12월 4주 (현재 주) -->
+            <div class="text-center py-1.5 text-red-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">22</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg bg-toss-blue">
+              <div class="text-xs font-bold text-white">23</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">24</div>
+              <div class="flex justify-center gap-0.5 mt-0.5">
+                <span class="w-1 h-1 bg-purple-500 rounded-full"></span>
+              </div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">25</div>
+              <div class="flex justify-center gap-0.5 mt-0.5">
+                <span class="w-1 h-1 bg-red-500 rounded-full"></span>
+              </div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">26</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">27</div>
+            </div>
+            <div class="text-center py-1.5 text-blue-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">28</div>
+            </div>
+
+            <!-- 12월 5주 -->
+            <div class="text-center py-1.5 text-red-400 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium">29</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">30</div>
+            </div>
+            <div class="text-center py-1.5 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs font-medium text-grey-700">31</div>
+              <div class="flex justify-center gap-0.5 mt-0.5">
+                <span class="w-1 h-1 bg-purple-500 rounded-full"></span>
+              </div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">1</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">2</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">3</div>
+            </div>
+            <div class="text-center py-1.5 text-grey-300 cursor-pointer rounded-lg active:bg-grey-100">
+              <div class="text-xs">4</div>
+            </div>
+          </div>
+
+          <!-- 범례 (모바일) -->
+          <div class="flex items-center justify-center gap-3 mt-3 text-[10px] text-grey-500">
+            <div class="flex items-center gap-1">
+              <div class="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+              <span>순환</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-1.5 h-1.5 bg-amber-400 rounded-full"></div>
+              <span>공지</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-1.5 h-1.5 bg-red-400 rounded-full"></div>
+              <span>휴원</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 공지 영역 (모바일) -->
+      <div class="px-3 pb-3">
+        <div class="bg-amber-50 rounded-xl p-2.5">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-500 text-sm">📢</span>
+            <span class="text-xs text-amber-800 font-medium">학부모 상담 주간</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 설명 -->
+  <div class="max-w-4xl mx-auto mt-8 p-4 bg-white rounded-2xl">
+    <h3 class="font-bold text-grey-900 mb-3">월간 캘린더 드롭다운 목업</h3>
+    <div class="space-y-2 text-sm text-grey-600">
+      <p><strong>동작:</strong> "월간" 버튼 클릭 시 주간 캘린더 아래로 월간 캘린더가 슬라이드 다운</p>
+      <p><strong>반응형 공지:</strong></p>
+      <ul class="list-disc list-inside ml-4">
+        <li><strong>PC:</strong> 공지 제목 일부 텍스트로 표시 (예: "학부모상..", "시험일정..")</li>
+        <li><strong>모바일:</strong> 공지 개수를 점(●)으로 표시 (최대 3개)</li>
+      </ul>
+      <p><strong>날짜 선택:</strong> 날짜 클릭 시 월간 캘린더가 닫히고 주간 캘린더가 해당 주로 이동</p>
+      <p><strong>마커:</strong> 순환수업일(보라색 점), 오늘(파란색 원), 휴원(빨간색)</p>
+    </div>
+  </div>
+
+  <script>
+    function setView(view) {
+      const pcView = document.getElementById('view-pc');
+      const mobileView = document.getElementById('view-mobile');
+      const btnPc = document.getElementById('btn-pc');
+      const btnMobile = document.getElementById('btn-mobile');
+
+      if (view === 'pc') {
+        pcView.classList.remove('hidden');
+        mobileView.classList.add('hidden');
+        btnPc.classList.remove('bg-grey-200', 'text-grey-700');
+        btnPc.classList.add('bg-toss-blue', 'text-white');
+        btnMobile.classList.remove('bg-toss-blue', 'text-white');
+        btnMobile.classList.add('bg-grey-200', 'text-grey-700');
+      } else {
+        pcView.classList.add('hidden');
+        mobileView.classList.remove('hidden');
+        btnMobile.classList.remove('bg-grey-200', 'text-grey-700');
+        btnMobile.classList.add('bg-toss-blue', 'text-white');
+        btnPc.classList.remove('bg-toss-blue', 'text-white');
+        btnPc.classList.add('bg-grey-200', 'text-grey-700');
+      }
+    }
+
+    function toggleMonthly(view) {
+      const calendar = document.getElementById(`monthly-calendar-${view}`);
+      const btn = document.getElementById(`monthly-btn-${view}`);
+
+      if (calendar.classList.contains('hidden')) {
+        calendar.classList.remove('hidden');
+        calendar.classList.add('slide-down');
+        btn.textContent = '주간';
+        btn.classList.remove('bg-grey-100', 'text-grey-700');
+        btn.classList.add('bg-toss-blue', 'text-white');
+      } else {
+        calendar.classList.add('slide-up');
+        btn.textContent = '월간';
+        btn.classList.remove('bg-toss-blue', 'text-white');
+        btn.classList.add('bg-grey-100', 'text-grey-700');
+        setTimeout(() => {
+          calendar.classList.add('hidden');
+          calendar.classList.remove('slide-up', 'slide-down');
+        }, 300);
+      }
+    }
+  </script>
+</body>
+</html>

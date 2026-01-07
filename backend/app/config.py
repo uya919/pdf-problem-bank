@@ -42,6 +42,19 @@ class Config:
     CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"]
     MAX_UPLOAD_SIZE: int = 100 * 1024 * 1024  # 100MB
 
+    # Phase 6-G: Railway Worker 설정 (메이크에듀 동기화)
+    RAILWAY_WORKER_URL: str = "http://localhost:5000"
+
+    # Phase 8-5: Supabase Admin 설정 (사용자 관리)
+    SUPABASE_URL: str = ""
+    SUPABASE_SERVICE_KEY: str = ""  # Service Role Key (절대 프론트엔드 노출 금지!)
+
+    # Stage 47: Synology NAS WebDAV 설정
+    NAS_WEBDAV_URL: str = ""
+    NAS_USERNAME: str = ""
+    NAS_PASSWORD: str = ""
+    NAS_TEXTBOOK_PATH: str = "/학원/0.수학자료/수학교재"
+
     @classmethod
     def load(cls) -> 'Config':
         """
@@ -91,6 +104,19 @@ class Config:
 
         config.MAX_UPLOAD_SIZE = int(os.getenv('MAX_UPLOAD_SIZE', str(100 * 1024 * 1024)))
 
+        # Phase 6-G: Railway Worker 설정
+        config.RAILWAY_WORKER_URL = os.getenv('RAILWAY_WORKER_URL', 'http://localhost:5000')
+
+        # Phase 8-5: Supabase Admin 설정
+        config.SUPABASE_URL = os.getenv('SUPABASE_URL', '')
+        config.SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY', '')
+
+        # Stage 47: NAS WebDAV 설정
+        config.NAS_WEBDAV_URL = os.getenv('NAS_WEBDAV_URL', 'https://hyeyumedu.synology.me:60006')
+        config.NAS_USERNAME = os.getenv('NAS_USERNAME', 'hyeyum')
+        config.NAS_PASSWORD = os.getenv('NAS_PASSWORD', '')
+        config.NAS_TEXTBOOK_PATH = os.getenv('NAS_TEXTBOOK_PATH', '/학원/0.수학자료/수학교재')
+
         # 경로 검증
         config.validate()
 
@@ -134,6 +160,9 @@ class Config:
 
 # 전역 설정 인스턴스
 config = Config.load()
+
+# settings alias (다른 모듈에서 from app.config import settings로 사용)
+settings = config
 
 
 if __name__ == "__main__":

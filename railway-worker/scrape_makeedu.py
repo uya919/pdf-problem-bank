@@ -224,6 +224,9 @@ def parse_student_data(html: str) -> list[dict]:
 
             # 학년 (별도 컬럼)
             grade = cells[2].get_text(strip=True)
+            # 디버그: 처음 5명 학년 출력
+            if len(students) < 5:
+                print(f"DEBUG 학년파싱: {name} → cells[2]='{grade}'")
 
             # 학교 (별도 컬럼)
             school = cells[3].get_text(strip=True)

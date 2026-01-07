@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>반 관리 모달 - 학생 목록 포함</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            grey: {
+              50: '#F9FAFB',
+              100: '#F2F4F6',
+              200: '#E5E8EB',
+              300: '#D1D6DB',
+              400: '#B0B8C1',
+              500: '#8B95A1',
+              600: '#6B7684',
+              700: '#4E5968',
+              800: '#333D4B',
+              900: '#191F28',
+            },
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-grey-100 min-h-screen p-8">
+
+  <!-- 페이지 제목 -->
+  <div class="max-w-4xl mx-auto mb-8">
+    <h1 class="text-2xl font-bold text-grey-900 mb-2">반 관리 모달 목업</h1>
+    <p class="text-grey-500">탭 방식으로 정보 수정 / 학생 목록 분리</p>
+  </div>
+
+  <!-- 모달들 나란히 -->
+  <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+    <!-- ========================================== -->
+    <!-- 모달 1: 정보 수정 탭 -->
+    <!-- ========================================== -->
+    <div class="bg-white rounded-2xl shadow-xl border border-grey-200 overflow-hidden">
+      <!-- 헤더 - 반 요약 -->
+      <div class="p-5 border-b border-grey-100">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-lg font-bold text-grey-900">고1 국어 심화반</h2>
+          <button class="p-2 text-grey-400 hover:text-grey-600 text-xl">&times;</button>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">국어</span>
+          <span class="text-grey-500">담당: 이한솔</span>
+          <span class="text-grey-500">학생 5명</span>
+        </div>
+      </div>
+
+      <!-- 탭 -->
+      <div class="px-5 pt-4">
+        <div class="flex gap-1 p-1 bg-grey-100 rounded-lg w-fit">
+          <button class="px-4 py-2 rounded-md text-sm font-medium bg-white text-grey-900 shadow-sm">
+            정보 수정
+          </button>
+          <button class="px-4 py-2 rounded-md text-sm font-medium text-grey-500 hover:text-grey-700">
+            학생 (5)
+          </button>
+        </div>
+      </div>
+
+      <!-- 정보 수정 폼 -->
+      <div class="p-5 space-y-4">
+        <!-- 반 이름 -->
+        <div>
+          <label class="block text-sm font-medium text-grey-700 mb-1.5">
+            반 이름 <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value="고1 국어 심화반"
+            class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <!-- 과목 & 학년 -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-grey-700 mb-1.5">과목</label>
+            <select class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option>국어</option>
+              <option>수학</option>
+              <option>영어</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-grey-700 mb-1.5">학년</label>
+            <select class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option>고1</option>
+              <option>고2</option>
+              <option>고3</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 담당 강사 -->
+        <div>
+          <label class="block text-sm font-medium text-grey-700 mb-1.5">담당 강사</label>
+          <select class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option>이한솔</option>
+            <option>김영희</option>
+            <option>박철수</option>
+          </select>
+        </div>
+
+        <!-- 수업 요일 -->
+        <div>
+          <label class="block text-sm font-medium text-grey-700 mb-1.5">수업 요일</label>
+          <div class="flex gap-2">
+            <button class="w-10 h-10 rounded-lg font-medium bg-grey-100 text-grey-600">월</button>
+            <button class="w-10 h-10 rounded-lg font-medium bg-blue-500 text-white">화</button>
+            <button class="w-10 h-10 rounded-lg font-medium bg-grey-100 text-grey-600">수</button>
+            <button class="w-10 h-10 rounded-lg font-medium bg-blue-500 text-white">목</button>
+            <button class="w-10 h-10 rounded-lg font-medium bg-grey-100 text-grey-600">금</button>
+            <button class="w-10 h-10 rounded-lg font-medium bg-grey-100 text-grey-600">토</button>
+            <button class="w-10 h-10 rounded-lg font-medium bg-grey-100 text-grey-600">일</button>
+          </div>
+        </div>
+
+        <!-- 수업 시간 -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-grey-700 mb-1.5">시작 시간</label>
+            <input
+              type="time"
+              value="16:00"
+              class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-grey-700 mb-1.5">종료 시간</label>
+            <input
+              type="time"
+              value="18:00"
+              class="w-full px-4 py-3 border border-grey-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="flex gap-3 p-5 pt-0">
+        <button class="flex-1 py-3 bg-grey-100 text-grey-700 font-medium rounded-xl hover:bg-grey-200">
+          취소
+        </button>
+        <button class="flex-1 py-3 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600">
+          저장하기
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 모달 2: 학생 목록 탭 -->
+    <!-- ========================================== -->
+    <div class="bg-white rounded-2xl shadow-xl border border-grey-200 overflow-hidden">
+      <!-- 헤더 - 반 요약 -->
+      <div class="p-5 border-b border-grey-100">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-lg font-bold text-grey-900">고1 국어 심화반</h2>
+          <button class="p-2 text-grey-400 hover:text-grey-600 text-xl">&times;</button>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">국어</span>
+          <span class="text-grey-500">담당: 이한솔</span>
+          <span class="text-grey-500">학생 5명</span>
+        </div>
+      </div>
+
+      <!-- 탭 -->
+      <div class="px-5 pt-4">
+        <div class="flex gap-1 p-1 bg-grey-100 rounded-lg w-fit">
+          <button class="px-4 py-2 rounded-md text-sm font-medium text-grey-500 hover:text-grey-700">
+            정보 수정
+          </button>
+          <button class="px-4 py-2 rounded-md text-sm font-medium bg-white text-grey-900 shadow-sm">
+            학생 (5)
+          </button>
+        </div>
+      </div>
+
+      <!-- 학생 목록 -->
+      <div class="p-5">
+        <!-- 학생 수 & 검색 -->
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm text-grey-500">총 5명</span>
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="학생 검색..."
+              class="pl-8 pr-3 py-1.5 text-sm border border-grey-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+            />
+            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-grey-400 text-xs">🔍</span>
+          </div>
+        </div>
+
+        <!-- 학생 리스트 -->
+        <div class="space-y-2">
+          <!-- 학생 1 -->
+          <div class="flex items-center justify-between p-3 bg-grey-50 rounded-xl hover:bg-grey-100 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm font-medium">
+                김
+              </div>
+              <div>
+                <div class="font-medium text-grey-900">김철수</div>
+                <div class="text-xs text-grey-400">고1 | 2025.09 등록</div>
+              </div>
+            </div>
+            <div class="text-sm text-grey-500">010-1234-****</div>
+          </div>
+
+          <!-- 학생 2 -->
+          <div class="flex items-center justify-between p-3 bg-grey-50 rounded-xl hover:bg-grey-100 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 text-sm font-medium">
+                이
+              </div>
+              <div>
+                <div class="font-medium text-grey-900">이영희</div>
+                <div class="text-xs text-grey-400">고1 | 2025.09 등록</div>
+              </div>
+            </div>
+            <div class="text-sm text-grey-500">010-5678-****</div>
+          </div>
+
+          <!-- 학생 3 -->
+          <div class="flex items-center justify-between p-3 bg-grey-50 rounded-xl hover:bg-grey-100 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm font-medium">
+                박
+              </div>
+              <div>
+                <div class="font-medium text-grey-900">박민수</div>
+                <div class="text-xs text-grey-400">고1 | 2025.10 등록</div>
+              </div>
+            </div>
+            <div class="text-sm text-grey-500">010-9012-****</div>
+          </div>
+
+          <!-- 학생 4 -->
+          <div class="flex items-center justify-between p-3 bg-grey-50 rounded-xl hover:bg-grey-100 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-sm font-medium">
+                최
+              </div>
+              <div>
+                <div class="font-medium text-grey-900">최지원</div>
+                <div class="text-xs text-grey-400">고1 | 2025.10 등록</div>
+              </div>
+            </div>
+            <div class="text-sm text-grey-500">010-3456-****</div>
+          </div>
+
+          <!-- 학생 5 -->
+          <div class="flex items-center justify-between p-3 bg-grey-50 rounded-xl hover:bg-grey-100 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm font-medium">
+                정
+              </div>
+              <div>
+                <div class="font-medium text-grey-900">정하늘</div>
+                <div class="text-xs text-grey-400">고1 | 2025.11 등록</div>
+              </div>
+            </div>
+            <div class="text-sm text-grey-500">010-7890-****</div>
+          </div>
+        </div>
+
+        <!-- 하단 링크 -->
+        <div class="mt-4 pt-4 border-t border-grey-100 text-center">
+          <button class="text-sm text-blue-500 hover:text-blue-600 font-medium">
+            반 배정 관리 →
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 빈 상태 모달 -->
+  <!-- ========================================== -->
+  <div class="max-w-md mx-auto mt-12">
+    <h2 class="text-lg font-bold text-grey-900 mb-4">빈 상태 (학생 없음)</h2>
+
+    <div class="bg-white rounded-2xl shadow-xl border border-grey-200 overflow-hidden">
+      <!-- 헤더 -->
+      <div class="p-5 border-b border-grey-100">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-lg font-bold text-grey-900">중2 수학 기초반</h2>
+          <button class="p-2 text-grey-400 hover:text-grey-600 text-xl">&times;</button>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">수학</span>
+          <span class="text-grey-500">담당: 미배정</span>
+          <span class="text-grey-500">학생 0명</span>
+        </div>
+      </div>
+
+      <!-- 탭 -->
+      <div class="px-5 pt-4">
+        <div class="flex gap-1 p-1 bg-grey-100 rounded-lg w-fit">
+          <button class="px-4 py-2 rounded-md text-sm font-medium text-grey-500 hover:text-grey-700">
+            정보 수정
+          </button>
+          <button class="px-4 py-2 rounded-md text-sm font-medium bg-white text-grey-900 shadow-sm">
+            학생 (0)
+          </button>
+        </div>
+      </div>
+
+      <!-- 빈 상태 -->
+      <div class="p-8 text-center">
+        <div class="text-5xl mb-4">👥</div>
+        <p class="text-grey-500 mb-4">등록된 학생이 없습니다</p>
+        <button class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600">
+          학생 배정하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 모바일 버전 -->
+  <!-- ========================================== -->
+  <div class="max-w-sm mx-auto mt-12">
+    <h2 class="text-lg font-bold text-grey-900 mb-4">모바일 버전</h2>
+
+    <div class="bg-white rounded-2xl shadow-xl border border-grey-200 overflow-hidden">
+      <!-- 헤더 - 컴팩트 -->
+      <div class="p-4 border-b border-grey-100">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-base font-bold text-grey-900">고1 국어 심화반</h2>
+          <button class="p-1.5 text-grey-400 hover:text-grey-600 text-lg">&times;</button>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">국어</span>
+          <span class="text-grey-400">이한솔</span>
+          <span class="text-grey-400">5명</span>
+        </div>
+      </div>
+
+      <!-- 탭 - 전체 너비 -->
+      <div class="px-4 pt-3">
+        <div class="flex gap-1 p-1 bg-grey-100 rounded-lg">
+          <button class="flex-1 px-3 py-2 rounded-md text-sm font-medium text-grey-500">
+            정보
+          </button>
+          <button class="flex-1 px-3 py-2 rounded-md text-sm font-medium bg-white text-grey-900 shadow-sm">
+            학생 (5)
+          </button>
+        </div>
+      </div>
+
+      <!-- 학생 목록 - 컴팩트 -->
+      <div class="p-4">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between p-2.5 bg-grey-50 rounded-lg">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-medium">
+                김
+              </div>
+              <div>
+                <div class="font-medium text-grey-900 text-sm">김철수</div>
+                <div class="text-xs text-grey-400">고1</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between p-2.5 bg-grey-50 rounded-lg">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 text-xs font-medium">
+                이
+              </div>
+              <div>
+                <div class="font-medium text-grey-900 text-sm">이영희</div>
+                <div class="text-xs text-grey-400">고1</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between p-2.5 bg-grey-50 rounded-lg">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xs font-medium">
+                박
+              </div>
+              <div>
+                <div class="font-medium text-grey-900 text-sm">박민수</div>
+                <div class="text-xs text-grey-400">고1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 더보기 -->
+        <button class="w-full mt-3 py-2 text-sm text-grey-500 hover:text-grey-700">
+          + 2명 더보기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 설명 -->
+  <div class="max-w-4xl mx-auto mt-12 p-6 bg-blue-50 rounded-xl border border-blue-200">
+    <h3 class="font-bold text-blue-900 mb-3">디자인 포인트</h3>
+    <ul class="space-y-2 text-sm text-blue-800">
+      <li><strong>1 Thing / 1 Page:</strong> 탭으로 "정보 수정"과 "학생 목록" 역할 분리</li>
+      <li><strong>Context First:</strong> 헤더에 반 요약 정보 (과목, 담당, 학생 수) 항상 표시</li>
+      <li><strong>Progressive Disclosure:</strong> 학생 검색은 학생 탭에서만 노출</li>
+      <li><strong>정보 계층:</strong> 학생 이름(굵게) > 학년/등록일(작게) > 연락처(회색)</li>
+      <li><strong>아바타 컬러:</strong> 성별/이름 기반으로 다양한 색상 적용</li>
+      <li><strong>반응형:</strong> 모바일에서는 연락처 숨김, 더보기 버튼 추가</li>
+    </ul>
+  </div>
+
+</body>
+</html>

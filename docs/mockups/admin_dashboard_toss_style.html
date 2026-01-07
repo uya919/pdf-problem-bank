@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>혜윰학원 - 토스 스타일 PC 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            pretendard: ['Pretendard', 'sans-serif'],
+          },
+          colors: {
+            grey: {
+              50: '#F9FAFB',
+              100: '#F2F4F6',
+              200: '#E5E8EB',
+              300: '#D1D6DB',
+              400: '#B0B8C1',
+              500: '#8B95A1',
+              600: '#6B7684',
+              700: '#4E5968',
+              800: '#333D4B',
+              900: '#191F28',
+            },
+            toss: {
+              blue: '#3182F6',
+              blueDark: '#1B64DA',
+              blueLight: '#EBF4FF',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background: #F2F4F6;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border: 1px solid #E5E8EB;
+      transition: all 0.2s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .card-static {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border: 1px solid #E5E8EB;
+    }
+
+    .sidebar-item {
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-item:hover {
+      background: #F2F4F6;
+    }
+
+    .sidebar-item.active {
+      background: #EBF4FF;
+      color: #3182F6;
+    }
+
+    .stat-card {
+      transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-1px);
+    }
+
+    .class-card {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .class-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .class-card.expanded {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .expand-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .expand-content.active {
+      max-height: 500px;
+    }
+
+    .btn-primary {
+      background: #3182F6;
+      color: white;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      background: #1B64DA;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: #F2F4F6;
+      color: #4E5968;
+      transition: all 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #E5E8EB;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .status-success {
+      background: #E6F9F0;
+      color: #00A844;
+    }
+
+    .status-warning {
+      background: #FFF8E6;
+      color: #CC8400;
+    }
+
+    .status-error {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+
+    .time-label {
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .time-label::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #3182F6;
+      border-radius: 50%;
+    }
+
+    .subject-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .subject-math { background: #3182F6; }
+    .subject-english { background: #00C853; }
+    .subject-korean { background: #FF6B35; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="flex">
+    <!-- 사이드바 -->
+    <aside class="w-[72px] h-screen bg-white border-r border-grey-200 flex flex-col items-center py-6 fixed left-0 top-0">
+      <!-- 로고 -->
+      <div class="w-10 h-10 bg-toss-blue rounded-xl flex items-center justify-center mb-8">
+        <span class="text-white font-bold text-lg">혜</span>
+      </div>
+
+      <!-- 메뉴 -->
+      <nav class="flex flex-col gap-2 flex-1">
+        <a href="#" class="sidebar-item active w-12 h-12 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+        </a>
+        <a href="#" class="sidebar-item w-12 h-12 rounded-xl flex items-center justify-center text-grey-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+        </a>
+        <a href="#" class="sidebar-item w-12 h-12 rounded-xl flex items-center justify-center text-grey-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+        </a>
+        <a href="#" class="sidebar-item w-12 h-12 rounded-xl flex items-center justify-center text-grey-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </a>
+      </nav>
+
+      <!-- 설정 -->
+      <a href="#" class="sidebar-item w-12 h-12 rounded-xl flex items-center justify-center text-grey-500">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </a>
+    </aside>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="ml-[72px] flex-1 min-h-screen">
+      <!-- 헤더 -->
+      <header class="h-16 bg-white border-b border-grey-200 px-10 flex items-center justify-between sticky top-0 z-10">
+        <div></div>
+        <div class="flex items-center gap-4">
+          <button class="w-10 h-10 rounded-full hover:bg-grey-100 flex items-center justify-center text-grey-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+          </button>
+          <div class="flex items-center gap-3 pl-4 border-l border-grey-200">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-toss-blue to-blue-400 flex items-center justify-center">
+              <span class="text-white text-sm font-medium">원</span>
+            </div>
+            <span class="text-sm font-medium text-grey-800">원장님</span>
+            <svg class="w-4 h-4 text-grey-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+      </header>
+
+      <!-- 컨텐츠 영역 -->
+      <div class="p-10 max-w-[1200px]">
+        <!-- 인사말 -->
+        <div class="mb-8">
+          <h1 class="text-[28px] font-bold text-grey-900 mb-2">좋은 하루예요, 원장님</h1>
+          <p class="text-grey-500">오늘 수업을 확인해보세요</p>
+        </div>
+
+        <!-- 요약 카드 -->
+        <div class="grid grid-cols-3 gap-4 mb-10">
+          <div class="card-static stat-card p-6">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-grey-500 text-sm">오늘 수업</span>
+              <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <svg class="w-4 h-4 text-toss-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+              </div>
+            </div>
+            <div class="text-[32px] font-bold text-grey-900">12<span class="text-lg font-medium text-grey-500 ml-1">개</span></div>
+          </div>
+
+          <div class="card-static stat-card p-6 border-l-4 border-l-orange-400">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-grey-500 text-sm">숙제 미제출</span>
+              <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+                <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="text-[32px] font-bold text-orange-500">5<span class="text-lg font-medium text-grey-500 ml-1">명</span></div>
+            <p class="text-xs text-grey-500 mt-1">2개 반에서 확인 필요</p>
+          </div>
+
+          <div class="card-static stat-card p-6">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-grey-500 text-sm">출결 미입력</span>
+              <div class="w-8 h-8 rounded-lg bg-grey-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-grey-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+              </div>
+            </div>
+            <div class="text-[32px] font-bold text-grey-900">0<span class="text-lg font-medium text-grey-500 ml-1">반</span></div>
+            <p class="text-xs text-green-600 mt-1">모두 완료했어요 ✓</p>
+          </div>
+        </div>
+
+        <!-- 날짜 선택 -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-4">
+            <h2 class="text-lg font-semibold text-grey-900">12월 21일 토요일</h2>
+            <span class="text-sm text-grey-500">오늘</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="w-8 h-8 rounded-lg hover:bg-grey-100 flex items-center justify-center text-grey-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <button class="w-8 h-8 rounded-lg hover:bg-grey-100 flex items-center justify-center text-grey-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 수업 목록 -->
+        <div class="space-y-6">
+          <!-- 14:00 시간대 -->
+          <div>
+            <div class="time-label text-sm font-semibold text-grey-700 mb-4">14:00</div>
+            <div class="space-y-3">
+              <!-- 중1A 수학 - 확장된 상태 -->
+              <div class="card class-card expanded p-0 overflow-hidden" onclick="toggleCard(this)">
+                <div class="p-6">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start gap-3">
+                      <div class="subject-dot subject-math mt-2"></div>
+                      <div>
+                        <h3 class="font-semibold text-grey-900 text-[17px]">중1A 수학</h3>
+                        <p class="text-grey-500 text-sm mt-1">p.42 → p.46 이차함수의 최댓값</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="status-badge status-warning">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"/>
+                        </svg>
+                        확인 필요
+                      </span>
+                      <span class="text-sm text-grey-500">김선생</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 확장 영역 -->
+                <div class="expand-content active">
+                  <div class="px-6 pb-6">
+                    <!-- 진도 정보 -->
+                    <div class="bg-grey-50 rounded-xl p-4 mb-4">
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <span class="text-xs text-grey-500 block mb-1">지난 수업</span>
+                          <span class="text-sm text-grey-800">p.42-45 이차함수의 정의</span>
+                        </div>
+                        <div>
+                          <span class="text-xs text-grey-500 block mb-1">오늘 수업</span>
+                          <span class="text-sm text-toss-blue font-medium">p.46-50 이차함수의 최댓값</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 상태 카드들 -->
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                      <div class="bg-orange-50 rounded-xl p-4 text-center">
+                        <div class="text-lg font-bold text-orange-500">4/5</div>
+                        <div class="text-xs text-grey-600 mt-1">숙제 제출</div>
+                        <div class="text-xs text-orange-500 mt-2">홍길동 미제출</div>
+                      </div>
+                      <div class="bg-green-50 rounded-xl p-4 text-center">
+                        <div class="text-lg font-bold text-green-600">5/5</div>
+                        <div class="text-xs text-grey-600 mt-1">출결</div>
+                        <div class="text-xs text-green-600 mt-2">전원 출석</div>
+                      </div>
+                      <div class="bg-grey-100 rounded-xl p-4 text-center">
+                        <div class="text-lg font-bold text-grey-700">1건</div>
+                        <div class="text-xs text-grey-600 mt-1">메모</div>
+                        <div class="text-xs text-grey-500 mt-2">보충수업 예정</div>
+                      </div>
+                    </div>
+
+                    <!-- 액션 버튼 -->
+                    <div class="flex gap-2">
+                      <button class="btn-primary px-4 py-2.5 rounded-xl text-sm font-medium">출결 입력</button>
+                      <button class="btn-secondary px-4 py-2.5 rounded-xl text-sm font-medium">진도 입력</button>
+                      <button class="btn-secondary px-4 py-2.5 rounded-xl text-sm font-medium">숙제 배정</button>
+                      <button class="btn-secondary px-4 py-2.5 rounded-xl text-sm font-medium ml-auto">상세보기 →</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 중2B 영어 - 접힌 상태 -->
+              <div class="card class-card p-6" onclick="toggleCard(this)">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-start gap-3">
+                    <div class="subject-dot subject-english mt-2"></div>
+                    <div>
+                      <h3 class="font-semibold text-grey-900 text-[17px]">중2B 영어</h3>
+                      <p class="text-grey-500 text-sm mt-1">Unit 5 → Unit 6</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
+                      <span class="status-badge status-success">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        완료
+                      </span>
+                    </div>
+                    <span class="text-sm text-grey-500">박선생</span>
+                  </div>
+                </div>
+                <div class="expand-content">
+                  <div class="pt-4">
+                    <!-- 확장 내용 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 16:00 시간대 -->
+          <div>
+            <div class="time-label text-sm font-semibold text-grey-700 mb-4">16:00</div>
+            <div class="space-y-3">
+              <!-- 고1A 국어 -->
+              <div class="card class-card p-6" onclick="toggleCard(this)">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-start gap-3">
+                    <div class="subject-dot subject-korean mt-2"></div>
+                    <div>
+                      <h3 class="font-semibold text-grey-900 text-[17px]">고1A 국어</h3>
+                      <p class="text-grey-500 text-sm mt-1">3과 → 4과 현대시 감상</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="status-badge status-warning">
+                      숙제 5/6
+                    </span>
+                    <span class="text-sm text-grey-500">이선생</span>
+                  </div>
+                </div>
+                <div class="expand-content">
+                  <div class="pt-4">
+                    <!-- 확장 내용 -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- 고1B 국어 - 문제 있음 -->
+              <div class="card class-card p-6 border-l-4 border-l-red-400" onclick="toggleCard(this)">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-start gap-3">
+                    <div class="subject-dot subject-korean mt-2"></div>
+                    <div>
+                      <h3 class="font-semibold text-grey-900 text-[17px]">고1B 국어</h3>
+                      <p class="text-grey-500 text-sm mt-1">5과 → 6과 수필 읽기</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="status-badge status-error">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                      숙제 3/7
+                    </span>
+                    <span class="text-sm text-grey-500">이선생</span>
+                  </div>
+                </div>
+                <div class="mt-3 text-sm text-red-500 flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"/>
+                  </svg>
+                  숙제 미제출 4명: 김철수, 이영희, 박민수, 최지원
+                </div>
+                <div class="expand-content">
+                  <div class="pt-4">
+                    <!-- 확장 내용 -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- 중3A 수학 -->
+              <div class="card class-card p-6" onclick="toggleCard(this)">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-start gap-3">
+                    <div class="subject-dot subject-math mt-2"></div>
+                    <div>
+                      <h3 class="font-semibold text-grey-900 text-[17px]">중3A 수학</h3>
+                      <p class="text-grey-500 text-sm mt-1">p.100 → p.106 이차방정식</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="status-badge status-success">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                      </svg>
+                      완료
+                    </span>
+                    <span class="text-sm text-grey-500">정선생</span>
+                  </div>
+                </div>
+                <div class="expand-content">
+                  <div class="pt-4">
+                    <!-- 확장 내용 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 18:00 시간대 -->
+          <div>
+            <div class="time-label text-sm font-semibold text-grey-700 mb-4">18:00</div>
+            <div class="space-y-3">
+              <!-- 고3A 수학 -->
+              <div class="card class-card p-6" onclick="toggleCard(this)">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-start gap-3">
+                    <div class="subject-dot subject-math mt-2"></div>
+                    <div>
+                      <h3 class="font-semibold text-grey-900 text-[17px]">고3A 수학</h3>
+                      <p class="text-grey-500 text-sm mt-1">p.150 → p.158 적분의 응용</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="status-badge status-success">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                      </svg>
+                      완료
+                    </span>
+                    <span class="text-sm text-grey-500">김선생</span>
+                  </div>
+                </div>
+                <div class="expand-content">
+                  <div class="pt-4">
+                    <!-- 확장 내용 -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- 순환수업 -->
+              <div class="card class-card p-6 bg-purple-50 border-purple-200" onclick="toggleCard(this)">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center">
+                      <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h3 class="font-semibold text-purple-900 text-[17px]">순환수업</h3>
+                        <span class="text-xs bg-purple-200 text-purple-700 px-2 py-0.5 rounded-full">3주차</span>
+                      </div>
+                      <div class="flex gap-2 mt-2">
+                        <span class="text-xs px-2 py-1 rounded-lg bg-green-100 text-green-700">중1 영어수업</span>
+                        <span class="text-xs px-2 py-1 rounded-lg bg-blue-100 text-blue-700">중2 수학수업</span>
+                        <span class="text-xs px-2 py-1 rounded-lg bg-amber-100 text-amber-700">중3 수학테스트</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="expand-content">
+                  <div class="pt-4">
+                    <!-- 확장 내용 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 범례 -->
+        <div class="mt-8 flex items-center gap-6 text-xs text-grey-500">
+          <div class="flex items-center gap-2">
+            <div class="subject-dot subject-math"></div>
+            <span>수학</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="subject-dot subject-english"></div>
+            <span>영어</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="subject-dot subject-korean"></div>
+            <span>국어</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function toggleCard(card) {
+      const expandContent = card.querySelector('.expand-content');
+      const isExpanded = card.classList.contains('expanded');
+
+      // 다른 카드들 접기
+      document.querySelectorAll('.class-card.expanded').forEach(c => {
+        if (c !== card) {
+          c.classList.remove('expanded');
+          c.querySelector('.expand-content')?.classList.remove('active');
+        }
+      });
+
+      // 현재 카드 토글
+      if (isExpanded) {
+        card.classList.remove('expanded');
+        expandContent?.classList.remove('active');
+      } else {
+        card.classList.add('expanded');
+        expandContent?.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -8,3 +8,4 @@
 export * from './classification';
 export * from './problem';
 export * from './matching';
+export * from './test';

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>월간 캘린더 폰트 변형 비교</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'toss-blue': '#3182F6',
+            'toss-blueDark': '#1B64DA',
+            'toss-blueLight': '#E8F3FF',
+            'grey': {
+              50: '#F9FAFB',
+              100: '#F2F4F6',
+              200: '#E5E8EB',
+              300: '#D1D6DB',
+              400: '#B0B8C1',
+              500: '#8B95A1',
+              600: '#6B7684',
+              700: '#4E5968',
+              800: '#333D4B',
+              900: '#191F28',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .month-card {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .variant-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #3182F6;
+      background: #E8F3FF;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .variant-desc {
+      font-size: 11px;
+      color: #6B7684;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body class="bg-grey-100 min-h-screen p-4">
+
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-2xl font-bold text-grey-800 mb-2 text-center">월간 캘린더 폰트 변형 비교</h1>
+    <p class="text-center text-grey-500 mb-6">주간 뷰 기준: 날짜 text-xl(20px) + font-semibold(600), 요일 text-xs(12px)</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+      <!-- 변형 1: 주간과 동일 (기준) -->
+      <div class="month-card">
+        <div class="variant-label">변형 1: 주간 동일 (기준)</div>
+        <div class="variant-desc">날짜 20px/600 · 요일 12px · 셀 72px</div>
+        <div class="text-center font-bold text-grey-800 mb-3">2025년 1월</div>
+        <div class="grid grid-cols-7 mb-2">
+          <div class="text-center text-xs py-1 text-red-400">일</div>
+          <div class="text-center text-xs py-1 text-grey-500">월</div>
+          <div class="text-center text-xs py-1 text-grey-500">화</div>
+          <div class="text-center text-xs py-1 text-grey-500">수</div>
+          <div class="text-center text-xs py-1 text-grey-500">목</div>
+          <div class="text-center text-xs py-1 text-grey-500">금</div>
+          <div class="text-center text-xs py-1 text-blue-400">토</div>
+        </div>
+        <div class="grid grid-cols-7 gap-0.5">
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl text-grey-300"><span class="text-xl font-semibold">29</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl text-grey-300"><span class="text-xl font-semibold">30</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl text-grey-300"><span class="text-xl font-semibold">31</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl bg-red-50"><span class="text-xl font-semibold text-red-500">1</span><span class="text-[10px] text-red-500 mt-1">신정</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-grey-700">2</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-grey-700">3</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-blue-400">4</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-red-400">5</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-grey-700">6</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-grey-700">7</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl bg-toss-blue"><span class="text-xl font-bold text-white">8</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-grey-700">9</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-grey-700">10</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[72px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-xl font-semibold text-blue-400">11</span></div>
+        </div>
+      </div>
+
+      <!-- 변형 2: 살짝 작게 -->
+      <div class="month-card">
+        <div class="variant-label">변형 2: 살짝 작게</div>
+        <div class="variant-desc">날짜 18px/600 · 요일 11px · 셀 64px</div>
+        <div class="text-center font-bold text-grey-800 mb-3">2025년 1월</div>
+        <div class="grid grid-cols-7 mb-2">
+          <div class="text-center text-[11px] py-1 text-red-400">일</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">월</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">화</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">수</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">목</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">금</div>
+          <div class="text-center text-[11px] py-1 text-blue-400">토</div>
+        </div>
+        <div class="grid grid-cols-7 gap-0.5">
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl text-grey-300"><span class="text-lg font-semibold">29</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl text-grey-300"><span class="text-lg font-semibold">30</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl text-grey-300"><span class="text-lg font-semibold">31</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl bg-red-50"><span class="text-lg font-semibold text-red-500">1</span><span class="text-[10px] text-red-500 mt-1">신정</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-grey-700">2</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-grey-700">3</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-blue-400">4</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-red-400">5</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-grey-700">6</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-grey-700">7</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl bg-toss-blue"><span class="text-lg font-bold text-white">8</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-grey-700">9</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-grey-700">10</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[64px] p-1 rounded-xl hover:bg-grey-50 cursor-pointer"><span class="text-lg font-semibold text-blue-400">11</span></div>
+        </div>
+      </div>
+
+      <!-- 변형 3: 컴팩트 -->
+      <div class="month-card">
+        <div class="variant-label">변형 3: 컴팩트</div>
+        <div class="variant-desc">날짜 16px/500 · 요일 11px · 셀 56px</div>
+        <div class="text-center font-bold text-grey-800 mb-3">2025년 1월</div>
+        <div class="grid grid-cols-7 mb-2">
+          <div class="text-center text-[11px] py-1 text-red-400">일</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">월</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">화</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">수</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">목</div>
+          <div class="text-center text-[11px] py-1 text-grey-500">금</div>
+          <div class="text-center text-[11px] py-1 text-blue-400">토</div>
+        </div>
+        <div class="grid grid-cols-7 gap-0.5">
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg text-grey-300"><span class="text-base font-medium">29</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg text-grey-300"><span class="text-base font-medium">30</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg text-grey-300"><span class="text-base font-medium">31</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg bg-red-50"><span class="text-base font-medium text-red-500">1</span><span class="text-[9px] text-red-500 mt-0.5">신정</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-grey-700">2</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-grey-700">3</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-blue-400">4</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-red-400">5</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-grey-700">6</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-grey-700">7</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg bg-toss-blue"><span class="text-base font-semibold text-white">8</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-grey-700">9</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-grey-700">10</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[56px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-medium text-blue-400">11</span></div>
+        </div>
+      </div>
+
+      <!-- 변형 4: 미니멀 -->
+      <div class="month-card">
+        <div class="variant-label">변형 4: 미니멀</div>
+        <div class="variant-desc">날짜 14px/500 · 요일 10px · 셀 48px</div>
+        <div class="text-center font-bold text-grey-800 mb-3">2025년 1월</div>
+        <div class="grid grid-cols-7 mb-2">
+          <div class="text-center text-[10px] py-1 text-red-400">일</div>
+          <div class="text-center text-[10px] py-1 text-grey-500">월</div>
+          <div class="text-center text-[10px] py-1 text-grey-500">화</div>
+          <div class="text-center text-[10px] py-1 text-grey-500">수</div>
+          <div class="text-center text-[10px] py-1 text-grey-500">목</div>
+          <div class="text-center text-[10px] py-1 text-grey-500">금</div>
+          <div class="text-center text-[10px] py-1 text-blue-400">토</div>
+        </div>
+        <div class="grid grid-cols-7 gap-0.5">
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg text-grey-300"><span class="text-sm font-medium">29</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg text-grey-300"><span class="text-sm font-medium">30</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg text-grey-300"><span class="text-sm font-medium">31</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg bg-red-50"><span class="text-sm font-medium text-red-500">1</span><span class="text-[8px] text-red-500">신정</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-grey-700">2</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-grey-700">3</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-blue-400">4</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-red-400">5</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-grey-700">6</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-grey-700">7</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg bg-toss-blue"><span class="text-sm font-semibold text-white">8</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-grey-700">9</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-grey-700">10</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[48px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-sm font-medium text-blue-400">11</span></div>
+        </div>
+      </div>
+
+      <!-- 변형 5: 볼드 강조 -->
+      <div class="month-card">
+        <div class="variant-label">변형 5: 볼드 강조</div>
+        <div class="variant-desc">날짜 16px/700 · 요일 11px/600 · 셀 60px</div>
+        <div class="text-center font-bold text-grey-800 mb-3">2025년 1월</div>
+        <div class="grid grid-cols-7 mb-2">
+          <div class="text-center text-[11px] font-semibold py-1 text-red-400">일</div>
+          <div class="text-center text-[11px] font-semibold py-1 text-grey-500">월</div>
+          <div class="text-center text-[11px] font-semibold py-1 text-grey-500">화</div>
+          <div class="text-center text-[11px] font-semibold py-1 text-grey-500">수</div>
+          <div class="text-center text-[11px] font-semibold py-1 text-grey-500">목</div>
+          <div class="text-center text-[11px] font-semibold py-1 text-grey-500">금</div>
+          <div class="text-center text-[11px] font-semibold py-1 text-blue-400">토</div>
+        </div>
+        <div class="grid grid-cols-7 gap-0.5">
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg text-grey-300"><span class="text-base font-bold">29</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg text-grey-300"><span class="text-base font-bold">30</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg text-grey-300"><span class="text-base font-bold">31</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg bg-red-50"><span class="text-base font-bold text-red-500">1</span><span class="text-[9px] font-medium text-red-500">신정</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-grey-700">2</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-grey-700">3</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-blue-400">4</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-red-400">5</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-grey-700">6</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-grey-700">7</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg bg-toss-blue"><span class="text-base font-extrabold text-white">8</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-grey-700">9</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-grey-700">10</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[60px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-base font-bold text-blue-400">11</span></div>
+        </div>
+      </div>
+
+      <!-- 변형 6: 라이트 -->
+      <div class="month-card">
+        <div class="variant-label">변형 6: 라이트</div>
+        <div class="variant-desc">날짜 15px/400 · 요일 10px/400 · 셀 52px</div>
+        <div class="text-center font-bold text-grey-800 mb-3">2025년 1월</div>
+        <div class="grid grid-cols-7 mb-2">
+          <div class="text-center text-[10px] font-normal py-1 text-red-400">일</div>
+          <div class="text-center text-[10px] font-normal py-1 text-grey-500">월</div>
+          <div class="text-center text-[10px] font-normal py-1 text-grey-500">화</div>
+          <div class="text-center text-[10px] font-normal py-1 text-grey-500">수</div>
+          <div class="text-center text-[10px] font-normal py-1 text-grey-500">목</div>
+          <div class="text-center text-[10px] font-normal py-1 text-grey-500">금</div>
+          <div class="text-center text-[10px] font-normal py-1 text-blue-400">토</div>
+        </div>
+        <div class="grid grid-cols-7 gap-0.5">
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg text-grey-300"><span class="text-[15px] font-normal">29</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg text-grey-300"><span class="text-[15px] font-normal">30</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg text-grey-300"><span class="text-[15px] font-normal">31</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg bg-red-50"><span class="text-[15px] font-normal text-red-500">1</span><span class="text-[8px] text-red-500">신정</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-grey-700">2</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-grey-700">3</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-blue-400">4</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-red-400">5</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-grey-700">6</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-grey-700">7</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg bg-toss-blue"><span class="text-[15px] font-medium text-white">8</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-grey-700">9</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-grey-700">10</span></div>
+          <div class="flex flex-col items-center justify-start min-h-[52px] p-1 rounded-lg hover:bg-grey-50 cursor-pointer"><span class="text-[15px] font-normal text-blue-400">11</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 스펙 비교표 -->
+    <div class="mt-8 bg-white rounded-2xl p-6">
+      <h3 class="font-bold text-grey-800 mb-4">스펙 비교표</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-grey-200">
+              <th class="text-left py-2 px-3 text-grey-600">변형</th>
+              <th class="text-left py-2 px-3 text-grey-600">날짜 크기</th>
+              <th class="text-left py-2 px-3 text-grey-600">날짜 굵기</th>
+              <th class="text-left py-2 px-3 text-grey-600">요일 크기</th>
+              <th class="text-left py-2 px-3 text-grey-600">셀 높이</th>
+              <th class="text-left py-2 px-3 text-grey-600">특징</th>
+            </tr>
+          </thead>
+          <tbody class="text-grey-700">
+            <tr class="border-b border-grey-100 bg-toss-blueLight">
+              <td class="py-2 px-3 font-medium">주간 (기준)</td>
+              <td class="py-2 px-3">20px (text-xl)</td>
+              <td class="py-2 px-3">600 (semibold)</td>
+              <td class="py-2 px-3">12px (text-xs)</td>
+              <td class="py-2 px-3">100px</td>
+              <td class="py-2 px-3">현재 주간 뷰</td>
+            </tr>
+            <tr class="border-b border-grey-100">
+              <td class="py-2 px-3 font-medium">변형 1</td>
+              <td class="py-2 px-3">20px (text-xl)</td>
+              <td class="py-2 px-3">600 (semibold)</td>
+              <td class="py-2 px-3">12px</td>
+              <td class="py-2 px-3">72px</td>
+              <td class="py-2 px-3">주간과 동일 폰트, 셀만 축소</td>
+            </tr>
+            <tr class="border-b border-grey-100">
+              <td class="py-2 px-3 font-medium">변형 2</td>
+              <td class="py-2 px-3">18px (text-lg)</td>
+              <td class="py-2 px-3">600 (semibold)</td>
+              <td class="py-2 px-3">11px</td>
+              <td class="py-2 px-3">64px</td>
+              <td class="py-2 px-3">비율 유지하며 축소</td>
+            </tr>
+            <tr class="border-b border-grey-100">
+              <td class="py-2 px-3 font-medium">변형 3</td>
+              <td class="py-2 px-3">16px (text-base)</td>
+              <td class="py-2 px-3">500 (medium)</td>
+              <td class="py-2 px-3">11px</td>
+              <td class="py-2 px-3">56px</td>
+              <td class="py-2 px-3">컴팩트, 정보 밀도 높음</td>
+            </tr>
+            <tr class="border-b border-grey-100">
+              <td class="py-2 px-3 font-medium">변형 4</td>
+              <td class="py-2 px-3">14px (text-sm)</td>
+              <td class="py-2 px-3">500 (medium)</td>
+              <td class="py-2 px-3">10px</td>
+              <td class="py-2 px-3">48px</td>
+              <td class="py-2 px-3">미니멀, 모바일 최적화</td>
+            </tr>
+            <tr class="border-b border-grey-100">
+              <td class="py-2 px-3 font-medium">변형 5</td>
+              <td class="py-2 px-3">16px (text-base)</td>
+              <td class="py-2 px-3">700 (bold)</td>
+              <td class="py-2 px-3">11px/600</td>
+              <td class="py-2 px-3">60px</td>
+              <td class="py-2 px-3">볼드 강조, 가독성 높음</td>
+            </tr>
+            <tr>
+              <td class="py-2 px-3 font-medium">변형 6</td>
+              <td class="py-2 px-3">15px</td>
+              <td class="py-2 px-3">400 (normal)</td>
+              <td class="py-2 px-3">10px/400</td>
+              <td class="py-2 px-3">52px</td>
+              <td class="py-2 px-3">라이트, 깔끔한 느낌</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 추천 -->
+    <div class="mt-4 p-4 bg-toss-blueLight rounded-2xl">
+      <h3 class="font-bold text-toss-blue mb-2">추천</h3>
+      <ul class="text-sm text-grey-700 space-y-1">
+        <li><strong>변형 2 (살짝 작게)</strong>: 주간과 비슷한 느낌 유지하면서 42셀에 맞게 축소</li>
+        <li><strong>변형 3 (컴팩트)</strong>: 정보 밀도가 높아 공지 미리보기 표시에 유리</li>
+        <li><strong>변형 5 (볼드 강조)</strong>: 가독성 좋고 시각적으로 명확함</li>
+      </ul>
+    </div>
+  </div>
+
+</body>
+</html>
