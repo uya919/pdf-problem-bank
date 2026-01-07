@@ -64,7 +64,7 @@ export function useSaveProgress() {
         start_page: data.startPage ? parseInt(data.startPage, 10) : null,
         end_page: data.endPage ? parseInt(data.endPage, 10) : null,
         topic: data.topic || '',
-        notes: data.notes || '',
+        note: data.notes || '',
         created_by: null,
       });
 
@@ -73,6 +73,9 @@ export function useSaveProgress() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['progress'] });
       queryClient.invalidateQueries({ queryKey: ['textbooks'] });
+    },
+    onError: (error) => {
+      console.error('Progress save failed:', error);
     },
   });
 }
