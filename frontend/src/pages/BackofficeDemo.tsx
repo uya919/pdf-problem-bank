@@ -44,8 +44,7 @@ import {
   useAttendanceByClassAndDate,
 } from '../hooks/useBackofficeData';
 import { useIsTablet } from '../hooks/useIsMobile';
-import { useAuth } from '../hooks/useAuth';
-import { useAuth as useAuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { useRotationSchedules, useRotationScheduleDetail } from '../hooks/useRotation';
 import { getRotationForDate, formatDateToString } from '../utils/rotationUtils';
@@ -89,8 +88,7 @@ const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
 
 export function BackofficeDemo() {
   const testStore = useTestStore();
-  const { user, loading: authLoading } = useAuth();
-  const { role } = useAuthContext();
+  const { user, isLoading: authLoading, role } = useAuth();
 
   // =====================================================
   // Stage 29-F: viewMode 기반 수업 필터링

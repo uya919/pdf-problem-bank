@@ -8,7 +8,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { useAuth } from './useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import type { Student, Class, ClassEnrollment, Grade } from '../types/database';
 
 /** 학생 + 반 + 학년 정보 */

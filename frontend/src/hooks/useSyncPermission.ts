@@ -11,7 +11,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { useAuth } from './useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { Profile } from '../types/database';
 
 interface SyncPermissionState {
@@ -22,7 +22,7 @@ interface SyncPermissionState {
 }
 
 export function useSyncPermission() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [state, setState] = useState<SyncPermissionState>({
     canSync: false,
     profile: null,
