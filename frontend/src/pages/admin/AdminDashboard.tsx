@@ -52,8 +52,7 @@ import type { AttendanceStudent, HomeworkStudent } from '../../components/backof
 import {
   useTextbooks,
   useSaveProgress,
-  useLastProgressBefore,
-  useProgressByDate,
+  // Stage 48: useLastProgressBefore, useProgressByDate는 ProgressModal 내부로 이동
   useClassWithStudents,
   useSaveAttendance,
   useSaveHomeworkSubmissions,
@@ -306,9 +305,8 @@ export default function AdminDashboard() {
   const { data: textbooks } = useTextbooks(selectedClassId || undefined);
   const saveProgress = useSaveProgress();
 
-  // 진도 조회
-  const { data: lastProgressData } = useLastProgressBefore(selectedClassId, selectedDate);
-  const { data: todayProgressData } = useProgressByDate(selectedClassId, selectedDate);
+  // Stage 48: 진도 조회는 ProgressModal 내부에서 수행
+  // useLastProgressBefore, useProgressByDate 제거됨
 
   // 학생 목록 조회
   const { data: classStudentsData } = useClassWithStudents(selectedClassId);
@@ -578,6 +576,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stage 19: 진도 모달 (PC 중앙 모달) */}
+      {/* Stage 48: lastProgress, todayProgress는 모달 내부에서 조회 */}
       {selectedClass && (
         <ProgressModal
           isOpen={progressModalOpen}
@@ -593,17 +592,10 @@ export default function AdminDashboard() {
           }}
           students={modalStudents}
           textbooks={textbooks || []}
-          lastProgress={lastProgressData ? {
-            topic: lastProgressData.topic || '',
-            textbook: lastProgressData.textbook || '',
-            pages: lastProgressData.pages || '',
-            date: lastProgressData.date || '',
-          } : undefined}
-          todayProgress={todayProgressData ? {
-            textbook: todayProgressData.textbook || '',
-            pages: todayProgressData.pages || '',
-            notes: todayProgressData.notes || '',
-          } : undefined}
+          selectedDate={(() => {
+            const [y, m, d] = selectedDate.split('-').map(Number);
+            return new Date(y, m - 1, d);
+          })()}
           onSave={handleSaveProgress}
           onSaveTest={handleSaveTest}
           variant="center"

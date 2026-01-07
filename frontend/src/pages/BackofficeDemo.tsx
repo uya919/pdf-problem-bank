@@ -23,9 +23,7 @@ import {
   // Phase 310: 교재 자동완성 & 진도 저장
   useTextbooks,
   useSaveProgress,
-  // Phase 317: 날짜 기반 진도 조회
-  useLastProgressBefore,
-  useProgressByDate,
+  // Stage 48: useLastProgressBefore, useProgressByDate는 ProgressModal 내부로 이동
   // Phase 7-1: 출결 저장
   useSaveAttendance,
   useClassWithStudents,
@@ -704,12 +702,9 @@ export function BackofficeDemo() {
   const { data: textbooks } = useTextbooks(selectedClassId || undefined);
   const saveProgress = useSaveProgress();
 
-  // Phase 317: 날짜 기반 진도 조회
-  // selectedDateStr은 위에서 이미 선언됨
-  // 선택일 이전 진도 (지난 수업용)
-  const { data: lastProgressData } = useLastProgressBefore(selectedClassId, selectedDateStr);
-  // 선택일 당일 진도 (오늘 수업용)
-  const { data: todayProgressData } = useProgressByDate(selectedClassId, selectedDateStr);
+  // Stage 48: 진도 데이터 조회는 ProgressModal 내부에서 직접 수행
+  // (스와이프 후 진도 데이터 중복 버그 수정)
+  // useLastProgressBefore, useProgressByDate 제거됨
 
   // 출결 모달 상태
   const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
@@ -1284,22 +1279,8 @@ export function BackofficeDemo() {
           startTime: selectedClass?.startTime,
         }}
         students={[]}
-        lastProgress={lastProgressData ? {
-          date: new Date(lastProgressData.date).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric', weekday: 'short' }),
-          topic: lastProgressData.topic || '',
-          textbook: lastProgressData.textbook || '',
-          pages: lastProgressData.pages || '',
-          homework: lastProgressData.homework || '',
-          homeworkDescription: lastProgressData.homeworkDescription || '',
-          notes: lastProgressData.notes || '',
-        } : undefined}
-        todayProgress={todayProgressData ? {
-          textbook: todayProgressData.textbook || '',
-          pages: todayProgressData.pages || '',
-          homework: todayProgressData.homework || '',
-          homeworkDescription: todayProgressData.homeworkDescription || '',
-          notes: todayProgressData.notes || '',
-        } : undefined}
+        // Stage 48: lastProgress, todayProgress는 이제 ProgressModal 내부에서 직접 조회
+        // (스와이프 후 진도 데이터 중복 버그 수정)
         selectedDate={selectedDate}
         onSave={(data) => {
           // Phase 310-B: 선택된 날짜로 Supabase에 저장

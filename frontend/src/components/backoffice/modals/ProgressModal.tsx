@@ -5,17 +5,21 @@
  * - 지난 수업 정보 (단원, 진도, 숙제)
  * - 오늘 수업 폼 (단원명, 진도, 숙제, 비고)
  * - 시험 토글 (Daily/Weekly/Monthly + 학생별 점수)
+ *
+ * Stage 48: 스와이프 후 진도 데이터 중복 버그 수정
+ * - 모달 내부에서 useLastProgressBefore, useProgressByDate 훅 호출
+ * - classId 변경 시 자동으로 새 데이터 로드 (stale data 방지)
  */
 import { useState, useEffect, useMemo } from 'react';
 import { BookIcon, NoteIcon } from '../../ui/Icons';
-import { FileText } from 'lucide-react';
+import { FileText, Loader2 } from 'lucide-react';
 import { BottomSheet } from './BottomSheet';
 import { TestInputSection } from './TestInputSection';
 import { TextbookAutocomplete } from './TextbookAutocomplete';
 import { PdfViewerModal } from '../../pdf';
 import { useTextbooksByClass } from '../../../hooks/useTextbooks';
 import { useLastProgress } from '../../../hooks/useBackofficeData';
-import { useTextbooksGrouped } from '../../../hooks/backoffice/useProgress';
+import { useTextbooksGrouped, useLastProgressBefore, useProgressByDate } from '../../../hooks/backoffice/useProgress';
 import { parsePages, extractPageRange, formatHomeworkDescription } from '../../../utils/progressUtils';
 import type { TestType, StudentScore, TestRecord } from '../../../types/test';
 import type { PageRange } from '../../../types/textbook';
@@ -63,16 +67,23 @@ interface ProgressModalProps {
   };
   /** 학생 목록 (시험 점수 입력용) */
   students?: Array<{ id: string; name: string }>;
+  /**
+   * @deprecated Stage 48: 모달 내부에서 훅으로 직접 조회
+   * 호환성을 위해 유지하나 무시됨
+   */
   lastProgress?: LastProgress;
-  /** 선택일에 기록된 진도 (Phase 317) */
+  /**
+   * @deprecated Stage 48: 모달 내부에서 훅으로 직접 조회
+   * 호환성을 위해 유지하나 무시됨
+   */
   todayProgress?: TodayProgress;
   onSave: (data: ProgressFormData) => void;
   /** 시험 저장 콜백 */
   onSaveTest?: (testData: Omit<TestRecord, 'id' | 'createdAt'>) => void;
   /** 교재 목록 (자동완성용) */
   textbooks?: string[];
-  /** 선택된 날짜 (Phase 310-B) */
-  selectedDate?: Date;
+  /** 선택된 날짜 (Phase 310-B) - Stage 48: 필수로 변경 */
+  selectedDate: Date;
   /** 모달 스타일: "bottom" (모바일), "center" (PC) - Stage 19 */
   variant?: 'bottom' | 'center';
 }
@@ -82,14 +93,44 @@ export function ProgressModal({
   onClose,
   classInfo,
   students = [],
-  lastProgress,
-  todayProgress,
+  lastProgress: _lastProgressProp,  // deprecated, 무시됨
+  todayProgress: _todayProgressProp, // deprecated, 무시됨
   onSave,
   onSaveTest,
   textbooks = [],
   selectedDate,
   variant = 'bottom',
 }: ProgressModalProps) {
+  // Stage 48: 모달 내부에서 직접 진도 데이터 조회 (stale data 방지)
+  const classId = classInfo.id || null;
+  const dateStr = selectedDate.toISOString().split('T')[0];
+
+  // 선택일 이전 진도 (지난 수업용) + 선택일 당일 진도
+  const { data: lastProgressData, isLoading: isLoadingLast, isFetching: isFetchingLast } = useLastProgressBefore(classId, dateStr);
+  const { data: todayProgressData, isLoading: isLoadingToday, isFetching: isFetchingToday } = useProgressByDate(classId, dateStr);
+
+  // 로딩 상태 (isLoading: 초기 로딩, isFetching: classId 변경 후 refetch 중)
+  const isDataLoading = isLoadingLast || isLoadingToday || isFetchingLast || isFetchingToday;
+
+  // Stage 48: DB 데이터를 컴포넌트 내부 형식으로 변환
+  const lastProgress: LastProgress | undefined = lastProgressData ? {
+    date: new Date(lastProgressData.date).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric', weekday: 'short' }),
+    topic: lastProgressData.topic || '',
+    textbook: lastProgressData.textbook || '',
+    pages: lastProgressData.pages || '',
+    homework: lastProgressData.homework || '',
+    homeworkDescription: lastProgressData.homeworkDescription || '',
+    notes: lastProgressData.notes || '',
+  } : undefined;
+
+  const todayProgress: TodayProgress | undefined = todayProgressData ? {
+    textbook: todayProgressData.textbook || '',
+    pages: todayProgressData.pages || '',
+    homework: todayProgressData.homework || '',
+    homeworkDescription: todayProgressData.homeworkDescription || '',
+    notes: todayProgressData.notes || '',
+  } : undefined;
+
   // 진도 폼 상태 (Phase 314: 하드코딩 제거, useEffect에서 설정)
   const [formData, setFormData] = useState<ProgressFormData>({
     topic: '',
@@ -209,8 +250,8 @@ export function ProgressModal({
   };
 
   // Phase 310-B: 선택된 날짜 또는 오늘 날짜 사용
-  const displayDate = selectedDate || new Date();
-  const dateStr = displayDate.toLocaleDateString('ko-KR', {
+  const displayDate = selectedDate;
+  const displayDateStr = displayDate.toLocaleDateString('ko-KR', {
     month: 'long',
     day: 'numeric',
     weekday: 'short',
@@ -222,9 +263,17 @@ export function ProgressModal({
       isOpen={isOpen}
       onClose={onClose}
       title={`${classInfo.name} 수업 기록`}
-      subtitle={`${dateStr} ${timeStr}`}
+      subtitle={`${displayDateStr} ${timeStr}`}
       variant={variant}
     >
+      {/* Stage 48: 데이터 로딩 중일 때 스피너 표시 */}
+      {isDataLoading ? (
+        <div className="py-12 flex flex-col items-center justify-center">
+          <Loader2 className="w-8 h-8 text-[#3182F6] animate-spin mb-3" />
+          <p className="text-sm text-[#6B7684]">진도 정보 로딩 중...</p>
+        </div>
+      ) : (
+        <>
       {/* 지난 수업 카드 */}
       {lastProgress && (
         <div className="bg-[#F9FAFB] border border-[#E5E8EB] rounded-xl p-3.5 mb-4">
@@ -275,7 +324,7 @@ export function ProgressModal({
             오늘 수업 {todayProgress && <span className="text-[#3182F6]">(수정)</span>}
           </span>
           <span className="text-[11px] text-[#8B95A1]">
-            {dateStr.replace(' ', '')}
+            {displayDateStr.replace(' ', '')}
           </span>
         </div>
 
@@ -372,6 +421,8 @@ export function ProgressModal({
           저장하기
         </button>
       </div>
+        </>
+      )}
     </BottomSheet>
   );
 }
