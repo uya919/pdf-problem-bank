@@ -253,7 +253,15 @@
       "Bash(claude mcp auth:*)",
       "mcp__mcp-installer__install_repo_mcp_server",
       "Bash(claude mcp get:*)",
-      "Bash(claude mcp --help:*)"
+      "Bash(claude mcp --help:*)",
+      "Bash(git -C c:/MYCLAUDE_PROJECT/pdf config user.name)",
+      "Bash(git -C c:/MYCLAUDE_PROJECT/pdf config user.email:*)",
+      "Bash(git -C c:/MYCLAUDE_PROJECT/pdf log -1 --format=\"%an <%ae>\")",
+      "Bash(git -C c:/MYCLAUDE_PROJECT/pdf config:*)",
+      "Bash(gpg --armor --export:*)",
+      "Bash(timeout /t 15 /nobreak)",
+      "Bash(node c:/MYCLAUDE_PROJECT/pdf/frontend/node_modules/.bin/tsc:*)",
+      "Bash(git -C c:/MYCLAUDE_PROJECT/pdf diff frontend/src/components/backoffice/modals/ProgressModal.tsx)"
     ],
     "deny": [
       "Read(**/hyeyum/**)",
