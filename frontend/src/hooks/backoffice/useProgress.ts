@@ -155,16 +155,16 @@ export function useLastProgress(classId: string | null) {
 
       const { data: homeworkList } = await supabase
         .from('homework')
-        .select('title, description')
+        .select('textbook, page_range, description')
         .eq('class_id', classId)
         .eq('assigned_date', typedProgress.date)
         .limit(1);
 
-      const hw = (homeworkList?.[0] ?? null) as { title?: string; description?: string } | null;
+      const hw = (homeworkList?.[0] ?? null) as { textbook?: string; page_range?: string; description?: string } | null;
 
       return {
         ...typedProgress,
-        homework: hw?.title || null,
+        homework: hw?.textbook && hw?.page_range ? `${hw.textbook} ${hw.page_range}` : null,
         homeworkDescription: hw?.description || null,
       };
     },
@@ -203,16 +203,16 @@ export function useLastProgressBefore(
 
       const { data: homeworkList } = await supabase
         .from('homework')
-        .select('title, description')
+        .select('textbook, page_range, description')
         .eq('class_id', classId)
         .eq('assigned_date', typedProgress.date)
         .limit(1);
 
-      const hw = (homeworkList?.[0] ?? null) as { title?: string; description?: string } | null;
+      const hw = (homeworkList?.[0] ?? null) as { textbook?: string; page_range?: string; description?: string } | null;
 
       return {
         ...typedProgress,
-        homework: hw?.title || null,
+        homework: hw?.textbook && hw?.page_range ? `${hw.textbook} ${hw.page_range}` : null,
         homeworkDescription: hw?.description || null,
       };
     },
@@ -247,16 +247,16 @@ export function useProgressByDate(classId: string | null, date: string | null) {
       // 해당 날짜 숙제 조회
       const { data: homeworkList } = await supabase
         .from('homework')
-        .select('title, description')
+        .select('textbook, page_range, description')
         .eq('class_id', classId)
         .eq('assigned_date', date)
         .limit(1);
 
-      const hw = (homeworkList?.[0] ?? null) as { title?: string; description?: string } | null;
+      const hw = (homeworkList?.[0] ?? null) as { textbook?: string; page_range?: string; description?: string } | null;
 
       return {
         ...(progress as Progress),
-        homework: hw?.title || null,
+        homework: hw?.textbook && hw?.page_range ? `${hw.textbook} ${hw.page_range}` : null,
         homeworkDescription: hw?.description || null,
       };
     },
