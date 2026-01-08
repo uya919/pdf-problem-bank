@@ -30,9 +30,19 @@ function formatPhone(phone: string | null): string {
 }
 
 /**
- * 전화번호 버튼 컴포넌트
+ * Pill 스타일 상수 (스파게티 방지)
  */
-function PhoneButton({
+const PHONE_STYLES = {
+  student: { bg: 'bg-blue-50', text: 'text-blue-600', icon: 'text-blue-500' },
+  parent: { bg: 'bg-green-50', text: 'text-green-600', icon: 'text-green-500' },
+} as const;
+
+/**
+ * Pill 형태 전화 버튼 (Option D)
+ * - 아이콘 + 라벨 + 전체 번호
+ * - 전화번호 없으면 null 반환 (빈 공간으로 처리)
+ */
+function PhonePill({
   phone,
   label,
   variant,
@@ -41,33 +51,26 @@ function PhoneButton({
   label: string;
   variant: 'student' | 'parent';
 }) {
-  if (!phone) {
-    return (
-      <div className="flex-1 py-2 px-3 bg-gray-100 rounded-lg text-center">
-        <span className="text-xs text-gray-400">{label}</span>
-        <div className="text-sm text-gray-400">없음</div>
-      </div>
-    );
-  }
+  // 전화번호 없으면 렌더링 안 함
+  if (!phone) return null;
 
+  const styles = PHONE_STYLES[variant];
   const formattedPhone = formatPhone(phone);
-  const bgColor = variant === 'student' ? 'bg-blue-50' : 'bg-green-50';
-  const textColor = variant === 'student' ? 'text-blue-600' : 'text-green-600';
-  const iconColor = variant === 'student' ? 'text-blue-500' : 'text-green-500';
 
   return (
     <a
       href={`tel:${phone.replace(/\D/g, '')}`}
-      className={`flex-1 py-2 px-3 ${bgColor} rounded-lg text-center active:opacity-70 transition-opacity`}
       onClick={(e) => e.stopPropagation()}
+      className={`
+        flex items-center gap-1.5 px-2.5 py-1.5 rounded-full
+        ${styles.bg} active:opacity-70 transition-opacity
+      `}
     >
-      <div className="flex items-center justify-center gap-1 mb-0.5">
-        <Phone className={`w-3 h-3 ${iconColor}`} />
-        <span className={`text-xs ${textColor} font-medium`}>{label}</span>
-      </div>
-      <div className={`text-sm font-semibold ${textColor}`}>
+      <Phone className={`w-3.5 h-3.5 ${styles.icon}`} />
+      <span className="text-xs text-gray-500">{label}</span>
+      <span className={`text-xs font-medium ${styles.text}`}>
         {formattedPhone}
-      </div>
+      </span>
     </a>
   );
 }
@@ -79,7 +82,6 @@ export function StudentCard({ student, onClickDetail }: StudentCardProps) {
   // 학년 표시
   const gradeText = student.grade_info?.name || '';
   const schoolText = student.school || '';
-  const subInfo = [gradeText, schoolText].filter(Boolean).join(' · ');
 
   // 등록된 반 (최대 2개 표시)
   const classNames = student.enrolled_classes
@@ -87,24 +89,24 @@ export function StudentCard({ student, onClickDetail }: StudentCardProps) {
     .map(c => c.class_name)
     .join(', ') || '';
 
+  // 전화번호 유무 확인 (둘 다 없으면 오른쪽 영역 숨김)
+  const hasAnyPhone = student.phone || student.parent_phone;
+
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-      {/* 상단: 학생 정보 + 상세 보기 버튼 */}
-      <div
-        onClick={onClickDetail}
-        className="flex items-center gap-3 p-4 cursor-pointer active:bg-gray-50 transition-colors"
-      >
-        {/* 프로필 아바타 */}
-        <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center flex-shrink-0">
+    <div
+      onClick={onClickDetail}
+      className="bg-white rounded-2xl p-4 shadow-sm cursor-pointer active:bg-gray-50"
+    >
+      <div className="flex gap-3">
+        {/* 왼쪽: 아바타 */}
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center flex-shrink-0 self-center">
           <span className="text-lg font-bold text-blue-600">{initial}</span>
         </div>
 
-        {/* 정보 영역 */}
-        <div className="flex-1 min-w-0">
+        {/* 중앙: 3줄 정보 */}
+        <div className="flex-1 min-w-0 flex flex-col justify-center">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-gray-900 text-base">
-              {student.name}
-            </span>
+            <span className="font-semibold text-gray-900">{student.name}</span>
             {gradeText && (
               <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
                 {gradeText}
@@ -112,33 +114,25 @@ export function StudentCard({ student, onClickDetail }: StudentCardProps) {
             )}
           </div>
           {schoolText && (
-            <div className="text-sm text-gray-500 mt-0.5 truncate">
-              {schoolText}
-            </div>
+            <div className="text-sm text-gray-500 mt-0.5 truncate">{schoolText}</div>
           )}
           {classNames && (
-            <div className="text-xs text-gray-400 mt-0.5 truncate">
-              {classNames}
-            </div>
+            <div className="text-xs text-gray-400 mt-0.5 truncate">{classNames}</div>
           )}
         </div>
 
-        {/* 상세 보기 화살표 */}
-        <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
-      </div>
+        {/* 오른쪽: 전화 Pill 버튼 (세로 배치) */}
+        {hasAnyPhone && (
+          <div className="flex flex-col gap-1.5 justify-center flex-shrink-0">
+            <PhonePill phone={student.phone} label="학생" variant="student" />
+            <PhonePill phone={student.parent_phone} label="학부모" variant="parent" />
+          </div>
+        )}
 
-      {/* 하단: 전화 버튼 영역 */}
-      <div className="flex gap-2 px-4 pb-4">
-        <PhoneButton
-          phone={student.phone}
-          label="학생"
-          variant="student"
-        />
-        <PhoneButton
-          phone={student.parent_phone}
-          label="학부모"
-          variant="parent"
-        />
+        {/* 화살표 */}
+        <div className="flex items-center flex-shrink-0">
+          <ChevronRight className="w-5 h-5 text-gray-300" />
+        </div>
       </div>
     </div>
   );
