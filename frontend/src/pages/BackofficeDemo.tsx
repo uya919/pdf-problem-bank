@@ -596,9 +596,16 @@ export function BackofficeDemo() {
         onSave={(data) => {
           if (selectedClassId) {
             // Stage 59: UTC → Local 시간 기준 날짜 사용 + 성공 시에만 모달 닫기
+            const dateToSave = formatDateKey(selectedDate);
+            console.log('[BackofficeDemo] onSave called:', {
+              selectedClassId,
+              dateToSave,
+              selectedDate: selectedDate.toISOString(),
+              topic: data.topic,
+            });
             saveProgress.mutate({
               class_id: selectedClassId,
-              date: formatDateKey(selectedDate),
+              date: dateToSave,
               textbook: data.textbook,
               startPage: data.startPage,
               endPage: data.endPage,
