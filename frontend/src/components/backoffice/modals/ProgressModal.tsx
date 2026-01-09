@@ -106,9 +106,15 @@ export function ProgressModal({
   const classId = classInfo.id || null;
   const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
 
+  // Stage 59d: 디버그 로그
+  console.log('[ProgressModal] Render:', { classId, dateStr, isOpen });
+
   // 선택일 이전 진도 (지난 수업용) + 선택일 당일 진도
   const { data: lastProgressData, isLoading: isLoadingLast, isFetching: isFetchingLast } = useLastProgressBefore(classId, dateStr);
   const { data: todayProgressData, isLoading: isLoadingToday, isFetching: isFetchingToday } = useProgressByDate(classId, dateStr);
+
+  // Stage 59d: 디버그 로그 - 조회된 데이터
+  console.log('[ProgressModal] Data:', { lastProgressData, todayProgressData });
 
   // 로딩 상태 (isLoading: 초기 로딩, isFetching: classId 변경 후 refetch 중)
   const isDataLoading = isLoadingLast || isLoadingToday || isFetchingLast || isFetchingToday;

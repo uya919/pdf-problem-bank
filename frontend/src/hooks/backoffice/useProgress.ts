@@ -57,6 +57,13 @@ export function useSaveProgress() {
       topic?: string;
       notes?: string;
     }) => {
+      // Stage 59d: 디버그 로그 - 저장 요청 확인
+      console.log('[useSaveProgress] Input:', {
+        class_id: data.class_id,
+        date: data.date,
+        topic: data.topic,
+      });
+
       // Stage 59: 기존 데이터 확인 (maybeSingle: 없으면 null, 있으면 객체)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: existing } = await (supabase as any)
@@ -65,6 +72,9 @@ export function useSaveProgress() {
         .eq('class_id', data.class_id)
         .eq('date', data.date)
         .maybeSingle();
+
+      // Stage 59d: 디버그 로그 - 기존 데이터 확인
+      console.log('[useSaveProgress] Existing record:', existing);
 
       const progressData = {
         textbook: data.textbook,
@@ -76,6 +86,7 @@ export function useSaveProgress() {
 
       if (existing) {
         // UPDATE: 기존 레코드 수정
+        console.log('[useSaveProgress] UPDATE id:', existing.id);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabase as any)
           .from('progress')
@@ -84,6 +95,7 @@ export function useSaveProgress() {
         if (error) throw error;
       } else {
         // INSERT: 새 레코드 생성
+        console.log('[useSaveProgress] INSERT new record');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabase as any).from('progress').insert({
           class_id: data.class_id,
