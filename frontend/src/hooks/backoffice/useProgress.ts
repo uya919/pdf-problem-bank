@@ -64,14 +64,17 @@ export function useSaveProgress() {
         topic: data.topic,
       });
 
-      // Stage 59: 기존 데이터 확인 (maybeSingle: 없으면 null, 있으면 객체)
+      // Stage 59h: 기존 데이터 확인 (중복 시에도 안전하게 최신 1개만 조회)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: existing } = await (supabase as any)
+      const { data: existingList } = await (supabase as any)
         .from('progress')
         .select('id')
         .eq('class_id', data.class_id)
         .eq('date', data.date)
-        .maybeSingle();
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const existing = existingList?.[0] || null;
 
       // Stage 59d: 디버그 로그 - 기존 데이터 확인
       console.log('[useSaveProgress] Existing record:', existing);
@@ -106,9 +109,21 @@ export function useSaveProgress() {
         if (error) throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      // Stage 59g: 저장한 날짜의 쿼리를 명시적으로 무효화하여 즉시 refetch
+      console.log('[useSaveProgress] onSuccess - invalidating queries for:', {
+        class_id: variables.class_id,
+        date: variables.date,
+      });
+
+      // 모든 progress 관련 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: ['progress'] });
       queryClient.invalidateQueries({ queryKey: ['textbooks'] });
+
+      // 해당 날짜의 진도 쿼리 강제 refetch
+      queryClient.refetchQueries({
+        queryKey: ['progress', 'byDate', variables.class_id, variables.date],
+      });
     },
     onError: (error) => {
       console.error('Progress save failed:', error);
@@ -268,12 +283,13 @@ export function useProgressByDate(classId: string | null, date: string | null) {
     queryFn: async (): Promise<LastProgressWithHomework | null> => {
       if (!classId || !date) return null;
 
-      // 해당 날짜 진도
+      // Stage 59h: 해당 날짜 진도 (최신순 정렬하여 중복 시에도 안전)
       const { data: progressList, error } = await supabase
         .from('progress')
         .select('*')
         .eq('class_id', classId)
         .eq('date', date)
+        .order('created_at', { ascending: false })
         .limit(1);
 
       if (error) throw error;
