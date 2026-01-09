@@ -102,8 +102,9 @@ export function ProgressModal({
   variant = 'bottom',
 }: ProgressModalProps) {
   // Stage 48: 모달 내부에서 직접 진도 데이터 조회 (stale data 방지)
+  // Stage 59: UTC → Local 시간 기준 날짜 사용 (타임존 버그 수정)
   const classId = classInfo.id || null;
-  const dateStr = selectedDate.toISOString().split('T')[0];
+  const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
 
   // 선택일 이전 진도 (지난 수업용) + 선택일 당일 진도
   const { data: lastProgressData, isLoading: isLoadingLast, isFetching: isFetchingLast } = useLastProgressBefore(classId, dateStr);
@@ -144,11 +145,13 @@ export function ProgressModal({
   });
 
   // Stage 49: classId 변경 시 폼 초기화 (스와이프 후 이전 반 데이터 잔류 버그 수정)
+  // Stage 59: 날짜 변경 시에도 폼 초기화 추가
   const prevClassIdRef = useRef<string | null>(null);
+  const prevDateStrRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // classId가 실제로 변경되었을 때만 리셋
-    if (classId !== prevClassIdRef.current) {
+    // classId 또는 dateStr이 실제로 변경되었을 때만 리셋
+    if (classId !== prevClassIdRef.current || dateStr !== prevDateStrRef.current) {
       setFormData({
         topic: '',
         textbook: '',
@@ -160,8 +163,9 @@ export function ProgressModal({
         notes: '',
       });
       prevClassIdRef.current = classId;
+      prevDateStrRef.current = dateStr;
     }
-  }, [classId]);
+  }, [classId, dateStr]);
 
   // 시험 토글 상태
   const [testEnabled, setTestEnabled] = useState(false);

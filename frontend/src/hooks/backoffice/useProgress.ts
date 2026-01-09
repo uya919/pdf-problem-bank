@@ -42,6 +42,7 @@ export function useProgress(classId: string | null) {
  * 진도 저장 mutation
  *
  * Stage 50: pages → start_page, end_page 분리 (Supabase 스키마 일치)
+ * Stage 59: INSERT → UPSERT 변경 (기존 데이터 있으면 UPDATE)
  */
 export function useSaveProgress() {
   const queryClient = useQueryClient();
@@ -56,19 +57,42 @@ export function useSaveProgress() {
       topic?: string;
       notes?: string;
     }) => {
+      // Stage 59: 기존 데이터 확인 (maybeSingle: 없으면 null, 있으면 객체)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any).from('progress').insert({
-        class_id: data.class_id,
-        date: data.date,
+      const { data: existing } = await (supabase as any)
+        .from('progress')
+        .select('id')
+        .eq('class_id', data.class_id)
+        .eq('date', data.date)
+        .maybeSingle();
+
+      const progressData = {
         textbook: data.textbook,
         start_page: data.startPage ? parseInt(data.startPage, 10) : null,
         end_page: data.endPage ? parseInt(data.endPage, 10) : null,
         topic: data.topic || '',
         note: data.notes || '',
-        created_by: null,
-      });
+      };
 
-      if (error) throw error;
+      if (existing) {
+        // UPDATE: 기존 레코드 수정
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (supabase as any)
+          .from('progress')
+          .update(progressData)
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        // INSERT: 새 레코드 생성
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (supabase as any).from('progress').insert({
+          class_id: data.class_id,
+          date: data.date,
+          ...progressData,
+          created_by: null,
+        });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['progress'] });
