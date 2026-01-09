@@ -8,3 +8,7 @@ export { GradeSummaryKPI } from './GradeSummaryKPI';
 export { ProgressCompareTable } from './ProgressCompareTable';
 export { HomeworkStatusTable } from './HomeworkStatusTable';
 export { ClassDetailModal } from './ClassDetailModal';
+
+// Types & Mock Data (Stage 54-D-2)
+export * from './types';
+export * from './mockGradeData';

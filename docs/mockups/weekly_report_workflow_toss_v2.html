@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주간 리포트 - 토스 스타일 v2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --toss-blue: #3182F6;
+      --grey-900: #191F28;
+      --grey-700: #4E5968;
+      --grey-600: #6B7684;
+      --grey-500: #8B95A1;
+      --grey-400: #B0B8C1;
+      --grey-300: #D1D6DB;
+      --grey-200: #E5E8EB;
+      --grey-100: #F2F4F6;
+      --grey-50: #F9FAFB;
+    }
+
+    .phone-frame {
+      width: 375px;
+      min-height: 780px;
+      border: 8px solid #191F28;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+      background: white;
+    }
+
+    .notch {
+      width: 120px;
+      height: 32px;
+      background: #191F28;
+      border-radius: 0 0 16px 16px;
+      margin: 0 auto;
+    }
+
+    .toss-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .toss-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--grey-100);
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      color: var(--grey-900);
+    }
+    .toss-input:focus {
+      background: var(--grey-200);
+      outline: none;
+    }
+
+    .toss-btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: var(--toss-blue);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .toss-btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    /* 별점 */
+    .toss-star {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .toss-star.empty { background: var(--grey-100); color: var(--grey-300); }
+    .toss-star.filled { background: #FEF3C7; color: #F59E0B; }
+
+    /* 칩 */
+    .toss-chip {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .toss-chip-positive { background: #E8F5E9; color: #2E7D32; }
+    .toss-chip-warning { background: #FFF3E0; color: #E65100; }
+    .toss-chip-info { background: #E3F2FD; color: #1565C0; }
+
+    /* 가로 스크롤 */
+    .horizontal-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .horizontal-scroll::-webkit-scrollbar { display: none; }
+
+    /* 요약 카드 */
+    .summary-card {
+      flex-shrink: 0;
+      width: 140px;
+      padding: 16px;
+      background: var(--grey-50);
+      border-radius: 16px;
+      text-align: left;
+    }
+    .summary-card-label {
+      font-size: 12px;
+      color: var(--grey-500);
+      margin-bottom: 8px;
+    }
+    .summary-card-value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .summary-card-sub {
+      font-size: 12px;
+      color: var(--grey-400);
+      margin-top: 4px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeUp { animation: fadeUp 0.3s ease-out; }
+  </style>
+</head>
+<body class="bg-[#F2F4F6] min-h-screen p-8">
+
+  <!-- 헤더 -->
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">토스 스타일 v2 - 시험 점수 디자인 연구</h1>
+    <p class="text-gray-600 mt-2">본인점수 + 반평균 + 등수 표시 방안</p>
+  </div>
+
+  <!-- 시험 점수 디자인 대안들 -->
+  <div class="max-w-4xl mx-auto mb-8">
+    <h3 class="font-bold text-gray-900 mb-4">시험 점수 표시 디자인 대안</h3>
+
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <!-- Option A: 3열 분리 -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">A</span>
+          <span class="font-semibold text-gray-900">3열 분리형</span>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="text-xs text-gray-500 mb-3">시험 (일일 2회)</div>
+          <div class="flex items-center justify-between">
+            <div class="text-center flex-1">
+              <div class="text-2xl font-bold text-[#3182F6]">85</div>
+              <div class="text-[11px] text-gray-400 mt-1">내 점수</div>
+            </div>
+            <div class="w-px h-10 bg-gray-200"></div>
+            <div class="text-center flex-1">
+              <div class="text-2xl font-bold text-gray-500">72</div>
+              <div class="text-[11px] text-gray-400 mt-1">반 평균</div>
+            </div>
+            <div class="w-px h-10 bg-gray-200"></div>
+            <div class="text-center flex-1">
+              <div class="text-2xl font-bold text-green-500">2위</div>
+              <div class="text-[11px] text-gray-400 mt-1">8명 중</div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">✓ 명확한 정보 분리, 한눈에 비교</p>
+      </div>
+
+      <!-- Option B: 메인 점수 + 서브 정보 -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-7 h-7 bg-gray-400 text-white rounded-full flex items-center justify-center text-xs font-bold">B</span>
+          <span class="font-semibold text-gray-900">메인 강조형</span>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="text-xs text-gray-500 mb-2">시험 (일일 2회)</div>
+          <div class="flex items-center gap-4">
+            <div>
+              <div class="text-4xl font-bold text-[#3182F6]">85</div>
+            </div>
+            <div class="flex-1 space-y-1">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">반 평균</span>
+                <span class="font-semibold text-gray-700">72점</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">등수</span>
+                <span class="font-semibold text-green-600">2위 / 8명</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">✓ 내 점수 강조, 부가 정보 정렬</p>
+      </div>
+
+      <!-- Option C: 프로그레스 바 -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-7 h-7 bg-gray-400 text-white rounded-full flex items-center justify-center text-xs font-bold">C</span>
+          <span class="font-semibold text-gray-900">프로그레스 바형</span>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-gray-500">시험 (일일 2회)</span>
+            <span class="text-sm font-bold text-green-600">2위 / 8명</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-3xl font-bold text-[#3182F6]">85</div>
+            <div class="flex-1">
+              <div class="h-2 bg-gray-200 rounded-full relative">
+                <div class="absolute h-full w-[85%] bg-[#3182F6] rounded-full"></div>
+                <div class="absolute h-full w-[72%] border-r-2 border-dashed border-gray-400" style="left:0"></div>
+              </div>
+              <div class="flex justify-between mt-1">
+                <span class="text-[10px] text-gray-400">0</span>
+                <span class="text-[10px] text-gray-400">평균 72</span>
+                <span class="text-[10px] text-gray-400">100</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">✓ 평균 대비 위치 시각화</p>
+      </div>
+
+      <!-- Option D: 배지 스타일 -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-7 h-7 bg-gray-400 text-white rounded-full flex items-center justify-center text-xs font-bold">D</span>
+          <span class="font-semibold text-gray-900">배지 + 태그형</span>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="text-xs text-gray-500 mb-2">시험 (일일 2회)</div>
+          <div class="flex items-center gap-3">
+            <div class="text-3xl font-bold text-[#3182F6]">85점</div>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">+13 평균↑</span>
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">🏆 2위</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">✓ 컴팩트, 성취감 강조</p>
+      </div>
+
+      <!-- Option E: 카드 나열 (가로 스크롤용) -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-7 h-7 bg-gray-400 text-white rounded-full flex items-center justify-center text-xs font-bold">E</span>
+          <span class="font-semibold text-gray-900">가로 스크롤 카드형</span>
+        </div>
+
+        <div class="flex gap-2 overflow-x-auto pb-2">
+          <div class="flex-shrink-0 w-[100px] bg-blue-50 rounded-xl p-3 text-center">
+            <div class="text-xl font-bold text-[#3182F6]">85</div>
+            <div class="text-[10px] text-gray-500 mt-0.5">내 점수</div>
+          </div>
+          <div class="flex-shrink-0 w-[100px] bg-gray-100 rounded-xl p-3 text-center">
+            <div class="text-xl font-bold text-gray-600">72</div>
+            <div class="text-[10px] text-gray-500 mt-0.5">반 평균</div>
+          </div>
+          <div class="flex-shrink-0 w-[100px] bg-green-50 rounded-xl p-3 text-center">
+            <div class="text-xl font-bold text-green-600">2위</div>
+            <div class="text-[10px] text-gray-500 mt-0.5">8명 중</div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">✓ 다른 요약 카드와 통일성</p>
+      </div>
+
+      <!-- Option F: 토스 투자 앱 스타일 -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-7 h-7 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">F</span>
+          <span class="font-semibold text-gray-900">토스증권 스타일</span>
+          <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">추천</span>
+        </div>
+
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-gray-500">시험 (일일 2회)</span>
+            <span class="text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">▲ 평균+13</span>
+          </div>
+          <div class="flex items-end gap-2">
+            <div class="text-4xl font-bold text-[#3182F6]">85</div>
+            <div class="text-sm text-gray-500 pb-1">점</div>
+          </div>
+          <div class="flex items-center gap-4 mt-3 pt-3 border-t border-blue-100">
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+              <span class="text-xs text-gray-500">반 평균</span>
+              <span class="text-xs font-semibold text-gray-700">72점</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span class="text-xs text-gray-500">등수</span>
+              <span class="text-xs font-semibold text-green-600">2위/8명</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">✓ 토스 투자 앱 느낌, 프리미엄</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 적용 예시 화면 -->
+  <div class="flex gap-8 justify-center flex-wrap mt-8">
+
+    <!-- Option F 적용 화면 -->
+    <div class="phone-frame">
+      <div class="notch"></div>
+      <div class="bg-white overflow-y-auto" style="height: 720px;">
+
+        <!-- 헤더 -->
+        <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 px-5 py-4 border-b border-gray-100">
+          <div class="flex items-center justify-between">
+            <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">
+              <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h2 class="text-[17px] font-semibold text-gray-900">주간 리포트</h2>
+            <button class="text-[15px] font-semibold text-[#3182F6]">저장</button>
+          </div>
+        </div>
+
+        <div class="px-5 py-4 space-y-5 animate-fadeUp">
+
+          <!-- 학생 정보 -->
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xl font-bold text-gray-900">김민지</div>
+              <div class="text-sm text-gray-500">수학 A반 · 중2</div>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-[#3182F6]">2회</div>
+              <div class="text-xs text-gray-400">이번 주 수업</div>
+            </div>
+          </div>
+
+          <!-- 이번 주 요약 (Option F 시험 + 기존) -->
+          <div>
+            <h3 class="text-[15px] font-semibold text-gray-900 mb-3">이번 주 요약</h3>
+
+            <!-- 시험 카드 (Option F 스타일) -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 mb-3">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs text-gray-500">시험 (일일 2회)</span>
+                <span class="text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">▲ 평균+13</span>
+              </div>
+              <div class="flex items-end gap-2">
+                <div class="text-4xl font-bold text-[#3182F6]">85</div>
+                <div class="text-sm text-gray-500 pb-1">점</div>
+              </div>
+              <div class="flex items-center gap-4 mt-3 pt-3 border-t border-blue-100">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span class="text-xs text-gray-500">반 평균</span>
+                  <span class="text-xs font-semibold text-gray-700">72점</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span class="text-xs text-gray-500">등수</span>
+                  <span class="text-xs font-semibold text-green-600">2위/8명</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 나머지 요약 (3열) -->
+            <div class="grid grid-cols-3 gap-3">
+              <!-- 출결 -->
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <div class="text-xl font-bold text-orange-500">50%</div>
+                <div class="text-[11px] text-gray-400 mt-1">출결</div>
+              </div>
+              <!-- 숙제 -->
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <div class="text-xl font-bold text-green-500">★4.5</div>
+                <div class="text-[11px] text-gray-400 mt-1">숙제</div>
+              </div>
+              <!-- 진도 -->
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <div class="text-sm font-bold text-gray-700">이차방정식</div>
+                <div class="text-[11px] text-gray-400 mt-1">진도</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 강사 평가 -->
+          <div class="toss-card">
+            <h3 class="text-[15px] font-semibold text-gray-900 mb-4">평가</h3>
+
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-[15px] text-gray-700">수업 태도</div>
+                  <div class="text-xs text-gray-400 mt-0.5">1/2회 출석</div>
+                </div>
+                <div class="flex gap-1">
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star empty">★</span>
+                  <span class="toss-star empty">★</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-[15px] text-gray-700">이해도</div>
+                  <div class="text-xs text-gray-400 mt-0.5">시험 85점 (2위)</div>
+                </div>
+                <div class="flex gap-1">
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star empty">★</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-[15px] text-gray-700">숙제 완료</div>
+                  <div class="text-xs text-gray-400 mt-0.5">평균 ★4.5</div>
+                </div>
+                <div class="flex gap-1">
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 코멘트 -->
+          <div class="toss-card">
+            <h3 class="text-[15px] font-semibold text-gray-900 mb-4">코멘트</h3>
+
+            <div class="mb-4">
+              <label class="text-sm text-gray-500 mb-2 block">잘한 점</label>
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span class="toss-chip toss-chip-positive">집중력</span>
+                <span class="toss-chip toss-chip-positive">이해력</span>
+              </div>
+              <textarea class="toss-input resize-none" rows="2">이차방정식 개념을 빠르게 이해했어요.</textarea>
+            </div>
+
+            <div class="mb-4">
+              <label class="text-sm text-gray-500 mb-2 block">개선할 점</label>
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span class="toss-chip toss-chip-warning">지각</span>
+              </div>
+              <textarea class="toss-input resize-none" rows="2">지각 1회 → 시간 관리 필요해요.</textarea>
+            </div>
+
+            <div>
+              <label class="text-sm text-gray-500 mb-2 block">학부모 전달</label>
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span class="toss-chip toss-chip-info">격려</span>
+              </div>
+              <textarea class="toss-input resize-none" rows="2">출결 관리 부탁드려요.</textarea>
+            </div>
+          </div>
+
+          <!-- 저장 버튼 -->
+          <button class="toss-btn-primary">저장하기</button>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

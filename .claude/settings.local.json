@@ -261,7 +261,19 @@
       "Bash(gpg --armor --export:*)",
       "Bash(timeout /t 15 /nobreak)",
       "Bash(node c:/MYCLAUDE_PROJECT/pdf/frontend/node_modules/.bin/tsc:*)",
-      "Bash(git -C c:/MYCLAUDE_PROJECT/pdf diff frontend/src/components/backoffice/modals/ProgressModal.tsx)"
+      "Bash(git -C c:/MYCLAUDE_PROJECT/pdf diff frontend/src/components/backoffice/modals/ProgressModal.tsx)",
+      "Bash(git -C c:/MYCLAUDE_PROJECT/pdf push)",
+      "Bash(node:*)",
+      "Bash(start \"\" \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\docs\\\\mockups\\\\student_card_phone_layout_v2.html\")",
+      "Bash(xargs:*)",
+      "Bash(start \"\" \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\docs\\\\mockups\\\\weekly_report_workflow.html\")",
+      "Bash(start \"\" \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\docs\\\\mockups\\\\weekly_report_modal_with_guide.html\")",
+      "Bash(start \"\" \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\docs\\\\mockups\\\\weekly_report_modal_final.html\")",
+      "Bash(start \"\" \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\docs\\\\mockups\\\\weekly_report_workflow_v2.html\")",
+      "Bash(start \"\" \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\docs\\\\mockups\\\\weekly_report_workflow_v3.html\")",
+      "Bash(start \"\" \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\docs\\\\mockups\\\\weekly_report_workflow_toss.html\")",
+      "Bash(start \"\" \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\docs\\\\mockups\\\\weekly_report_workflow_toss_v2.html\")",
+      "Bash(del \"c:\\\\MYCLAUDE_PROJECT\\\\pdf\\\\frontend\\\\src\\\\hooks\\\\backoffice\\\\useWeeklyReports.ts\")"
     ],
     "deny": [
       "Read(**/hyeyum/**)",

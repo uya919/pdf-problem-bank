@@ -150,14 +150,21 @@ export function ProgressModal({
     notes: '',
   });
 
-  // Stage 49: classId 변경 시 폼 초기화 (스와이프 후 이전 반 데이터 잔류 버그 수정)
-  // Stage 59: 날짜 변경 시에도 폼 초기화 추가
+  // Stage 59f: 모달 열릴 때 폼 초기화 (버그 수정)
+  // 문제: 날짜 변경 후 모달 열면 이전 날짜 데이터가 폼에 남아있었음
+  // 해결: isOpen 변경 시 무조건 폼 리셋 + 데이터 로딩 후 채우기
   const prevClassIdRef = useRef<string | null>(null);
   const prevDateStrRef = useRef<string | null>(null);
+  const prevIsOpenRef = useRef<boolean>(false);
+  const [formInitialized, setFormInitialized] = useState(false);
 
   useEffect(() => {
-    // classId 또는 dateStr이 실제로 변경되었을 때만 리셋
-    if (classId !== prevClassIdRef.current || dateStr !== prevDateStrRef.current) {
+    // 모달이 열릴 때 또는 classId/dateStr이 변경되었을 때 폼 리셋
+    const isNewOpen = isOpen && !prevIsOpenRef.current;
+    const isContextChanged = classId !== prevClassIdRef.current || dateStr !== prevDateStrRef.current;
+
+    if (isNewOpen || (isOpen && isContextChanged)) {
+      console.log('[ProgressModal] Form reset:', { isNewOpen, isContextChanged, classId, dateStr });
       setFormData({
         topic: '',
         textbook: '',
@@ -168,10 +175,12 @@ export function ProgressModal({
         homeworkEndPage: '',
         notes: '',
       });
+      setFormInitialized(false); // 데이터 로딩 후 다시 초기화되도록
       prevClassIdRef.current = classId;
       prevDateStrRef.current = dateStr;
     }
-  }, [classId, dateStr]);
+    prevIsOpenRef.current = isOpen;
+  }, [isOpen, classId, dateStr]);
 
   // 시험 토글 상태
   const [testEnabled, setTestEnabled] = useState(false);
@@ -210,29 +219,41 @@ export function ProgressModal({
     }
   }, [isOpen, students]);
 
-  // Phase 317: todayProgress가 있으면 기존 기록으로 폼 채우기 (수정 가능)
-  // todayProgress가 없으면 lastProgress 기반으로 다음 페이지 자동 설정
+  // Phase 317 + Stage 59f: 데이터 로딩 완료 후 폼 채우기
+  // formInitialized가 false일 때만 채움 (중복 채움 방지)
   useEffect(() => {
+    // 데이터 로딩 중이거나 이미 초기화된 경우 스킵
+    if (isDataLoading || formInitialized) return;
+
+    console.log('[ProgressModal] Auto-fill check:', {
+      formInitialized,
+      hasTodayProgress: !!todayProgress,
+      hasLastProgress: !!lastProgress,
+      dateStr
+    });
+
     if (todayProgress) {
       // 기존 기록이 있으면 해당 데이터로 폼 채우기
       const pageRange = extractPageRange(todayProgress.pages);
+      console.log('[ProgressModal] Filling from todayProgress:', todayProgress);
       setFormData((prev) => ({
         ...prev,
         textbook: todayProgress.textbook || prev.textbook,
         startPage: pageRange?.start?.toString() || '',
         endPage: pageRange?.end?.toString() || '',
         homeworkTextbook: todayProgress.textbook || prev.homeworkTextbook,
-        // 숙제 페이지는 homeworkDescription에서 추출 (복잡하므로 일단 비움)
         homeworkStartPage: '',
         homeworkEndPage: '',
         notes: todayProgress.notes || '',
       }));
+      setFormInitialized(true);
     } else if (lastProgress) {
       // 기존 기록 없으면 지난 진도 기반으로 다음 페이지 자동 설정
       const pageRange = extractPageRange(lastProgress.pages);
       const nextStart = pageRange ? (pageRange.end + 1).toString() : '';
       const nextEnd = pageRange ? (pageRange.end + 5).toString() : '';
 
+      console.log('[ProgressModal] Filling from lastProgress:', lastProgress);
       setFormData((prev) => ({
         ...prev,
         topic: lastProgress.topic || '',
@@ -243,8 +264,9 @@ export function ProgressModal({
         homeworkStartPage: nextStart || prev.homeworkStartPage,
         homeworkEndPage: nextEnd || prev.homeworkEndPage,
       }));
+      setFormInitialized(true);
     }
-  }, [lastProgress, todayProgress]);
+  }, [lastProgress, todayProgress, isDataLoading, formInitialized, dateStr]);
 
   const handleSave = () => {
     // 진도 저장

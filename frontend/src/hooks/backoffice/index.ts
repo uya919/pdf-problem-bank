@@ -19,3 +19,4 @@ export * from './useExamScores';
 export * from './useDashboard';
 export * from './useWeekData';
 export * from './useMisc';
+export * from './useWeeklyReports';

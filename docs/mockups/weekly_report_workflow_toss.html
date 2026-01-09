@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주간 리포트 워크플로우 - 토스 스타일 (2안)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 토스 컬러 시스템 */
+    :root {
+      --toss-blue: #3182F6;
+      --toss-blue-light: #4D9BFF;
+      --toss-red: #F04452;
+      --toss-green: #03C75A;
+      --toss-orange: #FF9500;
+      --grey-900: #191F28;
+      --grey-800: #333D4B;
+      --grey-700: #4E5968;
+      --grey-600: #6B7684;
+      --grey-500: #8B95A1;
+      --grey-400: #B0B8C1;
+      --grey-300: #D1D6DB;
+      --grey-200: #E5E8EB;
+      --grey-100: #F2F4F6;
+      --grey-50: #F9FAFB;
+    }
+
+    .phone-frame {
+      width: 375px;
+      min-height: 750px;
+      border: 8px solid #191F28;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+      background: white;
+    }
+
+    .notch {
+      width: 120px;
+      height: 32px;
+      background: #191F28;
+      border-radius: 0 0 16px 16px;
+      margin: 0 auto;
+    }
+
+    /* 토스 스타일 카드 */
+    .toss-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    /* 토스 스타일 입력 필드 */
+    .toss-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--grey-100);
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      color: var(--grey-900);
+      transition: background 0.2s;
+    }
+    .toss-input:focus {
+      background: var(--grey-200);
+      outline: none;
+    }
+    .toss-input::placeholder {
+      color: var(--grey-400);
+    }
+
+    /* 토스 스타일 버튼 */
+    .toss-btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: var(--toss-blue);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toss-btn-primary:active {
+      transform: scale(0.98);
+      background: #1B64DA;
+    }
+
+    /* 토스 스타일 세그먼트 컨트롤 */
+    .toss-segment {
+      display: flex;
+      padding: 4px;
+      background: var(--grey-100);
+      border-radius: 12px;
+      gap: 4px;
+    }
+    .toss-segment-item {
+      flex: 1;
+      padding: 10px 8px;
+      text-align: center;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--grey-500);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .toss-segment-item.active {
+      background: white;
+      color: var(--grey-900);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    /* 토스 스타일 별점 (슬라이더 느낌) */
+    .toss-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: var(--grey-50);
+      border-radius: 12px;
+    }
+    .toss-star {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 16px;
+    }
+    .toss-star.empty {
+      background: var(--grey-100);
+      color: var(--grey-300);
+    }
+    .toss-star.filled {
+      background: #FEF3C7;
+      color: #F59E0B;
+    }
+    .toss-star:active { transform: scale(0.9); }
+
+    /* 토스 스타일 칩 */
+    .toss-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .toss-chip:active { transform: scale(0.96); }
+    .toss-chip-positive { background: #E8F5E9; color: #2E7D32; }
+    .toss-chip-warning { background: #FFF3E0; color: #E65100; }
+    .toss-chip-info { background: #E3F2FD; color: #1565C0; }
+
+    /* 토스 스타일 진행 표시 */
+    .toss-progress {
+      height: 6px;
+      background: var(--grey-100);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .toss-progress-bar {
+      height: 100%;
+      background: var(--toss-blue);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    /* 토스 스타일 숫자 강조 */
+    .toss-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--grey-900);
+      letter-spacing: -0.5px;
+    }
+    .toss-number-sub {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--grey-500);
+    }
+
+    /* 부드러운 페이드 인 */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeUp { animation: fadeUp 0.3s ease-out; }
+  </style>
+</head>
+<body class="bg-[#F2F4F6] min-h-screen p-8">
+
+  <!-- 헤더 -->
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">주간 리포트 - 토스 스타일 (2안)</h1>
+    <p class="text-gray-600 mt-2">토스가 만들었다면 이렇게 했을 것</p>
+  </div>
+
+  <!-- 토스 디자인 원칙 -->
+  <div class="max-w-4xl mx-auto mb-8 bg-white rounded-2xl p-5 shadow-sm">
+    <h3 class="font-bold text-gray-900 mb-3">토스 디자인 원칙</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+      <div class="bg-gray-50 rounded-xl p-3">
+        <div class="text-blue-500 font-semibold mb-1">여백</div>
+        <div class="text-gray-600">넓은 패딩, 시원한 간격</div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-3">
+        <div class="text-blue-500 font-semibold mb-1">모서리</div>
+        <div class="text-gray-600">큰 라운드 (16-24px)</div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-3">
+        <div class="text-blue-500 font-semibold mb-1">색상</div>
+        <div class="text-gray-600">절제된 파란색 포인트</div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-3">
+        <div class="text-blue-500 font-semibold mb-1">숫자</div>
+        <div class="text-gray-600">크게, 명확하게</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2개 화면 비교 -->
+  <div class="flex gap-8 justify-center flex-wrap">
+
+    <!-- ========== 왼쪽: 매일 진도 입력 (토스 스타일) ========== -->
+    <div class="phone-frame">
+      <div class="notch"></div>
+      <div class="bg-white overflow-y-auto" style="height: 690px;">
+
+        <!-- 헤더 (토스 스타일) -->
+        <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 px-5 py-4 border-b border-gray-100">
+          <div class="flex items-center justify-between">
+            <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+              <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h2 class="text-[17px] font-semibold text-gray-900">진도 입력</h2>
+            <button class="text-[15px] font-semibold text-[#3182F6]">저장</button>
+          </div>
+        </div>
+
+        <div class="px-5 py-4 space-y-5 animate-fadeUp">
+
+          <!-- 수업 정보 카드 -->
+          <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 text-white">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-medium text-blue-100">오늘의 수업</span>
+              <span class="text-xs bg-white/20 px-2.5 py-1 rounded-full">수학 A반</span>
+            </div>
+            <div class="text-2xl font-bold mb-1">이차방정식</div>
+            <div class="text-sm text-blue-100">1월 8일 (수) · 16:00 - 18:00</div>
+          </div>
+
+          <!-- 진도 입력 -->
+          <div class="toss-card">
+            <h3 class="text-[15px] font-semibold text-gray-900 mb-4">진도 기록</h3>
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 gap-3">
+                <input type="text" class="toss-input" placeholder="교재명" value="개념쎈">
+                <input type="text" class="toss-input" placeholder="범위" value="p.42 - 48">
+              </div>
+              <input type="text" class="toss-input" placeholder="숙제 범위" value="개념쎈 p.49 - 52">
+            </div>
+          </div>
+
+          <!-- 시험 입력 (토스 스타일 세그먼트) -->
+          <div class="toss-card">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-[15px] font-semibold text-gray-900">시험 기록</h3>
+              <div class="w-11 h-6 bg-[#3182F6] rounded-full relative cursor-pointer">
+                <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+              </div>
+            </div>
+
+            <!-- 시험 유형 세그먼트 -->
+            <div class="toss-segment mb-4">
+              <div class="toss-segment-item active">일일</div>
+              <div class="toss-segment-item">주간</div>
+              <div class="toss-segment-item">월별</div>
+              <div class="toss-segment-item">쪽지</div>
+            </div>
+
+            <!-- 문항수 설정 -->
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl mb-4">
+              <span class="text-sm text-gray-600">총 문항</span>
+              <div class="flex items-center gap-2 flex-1">
+                <input type="text" class="w-16 text-center py-2 bg-white rounded-lg text-[15px] font-semibold border-0" value="10">
+                <span class="text-gray-400">문제</span>
+              </div>
+              <div class="text-sm text-[#3182F6] font-medium">→ 100점 환산</div>
+            </div>
+
+            <!-- 학생별 점수 (토스 스타일 리스트) -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-sm font-semibold text-blue-600">민</div>
+                  <span class="text-[15px] font-medium text-gray-900">김민지</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="text" class="w-12 text-center py-1.5 bg-white rounded-lg text-[15px] font-semibold" value="9">
+                  <span class="text-gray-400 text-sm">/10</span>
+                  <span class="text-[17px] font-bold text-[#3182F6]">90</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 bg-green-100 rounded-full flex items-center justify-center text-sm font-semibold text-green-600">서</div>
+                  <span class="text-[15px] font-medium text-gray-900">박서준</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="text" class="w-12 text-center py-1.5 bg-white rounded-lg text-[15px] font-semibold" value="7">
+                  <span class="text-gray-400 text-sm">/10</span>
+                  <span class="text-[17px] font-bold text-green-600">70</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 숙제 평가 (별점 → 토스 스타일 슬라이더 느낌) -->
+          <div class="toss-card">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-[15px] font-semibold text-gray-900">숙제 평가</h3>
+              <span class="text-xs text-gray-400">개념쎈 p.38-41</span>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-sm font-semibold text-blue-600">민</div>
+                  <span class="text-[15px] font-medium text-gray-900">김민지</span>
+                </div>
+                <div class="toss-rating">
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 bg-green-100 rounded-full flex items-center justify-center text-sm font-semibold text-green-600">서</div>
+                  <span class="text-[15px] font-medium text-gray-900">박서준</span>
+                </div>
+                <div class="toss-rating">
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star filled">★</span>
+                  <span class="toss-star empty">★</span>
+                  <span class="toss-star empty">★</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 오른쪽: 주간 리포트 (토스 스타일) ========== -->
+    <div class="phone-frame">
+      <div class="notch"></div>
+      <div class="bg-white overflow-y-auto" style="height: 690px;">
+
+        <!-- 헤더 -->
+        <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 px-5 py-4 border-b border-gray-100">
+          <div class="flex items-center justify-between">
+            <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+              <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h2 class="text-[17px] font-semibold text-gray-900">주간 리포트</h2>
+            <button class="text-[15px] font-semibold text-[#3182F6]">저장</button>
+          </div>
+        </div>
+
+        <div class="px-5 py-4 space-y-5 animate-fadeUp">
+
+          <!-- 학생 프로필 카드 -->
+          <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-xl font-bold text-white">민</div>
+            <div class="flex-1">
+              <div class="text-[17px] font-semibold text-gray-900">김민지</div>
+              <div class="text-sm text-gray-500">수학 A반 · 중2</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-400">이번 주</div>
+              <div class="text-sm font-semibold text-[#3182F6]">2회 수업</div>
+            </div>
+          </div>
+
+          <!-- 주간 요약 (토스 스타일 대시보드) -->
+          <div class="toss-card">
+            <h3 class="text-[15px] font-semibold text-gray-900 mb-4">이번 주 요약</h3>
+
+            <div class="grid grid-cols-2 gap-4">
+              <!-- 출결 -->
+              <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                <div class="toss-number text-orange-500">50%</div>
+                <div class="toss-number-sub mt-1">출결</div>
+                <div class="text-xs text-gray-400 mt-1">1/2회 출석</div>
+              </div>
+
+              <!-- 시험 -->
+              <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                <div class="toss-number text-[#3182F6]">85</div>
+                <div class="toss-number-sub mt-1">시험 평균</div>
+                <div class="text-xs text-gray-400 mt-1">일일 2회</div>
+              </div>
+
+              <!-- 숙제 -->
+              <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                <div class="toss-number text-green-500">4.5</div>
+                <div class="toss-number-sub mt-1">숙제 평균</div>
+                <div class="text-xs text-gray-400 mt-1">★ 기준</div>
+              </div>
+
+              <!-- 진도 -->
+              <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                <div class="text-[15px] font-bold text-gray-900">이차방정식</div>
+                <div class="toss-number-sub mt-1">진도</div>
+                <div class="text-xs text-gray-400 mt-1">p.42-52</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 강사 평가 (토스 스타일) -->
+          <div class="toss-card">
+            <h3 class="text-[15px] font-semibold text-gray-900 mb-4">평가</h3>
+
+            <div class="space-y-5">
+              <!-- 수업 태도 -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[15px] text-gray-700">수업 태도</span>
+                  <div class="flex gap-1">
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star empty">★</span>
+                    <span class="toss-star empty">★</span>
+                  </div>
+                </div>
+                <div class="toss-progress">
+                  <div class="toss-progress-bar" style="width: 60%"></div>
+                </div>
+                <div class="text-xs text-gray-400 mt-1">1/2회 출석, 지각 1회</div>
+              </div>
+
+              <!-- 이해도 -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[15px] text-gray-700">이해도</span>
+                  <div class="flex gap-1">
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star empty">★</span>
+                  </div>
+                </div>
+                <div class="toss-progress">
+                  <div class="toss-progress-bar" style="width: 80%"></div>
+                </div>
+                <div class="text-xs text-gray-400 mt-1">일일테스트 평균 85점</div>
+              </div>
+
+              <!-- 숙제 완료도 -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[15px] text-gray-700">숙제 완료</span>
+                  <div class="flex gap-1">
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                    <span class="toss-star filled">★</span>
+                  </div>
+                </div>
+                <div class="toss-progress">
+                  <div class="toss-progress-bar bg-green-500" style="width: 100%"></div>
+                </div>
+                <div class="text-xs text-gray-400 mt-1">숙제 평균 ★4.5</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 코멘트 (토스 스타일 칩 + 입력) -->
+          <div class="toss-card">
+            <h3 class="text-[15px] font-semibold text-gray-900 mb-4">코멘트</h3>
+
+            <!-- 잘한 점 -->
+            <div class="mb-4">
+              <label class="text-sm text-gray-500 mb-2 block">잘한 점</label>
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span class="toss-chip toss-chip-positive">집중력</span>
+                <span class="toss-chip toss-chip-positive">적극성</span>
+                <span class="toss-chip toss-chip-positive">이해력</span>
+              </div>
+              <textarea class="toss-input resize-none" rows="2" placeholder="탭하면 자동으로 입력돼요">이차방정식 개념을 빠르게 이해했어요.</textarea>
+            </div>
+
+            <!-- 개선할 점 -->
+            <div class="mb-4">
+              <label class="text-sm text-gray-500 mb-2 block">개선할 점</label>
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span class="toss-chip toss-chip-warning">지각</span>
+                <span class="toss-chip toss-chip-warning">복습부족</span>
+              </div>
+              <textarea class="toss-input resize-none" rows="2" placeholder="탭하면 자동으로 입력돼요">지각 1회 → 시간 관리 필요해요.</textarea>
+            </div>
+
+            <!-- 전달사항 -->
+            <div>
+              <label class="text-sm text-gray-500 mb-2 block">학부모 전달</label>
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span class="toss-chip toss-chip-info">격려</span>
+                <span class="toss-chip toss-chip-info">출결확인</span>
+              </div>
+              <textarea class="toss-input resize-none" rows="2" placeholder="탭하면 자동으로 입력돼요">출결 관리 부탁드려요.</textarea>
+            </div>
+          </div>
+
+          <!-- 저장 버튼 -->
+          <button class="toss-btn-primary">저장하기</button>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 비교 요약 -->
+  <div class="max-w-4xl mx-auto mt-8 bg-white rounded-2xl shadow-sm p-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-4">1안 vs 2안 (토스) 비교</h3>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-200">
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">요소</th>
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">1안 (현재)</th>
+            <th class="text-left py-3 px-4 font-semibold text-[#3182F6]">2안 (토스)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-600">모서리</td>
+            <td class="py-3 px-4">rounded-xl (12px)</td>
+            <td class="py-3 px-4">rounded-2xl (16-20px)</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-600">카드 스타일</td>
+            <td class="py-3 px-4">테두리 (border)</td>
+            <td class="py-3 px-4">그림자 (shadow-sm)</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-600">입력 필드</td>
+            <td class="py-3 px-4">테두리 있음</td>
+            <td class="py-3 px-4">회색 배경, 테두리 없음</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-600">별점</td>
+            <td class="py-3 px-4">★ 텍스트만</td>
+            <td class="py-3 px-4">★ + 박스 배경 + Progress bar</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-600">숫자 표시</td>
+            <td class="py-3 px-4">작은 폰트</td>
+            <td class="py-3 px-4">큰 폰트 (32px), 색상 강조</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-600">학생 목록</td>
+            <td class="py-3 px-4">이름만</td>
+            <td class="py-3 px-4">아바타 + 이름</td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 text-gray-600">전체 느낌</td>
+            <td class="py-3 px-4">심플, 기능 중심</td>
+            <td class="py-3 px-4">프리미엄, 여백 풍부</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>

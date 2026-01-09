@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주간 리포트 평가 기준표 - 혜윰학원</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+    body { font-family: 'Noto Sans KR', sans-serif; }
+    .score-5 { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .score-4 { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .score-3 { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .score-2 { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    .score-1 { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- 헤더 -->
+  <div class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">주간 리포트 평가 기준표</h1>
+          <p class="text-sm text-gray-500 mt-1">혜윰학원 강사용 통일 평가 가이드</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-400">v1.0</span>
+          <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Stage 58</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-6 py-8">
+
+    <!-- 점수 범례 -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">점수 범례</h2>
+      <div class="grid grid-cols-5 gap-3">
+        <div class="text-center">
+          <div class="score-5 text-white font-bold text-2xl py-3 rounded-xl mb-2">5점</div>
+          <div class="text-sm font-medium text-gray-700">매우 우수</div>
+          <div class="text-xs text-gray-500">상위 10%</div>
+        </div>
+        <div class="text-center">
+          <div class="score-4 text-white font-bold text-2xl py-3 rounded-xl mb-2">4점</div>
+          <div class="text-sm font-medium text-gray-700">우수</div>
+          <div class="text-xs text-gray-500">상위 30%</div>
+        </div>
+        <div class="text-center">
+          <div class="score-3 text-white font-bold text-2xl py-3 rounded-xl mb-2">3점</div>
+          <div class="text-sm font-medium text-gray-700">보통</div>
+          <div class="text-xs text-gray-500">평균 수준</div>
+        </div>
+        <div class="text-center">
+          <div class="score-2 text-white font-bold text-2xl py-3 rounded-xl mb-2">2점</div>
+          <div class="text-sm font-medium text-gray-700">미흡</div>
+          <div class="text-xs text-gray-500">개선 필요</div>
+        </div>
+        <div class="text-center">
+          <div class="score-1 text-white font-bold text-2xl py-3 rounded-xl mb-2">1점</div>
+          <div class="text-sm font-medium text-gray-700">매우 미흡</div>
+          <div class="text-xs text-gray-500">즉시 상담</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. 수업 태도 -->
+    <div class="bg-white rounded-2xl shadow-sm mb-6 overflow-hidden">
+      <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">1. 수업 태도</h2>
+            <p class="text-blue-100 text-sm">수업 중 집중도, 자세, 예절</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600 w-20">점수</th>
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600">구체적 행동 기준</th>
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600 w-64">예시 시나리오</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-5 text-white font-bold px-3 py-1 rounded-lg text-sm">5점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 수업 시작 전 미리 준비 완료</li>
+                  <li>• 선생님 눈을 보며 경청</li>
+                  <li>• 자발적으로 질문하고 답변</li>
+                  <li>• 다른 학생에게 방해가 전혀 없음</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "민지는 항상 수업 5분 전에 교재를 펴놓고 기다려요. 모르는 부분은 바로 질문하고, 설명할 때 고개를 끄덕이며 집중해요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-4 text-white font-bold px-3 py-1 rounded-lg text-sm">4점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 수업 시작과 동시에 준비</li>
+                  <li>• 대체로 집중하며 듣음</li>
+                  <li>• 질문하면 성실히 답변</li>
+                  <li>• 가끔 주의 산만하나 금방 복귀</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "서준이는 수업에 잘 따라와요. 가끔 옆 친구와 이야기하지만, 주의를 주면 바로 집중해요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-3 text-white font-bold px-3 py-1 rounded-lg text-sm">3점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 수업 시작 후 교재 찾음</li>
+                  <li>• 듣다가 멍하니 있는 경우 있음</li>
+                  <li>• 질문하면 답하나 소극적</li>
+                  <li>• 1-2회 주의 필요</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "수현이는 평균적인 태도예요. 설명 중 가끔 딴 생각을 하고, 질문하면 대답은 하지만 먼저 질문하진 않아요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-2 text-white font-bold px-3 py-1 rounded-lg text-sm">2점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 지각 또는 준비물 미비</li>
+                  <li>• 자주 딴짓 (낙서, 핸드폰)</li>
+                  <li>• 질문해도 대충 답변</li>
+                  <li>• 3회 이상 주의 필요</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "다은이는 이번 주 2번 지각했고, 수업 중 책상에 낙서하거나 멍하니 있는 시간이 많았어요. 여러 번 주의를 줬어요."
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-1 text-white font-bold px-3 py-1 rounded-lg text-sm">1점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 상습 지각 또는 조퇴</li>
+                  <li>• 수업 방해 (떠들기, 장난)</li>
+                  <li>• 교재 안 가져옴</li>
+                  <li>• 선생님 말에 반항적 태도</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "준호가 이번 주 수업에서 계속 옆 친구에게 말을 걸어 수업 진행이 어려웠어요. 주의를 줘도 금방 다시 떠들었어요. 학부모 상담이 필요해요."
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. 이해도 -->
+    <div class="bg-white rounded-2xl shadow-sm mb-6 overflow-hidden">
+      <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">2. 이해도</h2>
+            <p class="text-green-100 text-sm">수업 내용 파악 수준, 개념 이해력</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600 w-20">점수</th>
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600">구체적 행동 기준</th>
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600 w-64">예시 시나리오</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-5 text-white font-bold px-3 py-1 rounded-lg text-sm">5점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 새 개념을 한 번에 이해</li>
+                  <li>• 응용 문제까지 스스로 해결</li>
+                  <li>• 왜 그런지 설명할 수 있음</li>
+                  <li>• 심화 문제에도 도전</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "민지는 일차함수 개념을 바로 이해하고, 응용 문제도 혼자 풀었어요. '기울기가 변화율이죠?'라고 스스로 정리하더라고요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-4 text-white font-bold px-3 py-1 rounded-lg text-sm">4점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 1-2번 설명으로 이해</li>
+                  <li>• 유사 문제는 혼자 해결</li>
+                  <li>• 가끔 힌트 필요</li>
+                  <li>• 전체적으로 따라옴</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "서준이는 개념 설명을 두 번 듣고 이해했어요. 비슷한 유형은 잘 풀지만, 변형된 문제에서 살짝 막히더라고요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-3 text-white font-bold px-3 py-1 rounded-lg text-sm">3점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 3-4번 설명 필요</li>
+                  <li>• 기본 문제는 해결</li>
+                  <li>• 응용에서 어려움</li>
+                  <li>• 비슷한 실수 반복</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "수현이는 개념을 여러 번 설명해야 이해해요. 기본 문제는 풀지만, 응용 문제에서 막히면 어디서부터 접근해야 할지 몰라해요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-2 text-white font-bold px-3 py-1 rounded-lg text-sm">2점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 많이 설명해도 헷갈려함</li>
+                  <li>• 기본 문제도 힌트 필요</li>
+                  <li>• 이전 개념 복습 필요</li>
+                  <li>• 자신감 부족</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "다은이는 이번 단원이 어려운 것 같아요. 기본 문제도 제가 옆에서 도와줘야 풀어요. 이전 단원 복습이 필요해 보여요."
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-1 text-white font-bold px-3 py-1 rounded-lg text-sm">1점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 기초 개념부터 모름</li>
+                  <li>• 수업을 따라오기 어려움</li>
+                  <li>• 개별 보충 수업 필요</li>
+                  <li>• 학습 격차 심각</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "준호는 이번 단원의 선행 개념(분수 계산)이 안 되어 있어서 수업 진행이 어려워요. 개별 보충 수업이나 레벨 조정이 필요해요."
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. 숙제 완료도 -->
+    <div class="bg-white rounded-2xl shadow-sm mb-6 overflow-hidden">
+      <div class="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">3. 숙제 완료도</h2>
+            <p class="text-amber-100 text-sm">과제 제출율, 성실도, 정확도</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600 w-20">점수</th>
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600">구체적 행동 기준</th>
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600 w-64">예시 시나리오</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-5 text-white font-bold px-3 py-1 rounded-lg text-sm">5점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 숙제 100% 완료 + 오답 정리까지</li>
+                  <li>• 모르는 문제 표시 후 질문</li>
+                  <li>• 추가 문제까지 스스로 풀어옴</li>
+                  <li>• 깔끔한 풀이 과정</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "민지는 숙제를 다 하고, 틀린 문제는 왜 틀렸는지 적어왔어요. 모르는 건 표시해서 수업 시작할 때 바로 질문해요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-4 text-white font-bold px-3 py-1 rounded-lg text-sm">4점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 숙제 100% 완료</li>
+                  <li>• 성실하게 풀이 작성</li>
+                  <li>• 오답 정리는 안 함</li>
+                  <li>• 가끔 계산 실수 있음</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "서준이는 숙제를 빠짐없이 해왔어요. 풀이도 성실하게 적었고요. 다만 틀린 문제 복습은 안 했네요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-3 text-white font-bold px-3 py-1 rounded-lg text-sm">3점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 숙제 70-90% 완료</li>
+                  <li>• 어려운 문제 건너뜀</li>
+                  <li>• 풀이 과정 생략 있음</li>
+                  <li>• 대충 한 흔적 보임</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "수현이는 숙제를 거의 했는데, 뒷부분 어려운 문제 3개를 안 풀어왔어요. '몰라서요'라고 했는데, 시도한 흔적이 없었어요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-2 text-white font-bold px-3 py-1 rounded-lg text-sm">2점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 숙제 50-70% 완료</li>
+                  <li>• 답만 적고 풀이 없음</li>
+                  <li>• 베낀 흔적 있음</li>
+                  <li>• 급하게 한 티가 남</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "다은이는 숙제 절반만 했고, 답만 적혀있어요. 수업 직전에 급하게 한 것 같아요. 이번 주 두 번 다 이랬어요."
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-1 text-white font-bold px-3 py-1 rounded-lg text-sm">1점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 숙제 50% 미만 또는 안 함</li>
+                  <li>• 교재를 안 가져옴</li>
+                  <li>• 핑계를 댐 ("잊어버렸어요")</li>
+                  <li>• 반복적으로 미완료</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "준호가 이번 주 숙제를 아예 안 해왔어요. '교재를 학교에 두고 왔어요'라고 했는데, 지난주에도 같은 핑계였어요. 학부모님께 연락드려야 할 것 같아요."
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. 참여도 -->
+    <div class="bg-white rounded-2xl shadow-sm mb-6 overflow-hidden">
+      <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">4. 참여도</h2>
+            <p class="text-purple-100 text-sm">수업 활동 참여, 질문/발표, 적극성</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600 w-20">점수</th>
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600">구체적 행동 기준</th>
+              <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600 w-64">예시 시나리오</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-5 text-white font-bold px-3 py-1 rounded-lg text-sm">5점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 자발적으로 질문 3회 이상</li>
+                  <li>• 문제 풀이 발표 자원</li>
+                  <li>• 모둠 활동에서 리더 역할</li>
+                  <li>• 수업 분위기를 끌어올림</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "민지는 '선생님, 이 방법도 되나요?'라고 먼저 질문하고, 칠판에 나와서 풀이도 설명해줬어요. 수업 분위기가 좋아져요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-4 text-white font-bold px-3 py-1 rounded-lg text-sm">4점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 가끔 질문 (1-2회)</li>
+                  <li>• 시키면 발표함</li>
+                  <li>• 활동에 성실히 참여</li>
+                  <li>• 반응이 좋음 (끄덕끄덕)</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "서준이는 질문하면 잘 대답하고, 모르면 손을 들어 물어봐요. 적극적이진 않지만 성실하게 참여해요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-3 text-white font-bold px-3 py-1 rounded-lg text-sm">3점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 질문 안 하고 듣기만 함</li>
+                  <li>• 시키면 마지못해 답함</li>
+                  <li>• 활동은 하지만 수동적</li>
+                  <li>• 표정이 무덤덤</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "수현이는 조용히 듣기만 해요. 발표시키면 작은 목소리로 대답하긴 하는데, 스스로 질문하거나 의견을 말하진 않아요."
+              </td>
+            </tr>
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-2 text-white font-bold px-3 py-1 rounded-lg text-sm">2점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 질문해도 "모르겠어요"만</li>
+                  <li>• 발표 시키면 거부</li>
+                  <li>• 활동에 소극적/무관심</li>
+                  <li>• 의욕 없어 보임</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "다은이는 발표시키면 '저 말고요' 하고, 질문해도 '몰라요'만 해요. 의욕이 없어 보여서 걱정이에요."
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="py-4 px-4">
+                <span class="score-1 text-white font-bold px-3 py-1 rounded-lg text-sm">1점</span>
+              </td>
+              <td class="py-4 px-4">
+                <ul class="text-sm text-gray-700 space-y-1">
+                  <li>• 수업 참여 거부</li>
+                  <li>• 책상에 엎드려 있음</li>
+                  <li>• 대화가 안 됨</li>
+                  <li>• 정서적 문제 의심</li>
+                </ul>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600">
+                "준호가 이번 주 내내 책상에 엎드려 있었어요. 말을 걸어도 대답을 안 하고요. 가정에서 무슨 일이 있는 건 아닌지 확인이 필요해요."
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 종합 평가 가이드 -->
+    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 text-white mb-8">
+      <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        종합 평가 가이드
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-semibold text-yellow-400 mb-2">평가 시 주의사항</h3>
+          <ul class="text-sm text-gray-300 space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-green-400">✓</span>
+              <span>객관적 행동 기준으로 판단 (감정 배제)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-green-400">✓</span>
+              <span>이번 주 전체를 종합적으로 평가</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-green-400">✓</span>
+              <span>3점이 "나쁜 점수"가 아님을 인지 (평균)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-green-400">✓</span>
+              <span>1-2점은 학부모 상담 필요 신호</span>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-yellow-400 mb-2">점수 분포 권장</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="score-5 text-white text-xs font-bold px-2 py-0.5 rounded">5점</span>
+              <div class="flex-1 bg-gray-700 rounded-full h-2">
+                <div class="bg-green-500 h-2 rounded-full" style="width: 10%"></div>
+              </div>
+              <span class="text-xs text-gray-400">~10%</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="score-4 text-white text-xs font-bold px-2 py-0.5 rounded">4점</span>
+              <div class="flex-1 bg-gray-700 rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: 25%"></div>
+              </div>
+              <span class="text-xs text-gray-400">~25%</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="score-3 text-white text-xs font-bold px-2 py-0.5 rounded">3점</span>
+              <div class="flex-1 bg-gray-700 rounded-full h-2">
+                <div class="bg-amber-500 h-2 rounded-full" style="width: 40%"></div>
+              </div>
+              <span class="text-xs text-gray-400">~40%</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="score-2 text-white text-xs font-bold px-2 py-0.5 rounded">2점</span>
+              <div class="flex-1 bg-gray-700 rounded-full h-2">
+                <div class="bg-orange-500 h-2 rounded-full" style="width: 20%"></div>
+              </div>
+              <span class="text-xs text-gray-400">~20%</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="score-1 text-white text-xs font-bold px-2 py-0.5 rounded">1점</span>
+              <div class="flex-1 bg-gray-700 rounded-full h-2">
+                <div class="bg-red-500 h-2 rounded-full" style="width: 5%"></div>
+              </div>
+              <span class="text-xs text-gray-400">~5%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 학부모 전달 문구 예시 -->
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div class="bg-gradient-to-r from-pink-500 to-rose-500 px-6 py-4">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+          </svg>
+          학부모 전달 문구 예시
+        </h2>
+      </div>
+
+      <div class="p-6">
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- 긍정적 피드백 -->
+          <div>
+            <h3 class="font-semibold text-green-600 mb-3 flex items-center gap-2">
+              <span class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </span>
+              긍정적 피드백 (4-5점)
+            </h3>
+            <div class="space-y-3">
+              <div class="bg-green-50 rounded-xl p-4">
+                <div class="text-xs text-green-600 font-medium mb-1">수업 태도 5점</div>
+                <p class="text-sm text-gray-700">"○○이가 항상 수업 준비를 미리 하고, 집중해서 듣는 모습이 인상적이에요. 다른 친구들에게도 좋은 본보기가 되고 있어요."</p>
+              </div>
+              <div class="bg-green-50 rounded-xl p-4">
+                <div class="text-xs text-green-600 font-medium mb-1">이해도 4점</div>
+                <p class="text-sm text-gray-700">"이번 주 배운 일차함수 개념을 잘 이해하고 있어요. 응용 문제까지 도전해보면 더 좋을 것 같아요!"</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 개선 필요 피드백 -->
+          <div>
+            <h3 class="font-semibold text-orange-600 mb-3 flex items-center gap-2">
+              <span class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+              </span>
+              개선 필요 피드백 (2-3점)
+            </h3>
+            <div class="space-y-3">
+              <div class="bg-orange-50 rounded-xl p-4">
+                <div class="text-xs text-orange-600 font-medium mb-1">숙제 완료도 2점</div>
+                <p class="text-sm text-gray-700">"이번 주 숙제가 절반만 되어 있었어요. 어려운 문제는 풀이 시도라도 해보면 다음 수업에서 같이 해결할 수 있어요. 가정에서도 숙제 확인 부탁드려요."</p>
+              </div>
+              <div class="bg-orange-50 rounded-xl p-4">
+                <div class="text-xs text-orange-600 font-medium mb-1">참여도 3점</div>
+                <p class="text-sm text-gray-700">"수업은 잘 따라오는데, 조금 더 적극적으로 질문하면 좋겠어요. 틀려도 괜찮으니 자신감을 가지고 도전해봤으면 해요."</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 심각한 경우 -->
+        <div class="mt-6 bg-red-50 border border-red-200 rounded-xl p-4">
+          <h3 class="font-semibold text-red-600 mb-2 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            1점 시 필수 포함 문구
+          </h3>
+          <p class="text-sm text-gray-700">
+            "최근 ○○이의 수업 참여/숙제/이해도에 대해 걱정이 됩니다.
+            <span class="font-medium text-red-600">학부모님과 상담을 통해 함께 방법을 찾고 싶습니다.</span>
+            편하신 시간에 연락 부탁드립니다."
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div class="mt-8 text-center text-sm text-gray-500">
+      <p>혜윰학원 주간 리포트 평가 기준표 v1.0</p>
+      <p class="mt-1">Stage 58 | 2026-01-08</p>
+    </div>
+  </div>
+
+</body>
+</html>

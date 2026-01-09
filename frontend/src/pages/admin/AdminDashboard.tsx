@@ -637,9 +637,3 @@ export default function AdminDashboard() {
   );
 }
 
-// ============================================
-// Sub Components (더 이상 사용하지 않음 - Stage 15에서 ClassCardGrid로 대체)
-// ============================================
-
-// 기존 ClassCard, OtherSubjectSummary, ScheduleRow, RotationClassChip 삭제
-// → ClassCard, ClassCardGrid 컴포넌트로 대체

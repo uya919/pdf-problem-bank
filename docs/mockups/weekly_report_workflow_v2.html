@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주간 리포트 워크플로우 v2 - 과목별 + 단색 아이콘</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    /* 실제 시스템 색상 */
+    :root {
+      --blue-primary: #3182F6;
+      --blue-hover: #1B64DA;
+      --blue-light: #EBF4FF;
+      --gray-900: #191F28;
+      --gray-700: #333D4B;
+      --gray-600: #6B7684;
+      --gray-500: #8B95A1;
+      --gray-300: #D5D8DC;
+      --gray-200: #E5E8EB;
+      --gray-100: #F2F4F6;
+      --gray-50: #F9FAFB;
+      --green-500: #22C55E;
+      --orange-500: #F97316;
+      --red-500: #EF4444;
+    }
+
+    .phone-frame {
+      width: 375px;
+      min-height: 700px;
+      border: 8px solid #1f2937;
+      border-radius: 40px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+      background: var(--gray-50);
+    }
+
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1f2937;
+      border-radius: 0 0 20px 20px;
+      margin: 0 auto;
+    }
+
+    /* 토글 스위치 */
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      background: var(--gray-300);
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-switch.on { background: var(--blue-primary); }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .toggle-switch.on::after { transform: translateX(18px); }
+
+    /* 시험 유형 탭 */
+    .test-type-tab {
+      flex: 1;
+      padding: 8px 4px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gray-500);
+      background: transparent;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .test-type-tab.active {
+      background: white;
+      color: var(--gray-900);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* 점수 입력 */
+    .score-input {
+      width: 40px;
+      height: 28px;
+      text-align: center;
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* 별점 슬라이더 */
+    .star-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .star-btn.empty { background: var(--gray-100); }
+    .star-btn.filled { background: #FEF3C7; }
+    .star-btn svg { width: 18px; height: 18px; }
+
+    /* 숙제 버튼 */
+    .hw-btn {
+      flex: 1;
+      padding: 6px 0;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .hw-btn.submit { background: #DCFCE7; color: #16A34A; }
+    .hw-btn.not-submit { background: #FEE2E2; color: #DC2626; }
+    .hw-btn.inactive { background: var(--gray-100); color: var(--gray-500); }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+
+  <!-- 헤더 -->
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">주간 리포트 워크플로우 v2</h1>
+    <p class="text-gray-600 mt-2">과목별 리포트 + 단색 아이콘 + 저장 전용</p>
+  </div>
+
+  <!-- 핵심 변경사항 -->
+  <div class="max-w-4xl mx-auto mb-8 bg-blue-50 border border-blue-200 rounded-xl p-4">
+    <h3 class="font-bold text-blue-800 mb-2">v2 변경사항</h3>
+    <ul class="text-sm text-blue-700 space-y-1">
+      <li>• <strong>과목별 리포트</strong>: 수학 수업 주 2회 → 해당 2회 기준 집계</li>
+      <li>• <strong>저장 전용</strong>: 학부모 발송 기능 제거 (나중에 관리자용으로 분리)</li>
+      <li>• <strong>단색 아이콘</strong>: 네비게이션과 동일한 SVG stroke 아이콘</li>
+    </ul>
+  </div>
+
+  <!-- 2개 화면 비교 -->
+  <div class="flex gap-8 justify-center flex-wrap">
+
+    <!-- ========== 왼쪽: 매일 진도 입력 (ProgressModal 확장) ========== -->
+    <div class="phone-frame">
+      <div class="notch"></div>
+      <div class="p-4 overflow-y-auto" style="height: 640px;">
+
+        <!-- 모달 헤더 -->
+        <div class="flex items-center justify-between mb-4">
+          <button class="text-gray-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <h2 class="text-lg font-bold text-gray-900">수학 A반 진도</h2>
+          <button class="text-[#3182F6] font-semibold text-sm">저장</button>
+        </div>
+
+        <!-- 날짜/수업 정보 -->
+        <div class="bg-white rounded-xl p-3 mb-3 border border-gray-100">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span class="text-sm font-medium text-gray-700">2026년 1월 8일 (수)</span>
+          </div>
+          <div class="flex items-center gap-2 mt-1">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="text-sm text-gray-600">16:00 - 18:00</span>
+          </div>
+        </div>
+
+        <!-- 기존 진도 입력 폼 -->
+        <div class="bg-white rounded-xl p-4 mb-3 border border-gray-100">
+          <div class="mb-3">
+            <label class="text-xs font-medium text-gray-500 mb-1 block">단원명</label>
+            <input type="text" value="이차방정식의 풀이" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400">
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="text-xs font-medium text-gray-500 mb-1 block">교재</label>
+              <input type="text" value="개념쎈" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg">
+            </div>
+            <div>
+              <label class="text-xs font-medium text-gray-500 mb-1 block">진도 범위</label>
+              <input type="text" value="p.42 - p.48" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="text-xs font-medium text-gray-500 mb-1 block">숙제 교재</label>
+              <input type="text" value="개념쎈" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg">
+            </div>
+            <div>
+              <label class="text-xs font-medium text-gray-500 mb-1 block">숙제 범위</label>
+              <input type="text" value="p.49 - p.52" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg">
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-medium text-gray-500 mb-1 block">비고</label>
+            <textarea class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg h-16 resize-none" placeholder="특이사항 입력..."></textarea>
+          </div>
+        </div>
+
+        <!-- 시험 섹션 (토글) -->
+        <div class="bg-white rounded-xl border border-gray-100 mb-3 overflow-hidden">
+          <div class="flex items-center justify-between p-4 border-b border-gray-50">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span class="font-medium text-gray-900">시험 입력</span>
+            </div>
+            <div class="toggle-switch on"></div>
+          </div>
+
+          <div class="p-4">
+            <!-- 시험 유형 선택 -->
+            <div class="flex gap-1 p-1 bg-gray-100 rounded-lg mb-3">
+              <div class="test-type-tab">일일</div>
+              <div class="test-type-tab active">주간</div>
+              <div class="test-type-tab">월별</div>
+              <div class="test-type-tab">쪽지</div>
+            </div>
+
+            <!-- 문항수 입력 (NEW) -->
+            <div class="flex items-center gap-3 mb-3 p-2 bg-blue-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-600">총 문항</span>
+                <input type="text" value="20" class="score-input">
+              </div>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+              <span class="text-xs text-blue-600 font-medium">100점 환산</span>
+            </div>
+
+            <!-- 학생별 점수 입력 -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-700">김민지</span>
+                <div class="flex items-center gap-2">
+                  <input type="text" value="18" class="score-input" style="width:36px;">
+                  <span class="text-xs text-gray-400">/20</span>
+                  <span class="text-sm font-bold text-blue-600">90</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-700">박서준</span>
+                <div class="flex items-center gap-2">
+                  <input type="text" value="15" class="score-input" style="width:36px;">
+                  <span class="text-xs text-gray-400">/20</span>
+                  <span class="text-sm font-bold text-green-600">75</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-700">이하은</span>
+                <div class="flex items-center gap-2">
+                  <input type="text" value="12" class="score-input" style="width:36px;">
+                  <span class="text-xs text-gray-400">/20</span>
+                  <span class="text-sm font-bold text-orange-500">60</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 숙제 확인 섹션 (토글) -->
+        <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div class="flex items-center justify-between p-4 border-b border-gray-50">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+              </svg>
+              <span class="font-medium text-gray-900">숙제 확인</span>
+            </div>
+            <div class="toggle-switch on"></div>
+          </div>
+
+          <div class="p-4">
+            <div class="text-xs text-gray-500 mb-2">지난 숙제: 개념쎈 p.38-41</div>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-700">김민지</span>
+                <div class="flex gap-2">
+                  <button class="hw-btn submit" style="width:50px;">제출</button>
+                  <button class="hw-btn inactive" style="width:50px;">미제출</button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-700">박서준</span>
+                <div class="flex gap-2">
+                  <button class="hw-btn submit" style="width:50px;">제출</button>
+                  <button class="hw-btn inactive" style="width:50px;">미제출</button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-700">이하은</span>
+                <div class="flex gap-2">
+                  <button class="hw-btn inactive" style="width:50px;">제출</button>
+                  <button class="hw-btn not-submit" style="width:50px;">미제출</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========== 오른쪽: 주간 리포트 (WeeklyReportModal) ========== -->
+    <div class="phone-frame">
+      <div class="notch"></div>
+      <div class="p-4 overflow-y-auto" style="height: 640px;">
+
+        <!-- 모달 헤더 -->
+        <div class="flex items-center justify-between mb-4">
+          <button class="text-gray-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <h2 class="text-lg font-bold text-gray-900">김민지 주간 리포트</h2>
+          <button class="text-[#3182F6] font-semibold text-sm">저장</button>
+        </div>
+
+        <!-- 과목/기간 정보 -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 mb-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">수학</span>
+                <span class="text-sm font-semibold text-gray-900">수학 A반</span>
+              </div>
+              <div class="text-xs text-gray-500 mt-1">1/6 (월) - 1/10 (금) · 이번 주 2회 수업</div>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold text-blue-600">2</div>
+              <div class="text-xs text-gray-500">수업 횟수</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 자동 집계 데이터 -->
+        <div class="bg-white rounded-xl border border-gray-100 p-4 mb-4">
+          <div class="flex items-center gap-2 mb-3">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span class="text-sm font-semibold text-gray-900">이번 주 수업 요약</span>
+            <span class="text-xs text-gray-400">(2회 기준 자동 집계)</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <!-- 출결 -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="flex items-center gap-1.5 mb-1">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-xs text-gray-600">출결</span>
+              </div>
+              <div class="text-sm font-semibold text-gray-900">2회 출석</div>
+              <div class="text-xs text-gray-500">지각 0 · 결석 0</div>
+            </div>
+
+            <!-- 시험 -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="flex items-center gap-1.5 mb-1">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span class="text-xs text-gray-600">시험</span>
+              </div>
+              <div class="text-sm font-semibold text-blue-600">평균 88점</div>
+              <div class="text-xs text-gray-500">주간 1회 (90점)</div>
+            </div>
+
+            <!-- 숙제 -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="flex items-center gap-1.5 mb-1">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+                <span class="text-xs text-gray-600">숙제</span>
+              </div>
+              <div class="text-sm font-semibold text-green-600">2/2 제출</div>
+              <div class="text-xs text-gray-500">100% 완료</div>
+            </div>
+
+            <!-- 진도 -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="flex items-center gap-1.5 mb-1">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <span class="text-xs text-gray-600">진도</span>
+              </div>
+              <div class="text-sm font-semibold text-gray-900">이차방정식</div>
+              <div class="text-xs text-gray-500">p.42 - p.52</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 강사 평가 영역 -->
+        <div class="bg-white rounded-xl border border-gray-100 p-4 mb-4">
+          <div class="flex items-center gap-2 mb-3">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+            </svg>
+            <span class="text-sm font-semibold text-gray-900">강사 평가</span>
+          </div>
+
+          <!-- 수업 태도 -->
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-700">수업 태도</span>
+              <div class="flex gap-1">
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn empty"><svg viewBox="0 0 24 24" fill="#D1D5DB"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+              </div>
+            </div>
+            <div class="text-xs text-gray-400 pl-0">2회 출석, 지각 0회</div>
+          </div>
+
+          <!-- 이해도 -->
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-700">이해도</span>
+              <div class="flex gap-1">
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+              </div>
+            </div>
+            <div class="text-xs text-gray-400 pl-0">주간테스트 90점</div>
+          </div>
+
+          <!-- 숙제 완료도 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-700">숙제 완료도</span>
+              <div class="flex gap-1">
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="star-btn filled"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+              </div>
+            </div>
+            <div class="text-xs text-gray-400 pl-0">숙제 2/2 제출 (100%)</div>
+          </div>
+        </div>
+
+        <!-- 텍스트 입력 영역 -->
+        <div class="bg-white rounded-xl border border-gray-100 p-4">
+          <div class="mb-3">
+            <label class="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+              </svg>
+              잘한 점
+            </label>
+            <textarea class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg h-16 resize-none" placeholder="이번 주 잘한 점...">이차방정식 개념 이해가 빠르고, 응용문제도 잘 해결합니다.</textarea>
+          </div>
+          <div class="mb-3">
+            <label class="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+              </svg>
+              개선할 점
+            </label>
+            <textarea class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg h-16 resize-none" placeholder="개선이 필요한 부분...">계산 실수가 간혹 있어 검산 습관이 필요합니다.</textarea>
+          </div>
+          <div>
+            <label class="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+              </svg>
+              학부모 전달사항
+            </label>
+            <textarea class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg h-16 resize-none" placeholder="학부모에게 전달할 내용...">다음 주에 이차방정식 단원평가가 있습니다. 복습 부탁드립니다.</textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 워크플로우 요약 -->
+  <div class="max-w-4xl mx-auto mt-8 bg-white rounded-xl shadow-lg p-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+      워크플로우 요약
+    </h3>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <!-- Step 1 -->
+      <div class="bg-blue-50 rounded-lg p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+          <span class="font-semibold text-gray-900">매일 수업 후</span>
+        </div>
+        <ul class="text-sm text-gray-600 space-y-1 ml-8">
+          <li>• 진도 입력 (기존)</li>
+          <li>• 시험 점수 입력 (선택)</li>
+          <li>• 숙제 제출 확인 (선택)</li>
+        </ul>
+        <div class="text-xs text-blue-600 mt-2 ml-8">~2분/수업</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="bg-green-50 rounded-lg p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+          <span class="font-semibold text-gray-900">자동 집계</span>
+        </div>
+        <ul class="text-sm text-gray-600 space-y-1 ml-8">
+          <li>• 과목별 수업 횟수 기준</li>
+          <li>• 출결/시험/숙제/진도 집계</li>
+          <li>• 주간 리포트에 자동 반영</li>
+        </ul>
+        <div class="text-xs text-green-600 mt-2 ml-8">자동 (강사 작업 없음)</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="bg-purple-50 rounded-lg p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+          <span class="font-semibold text-gray-900">금요일 리포트</span>
+        </div>
+        <ul class="text-sm text-gray-600 space-y-1 ml-8">
+          <li>• 자동 집계 데이터 확인</li>
+          <li>• 3개 항목 별점 평가</li>
+          <li>• 코멘트 작성 → <strong>저장</strong></li>
+        </ul>
+        <div class="text-xs text-purple-600 mt-2 ml-8">~3분/학생</div>
+      </div>
+    </div>
+
+    <!-- 시간 계산 -->
+    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-gray-600">예상 소요시간 (주 5일, 학생 5명 기준)</span>
+        <span class="font-bold text-gray-900">~25분/주</span>
+      </div>
+      <div class="text-xs text-gray-500 mt-1">
+        매일 진도+시험+숙제 2분 × 5일 = 10분 + 금요일 리포트 3분 × 5명 = 15분
+      </div>
+    </div>
+
+    <!-- 발송 관련 안내 -->
+    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="text-sm text-yellow-800">
+          <strong>저장 전용</strong>: 학부모 발송은 관리자 기능에서 별도 구현 예정
+        </span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
