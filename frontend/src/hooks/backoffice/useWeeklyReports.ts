@@ -92,6 +92,7 @@ export interface HomeroomStudent {
   id: string;
   name: string;
   grade_id: string | null;
+  grade_name: string | null;  // 학년 이름 (예: 초4, 중1)
   school: string | null;
   class_id: string;
   class_name: string;
@@ -162,7 +163,7 @@ export function useHomeroomStudents(teacherId: string | null) {
       const classIds = typedClasses.map(c => c.id);
       const classMap = new Map(typedClasses.map(c => [c.id, c.name]));
 
-      // 2. 해당 반들의 활성 등록 학생 조회
+      // 2. 해당 반들의 활성 등록 학생 조회 (학년 정보 포함)
       const { data: enrollments, error: enrollError } = await supabase
         .from('enrollments')
         .select(`
@@ -171,7 +172,8 @@ export function useHomeroomStudents(teacherId: string | null) {
             id,
             name,
             grade_id,
-            school
+            school,
+            grade:grades(name)
           )
         `)
         .in('class_id', classIds)
@@ -189,6 +191,7 @@ export function useHomeroomStudents(teacherId: string | null) {
           name: string;
           grade_id: string | null;
           school: string | null;
+          grade: { name: string } | null;
         };
       };
       const typedEnrollments = enrollments as unknown as EnrollmentResult[];
@@ -202,6 +205,7 @@ export function useHomeroomStudents(teacherId: string | null) {
             id: student.id,
             name: student.name,
             grade_id: student.grade_id,
+            grade_name: student.grade?.name || null,
             school: student.school,
             class_id: e.class_id,
             class_name: classMap.get(e.class_id) || '',

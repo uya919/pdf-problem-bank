@@ -119,9 +119,9 @@ function StudentReportCard({ student, report, onClick }: StudentCardProps) {
       <div className="flex-1 text-left min-w-0">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900">{student.name}</span>
-          {student.grade_id && (
+          {student.grade_name && (
             <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
-              {student.grade_id}
+              {student.grade_name}
             </span>
           )}
         </div>
